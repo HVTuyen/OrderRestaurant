@@ -1,0 +1,56 @@
+.navBar {
+    min-height: calc(100vh - 56px);
+    padding: 0px;
+    margin-top: -1px;
+}
+
+.title {
+    padding: 12px 0 12px 28px;
+    align-items: center;
+    background-color: #3b4e57;
+
+    &:hover {
+        cursor: pointer;
+        .titleText, .icon {
+            color: #fff;
+        }
+    }
+}
+
+.titleText {
+    font-size: 18px;
+    padding-left: 12px;
+    color: #bcafaf;
+    margin-bottom: 0
+}
+
+.icon {
+    font-size: 26px;
+    color: #bcafaf;
+}
+
+.li{
+    padding-left: 42px;
+    align-items: center;
+    height: 36px;
+
+    &:hover {
+        cursor: pointer;
+        .a, .iconLi {
+            color: #fff;
+        }
+    }
+}
+
+.a {
+    font-size: 16px;
+    color: #bcafaf;
+    padding-left: 8px;
+    display: block;
+    text-decoration: none;
+}
+
+.iconLi {
+    font-size: 14px;
+    color: #bcafaf;
+}
