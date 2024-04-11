@@ -1,17 +1,24 @@
 import clsx from 'clsx'
-import { useReducer } from 'react'
+import { useReducer, useEffect } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import style from './category.module.scss'
 import reducer, {initState} from './reducer'
-import { setCategories } from './actions'
+import { setCategories, setCategory } from './actions'
 
 function Category() {
+    console.log('re-render')
 
     const [state, dispatch] = useReducer(reducer, initState)
-    const { category, categories} = state
+    const { category, categories, categoriessearch} = state
+
+    useEffect(() => {
+        fetch('https://jsonplaceholder.typicode.com/posts')
+            .then(res => res.json())
+            .then(data => dispatch(setCategories(data)))
+    }, [])
     
 
     const classCategorySearch = clsx(style.categorySearch, 'input-group')
@@ -20,10 +27,16 @@ function Category() {
     const classCategoryTable = clsx(style.categoryTable, 'table')
     const classCategoryPagination = clsx(style.categoryPagination, 'pagination justify-content-center')
 
+    console.log(categoriessearch)
     return (
         <div className="col-10">
             <div className={classCategorySearch}>
-                <input type="text" className="form-control" placeholder="Nhập loại món ăn cần tìm...    " />
+                <input type="text" className="form-control" placeholder="Nhập loại món ăn cần tìm..." 
+                    value={category}
+                    onChange={ e => {
+                        dispatch(setCategory(e.target.value))
+                    }}        
+                />
                 <button className={classCategoryButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classCategoryIcon}/>
                     Tìm kiếm
@@ -35,7 +48,7 @@ function Category() {
             </div>
 
 
-            <table class={classCategoryTable}>
+            <table className={classCategoryTable}>
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -44,31 +57,19 @@ function Category() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry the Bird</td>
-                        <td>Thornton</td>
-                    </tr>
+                    {
+                        categoriessearch.map((item, index) => {
+                            return (
+                                <tr key={index}>
+                                    <th scope="row" style={{minWidth:48}}>{index + 1}</th>
+                                    <td>{item.title}</td>
+                                    <td>{item.body}</td>
+                                </tr>
+                            )
+                        })
+                    }
                 </tbody>
             </table>
-
-            <ul class={classCategoryPagination}>
-                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
         </div>
     )
 }
