@@ -3,7 +3,15 @@ import {Routes, Route, Link} from 'react-router-dom'
 import style from './navbar.module.scss'
 
 import Category from '../content/category/Category'
+import CategoryAdd from '../content/category/CategoryAdd'
+import CategoryEdit from '../content/category/CategoryEdit'
+import CategoryDelete from '../content/category/CategoryDelete'
+
 import Product from '../content/product/Product'
+import ProductAdd from '../content/product/ProductAdd'
+import ProductEdit from '../content/product/ProductEdit'
+import ProductDelete from '../content/product/ProductDelete'
+
 import Table from '../content/table/Table'
 import Employee from '../content/employee/Employee'
 
@@ -14,7 +22,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons'
 
 function Navbar() {
 
-    const classNavbar = clsx(style.navBar,'col-2 border bg-secondary')
+    const classNavbar = clsx(style.navBar,'col-2 bg-secondary')
     const classNavbarUl = clsx('nav flex-column')
     const classTitle = clsx(style.title, 'd-flex')
     const classNavbarIcon = clsx(style.icon)
@@ -31,17 +39,23 @@ function Navbar() {
               <h3 className={classTitleText}>Quản lý hoạt động</h3>
             </div>
             <ul className={classNavbarUl}>
-              <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/content">Active</Link>
+            <li className={classNavbarLi}>
+                <Link className={classNavbarA} to="/Employee">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Nhân viên
+                </Link>
               </li>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/content">Active</Link>
+                <Link className={classNavbarA} to="/Employee">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Nhân viên
+                </Link>
               </li>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/content">Active</Link>
+                <Link className={classNavbarA} to="/Employee">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Nhân viên
+                </Link>
               </li>
             </ul>
 
@@ -51,26 +65,42 @@ function Navbar() {
             </div>
             <ul className={classNavbarUl}>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/Category">Loại món</Link>
+                <Link className={classNavbarA} to="/Category">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Loại món
+                </Link>
               </li>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/Product">Món ăn</Link>
+                <Link className={classNavbarA} to="/Product">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Món ăn
+                </Link>
               </li>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/Table">Bàn ăn</Link>
+                <Link className={classNavbarA} to="/Table">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Bàn ăn
+                </Link>
               </li>
               <li className={classNavbarLi}>
-                <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                <Link className={classNavbarA} to="/Employee">Nhân viên</Link>
+                <Link className={classNavbarA} to="/Employee">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Nhân viên
+                </Link>
               </li>
             </ul>
           </div>
           <Routes>
             <Route path="/category" element={<Category/>} />
+            <Route path="/category/add" element={<CategoryAdd/>} />
+            <Route path="/category/edit/:id" element={<CategoryEdit/>} />
+            <Route path="/category/delete/:id" element={<CategoryDelete/>} />
+
             <Route path="/product" element={<Product/>} />
+            <Route path="/product/add" element={<ProductAdd/>} />
+            <Route path="/product/edit/:id" element={<ProductEdit/>} />
+            <Route path="/product/delete/:id" element={<ProductDelete/>} />
+
             <Route path="/table" element={<Table/>} />
             <Route path="/employee" element={<Employee/>} />
           </Routes>

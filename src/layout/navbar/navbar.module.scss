@@ -1,7 +1,6 @@
 .navBar {
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - 56px - 36px);
     padding: 0px;
-    margin-top: -1px;
 }
 
 .title {
@@ -20,17 +19,17 @@
 .titleText {
     font-size: 18px;
     padding-left: 12px;
-    color: #bcafaf;
+    color: #cec6c6;
     margin-bottom: 0
 }
 
 .icon {
     font-size: 26px;
-    color: #bcafaf;
+    color: #cec6c6;
 }
 
 .li{
-    padding-left: 42px;
+    padding-left: 30px;
     align-items: center;
     height: 36px;
 
@@ -44,13 +43,18 @@
 
 .a {
     font-size: 16px;
-    color: #bcafaf;
+    color: #cec6c6;
     padding-left: 8px;
     display: block;
     text-decoration: none;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
 }
 
 .iconLi {
     font-size: 14px;
-    color: #bcafaf;
+    color: #cec6c6;
+    margin-right: 12px;
 }

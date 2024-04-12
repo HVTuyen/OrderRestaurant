@@ -14,6 +14,17 @@ function App() {
           <div className='row content'>
             <Navbar />
           </div>
+          
+          <footer className="footer d-flex j-space-between">
+              <div>
+                <strong>Copyright &copy; 2024 <a href="/">Order</a>. </strong> 
+                All rights reserved.
+              </div>
+              <div className="pull-right hidden-xs">
+                  <b>Version </b> 
+                  1.0.0
+              </div>
+          </footer>
         </div>
       </GlobalStyle>
   );

@@ -5,3 +5,41 @@
 .j-flex-end {
     justify-content: flex-end;
 }
+
+.j-space-between {
+    justify-content: space-between;
+}
+
+.j-center {
+    justify-content: center;
+}
+
+.a-center {
+    align-items: center;
+}
+
+.border {
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+
+.footer {
+    padding: 6px 12px 6px 12px;
+    background-color: #155967;
+    color: #fff;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 24px 12px 24px 12px;
+    border-bottom: 2px solid #4f808a;
+}
+
+.primary {
+    background-color: #ccd4ff;
+}
+
+.danger {
+    background-color: #ffbebe;
+}

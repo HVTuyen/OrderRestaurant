@@ -1,31 +1,32 @@
-.categorySearch {
+.productSearch {
     padding: 12px 12px 0 12px;
     margin-left: 8px;
 }
 
-.categoryButton {
+.productButton {
     margin-right: 16px;
 }
 
-.categoryIcon {
+.productIcon {
     margin-right: 10px;
 }
 
-.categoryTable {
+.productTable {
     margin: 24px 12px 24px 12px;
     padding-right: 24px;
     width: 98%;
 }
 
-.categoryPagination {
+.productPagination {
     margin-top: 24px;
 }
 
-.categoryCol {
+.productCol {
     border: 1px solid #ccc;
+    text-align: justify;
 }
 
-.categoryTableIcon {
+.productTableIcon {
     width: 50%;
     font-size: 24px;
     opacity: 0.7;
