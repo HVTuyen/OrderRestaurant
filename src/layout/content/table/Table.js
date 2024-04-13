@@ -53,7 +53,7 @@ function Table() {
         <div className="col-10">
             <div className='title'>Danh sách bàn ăn</div>
             <div className={classTableSearch}>
-                <input type="text" className="form-control" placeholder="Nhập loại món ăn cần tìm..." 
+                <input type="text" className="form-control" placeholder="Nhập tên bàn cần tìm..." 
                     value={table}
                     onChange={e => setTable(e.target.value)}
                 />

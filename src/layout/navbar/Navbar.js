@@ -13,7 +13,14 @@ import ProductEdit from '../content/product/ProductEdit'
 import ProductDelete from '../content/product/ProductDelete'
 
 import Table from '../content/table/Table'
+import TableAdd from '../content/table/TableAdd'
+import TableEdit from '../content/table/TableEdit'
+import TableDelete from '../content/table/TableDelete'
+
 import Employee from '../content/employee/Employee'
+import EmployeeAdd from '../content/employee/EmployeeAdd'
+import EmployeeDelete from '../content/employee/EmployeeDelete'
+import EmployeeEdit from '../content/employee/EmployeeEdit'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase, faUtensils } from '@fortawesome/free-solid-svg-icons'
@@ -91,18 +98,25 @@ function Navbar() {
             </ul>
           </div>
           <Routes>
-            <Route path="/category" element={<Category/>} />
-            <Route path="/category/add" element={<CategoryAdd/>} />
-            <Route path="/category/edit/:id" element={<CategoryEdit/>} />
-            <Route path="/category/delete/:id" element={<CategoryDelete/>} />
+            <Route path="/Category" element={<Category/>} />
+            <Route path="/Category/add" element={<CategoryAdd/>} />
+            <Route path="/Category/edit/:id" element={<CategoryEdit/>} />
+            <Route path="/Category/delete/:id" element={<CategoryDelete/>} />
 
-            <Route path="/product" element={<Product/>} />
-            <Route path="/product/add" element={<ProductAdd/>} />
-            <Route path="/product/edit/:id" element={<ProductEdit/>} />
-            <Route path="/product/delete/:id" element={<ProductDelete/>} />
+            <Route path="/Product" element={<Product/>} />
+            <Route path="/Product/add" element={<ProductAdd/>} />
+            <Route path="/Product/edit/:id" element={<ProductEdit/>} />
+            <Route path="/Product/delete/:id" element={<ProductDelete/>} />
 
-            <Route path="/table" element={<Table/>} />
-            <Route path="/employee" element={<Employee/>} />
+            <Route path="/Table" element={<Table/>} />
+            <Route path="/Table/add" element={<TableAdd/>} />
+            <Route path="/Table/edit/:id" element={<TableEdit/>} />
+            <Route path="/Table/delete/:id" element={<TableDelete/>} />
+
+            <Route path="/Employee" element={<Employee/>} />
+            <Route path="/Employee/add" element={<EmployeeAdd/>} />
+            <Route path="/Employee/edit/:id" element={<EmployeeEdit/>} />
+            <Route path="/Employee/delete/:id" element={<EmployeeDelete/>} />
           </Routes>
         </>
         
