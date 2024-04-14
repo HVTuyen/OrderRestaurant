@@ -14,7 +14,7 @@ function Category() {
     const [category,setCategory] = useState('')
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts')
+        fetch('http://localhost:3001/category')
             .then(res => res.json())
             .then(data => {
                 setCategorys(data)
@@ -72,8 +72,8 @@ function Category() {
                             return (
                                 <tr key={item.id}>
                                     <th className={classCategoryColId}>{item.id}</th>
-                                    <td className={classCategoryColName}>{item.title}</td>
-                                    <td className={classCategoryColDes}>{item.body}</td>
+                                    <td className={classCategoryColName}>{item.name}</td>
+                                    <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>
                                         <Link to={`/Category/Edit/${item.id}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classCategoryTableIcon} style={{color:'#5c94ff'}}/>

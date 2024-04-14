@@ -9,13 +9,29 @@ function CategoryDelete( ) {
 
     const [category,setCategory] = useState('')
 
+    const categoryApi = `http://localhost:3001/category/${id}`
+
     useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+        fetch(categoryApi)
             .then(res => res.json())
             .then(data => {
                 setCategory(data)
             })
     }, [])
+
+    const deleteCategory = () => {
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+        fetch(categoryApi, options)
+            .then(res => res.json())
+            .then(() => {
+                console.log('Category deleted successfully');
+            })
+    }
 
     console.log(category)
     
@@ -27,14 +43,19 @@ function CategoryDelete( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên loại món</label>
-                        <label className="col-sm-9 col-form-label">{category.title}</label>
+                        <label className="col-sm-9 col-form-label">{category.name}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Mô tả</label>
-                        <label className="col-sm-9 col-form-label">{category.body}</label>
+                        <label className="col-sm-9 col-form-label">{category.description}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link to='/Category' className='btn btn-outline-danger' style={{marginRight:'6px'}}>
+                        <Link 
+                            to='/Category' 
+                            className='btn btn-outline-danger' 
+                            style={{marginRight:'6px'}}
+                            onClick={deleteCategory}
+                        >
                             Xác nhận xóa
                         </Link>
                         <Link to='/Category' className='btn btn-outline-danger'>
