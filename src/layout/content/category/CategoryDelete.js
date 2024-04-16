@@ -4,16 +4,12 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { CATEGORY_API } from '../constants'
-import {getCategoryAPI, deleteCategoryAPI} from '../../../api/category'
-
 
 function CategoryDelete( ) {
     const {id} = useParams()
     console.log(id)
 
     const [category,setCategory] = useState('')
-
-    const categoryApi = `${CATEGORY_API}${id}`
 
     useEffect(() => {
         axios.get(`${CATEGORY_API}${id}`)

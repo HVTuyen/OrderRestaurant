@@ -7,8 +7,6 @@ import { CATEGORY_API } from '../constants'
 
 function CategoryAdd( ) {
 
-    const categoryApi = 'http://localhost:3001/category'
-
     const [name,setName] = useState('')
     const [description,setDescription] = useState('')
 

@@ -1,11 +1,13 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
+import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './product.module.scss'
+import { PRODUCT_API } from '../constants'
 
 function Product() {
     console.log('re-render-product')
@@ -14,12 +16,14 @@ function Product() {
     const [product,setProduct] = useState('')
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/photos')
-            .then(res => res.json())
-            .then(data => {
-                setProducts(data.slice(0, 10))
-                setProductsSearch(data.slice(0, 10))
+        axios.get(PRODUCT_API)
+            .then(res => {
+                setProducts(res.data);
+                setProductsSearch(res.data);
             })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
     }, [])
 
     useEffect(() => {
@@ -74,19 +78,19 @@ function Product() {
                     {
                         productsSearch.map((item) => {
                             return (
-                                <tr key={item.id}>
-                                    <th className={classProductColId}>{item.id}</th>
+                                <tr key={item.foodId}>
+                                    <th className={classProductColId}>{item.foodId}</th>
                                     <th className={classProductColImg}>
-                                        <img src={item.thumbnailUrl} alt={item.title} width="80" height="80"/>
+                                        <img src={`data:image/jpeg;base64,${item.urlImage}`} alt={item.nameFood} width="80" height="80"/>
                                     </th>
-                                    <th className={classProductColName}>{item.title}</th>
-                                    <th className={classProductColPrice}></th>
-                                    <th className={classProductColCategory}></th>
+                                    <td className={classProductColName}>{item.nameFood}</td>
+                                    <td className={classProductColPrice}>{item.unitPrice}</td>
+                                    <td className={classProductColCategory}>{item.category.categoryName}</td>
                                     <th className={classProductColAction}>
-                                        <Link to={`/Product/Edit/${item.id}`}>
+                                        <Link to={`/Product/Edit/${item.foodId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classProductTableIcon} style={{color:'#5c94ff'}}/>
                                         </Link>
-                                        <Link to={`/Product/Delete/${item.id}`}>
+                                        <Link to={`/Product/Delete/${item.foodId}`}>
                                             <FontAwesomeIcon icon={faTrash} className={classProductTableIcon} style={{color:'#ff5252'}}/>
                                         </Link>
                                     </th>

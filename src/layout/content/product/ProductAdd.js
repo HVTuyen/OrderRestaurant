@@ -1,9 +1,64 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
+import { PRODUCT_API } from '../constants'
 
 function ProductAdd( ) {
+
+    const [nameFood,setNameFood] = useState('')
+    const [unitPrice,setUnitPrice] = useState('')
+    const [urlImage,setUrlImage] = useState('')
+    const [previewImg,setPreviewImg] = useState('')
+    const [categoryId,setCategoryId] = useState('')
+
+    console.log(nameFood,unitPrice, categoryId, urlImage)
+
+    // const createProduct = () => {
+    //     const newProduct = {
+    //         nameFood: nameFood,
+    //         unitPrice: unitPrice,
+    //         urlImage: urlImage,
+    //         categoryId: categoryId,
+    //     };
+        
+    //     axios.post(`${PRODUCT_API}post-with-image/`,newProduct)
+    // }
+
+    const createProduct = async () => {
+        const formData = new FormData();
+        formData.append('nameFood', nameFood);
+        formData.append('unitPrice', unitPrice);
+        formData.append('categoryId', categoryId);
+        formData.append('image', urlImage);
+
+        try {
+            await axios.post(`${PRODUCT_API}post-with-image`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Product created successfully.');
+            // Redirect or handle success
+        } catch (error) {
+            console.error('Error creating product:', error);
+            // Handle error
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            previewImg && URL.revokeObjectURL(previewImg.preview)
+        }
+    }, [previewImg])
+
+    const handleImg = (e) => {
+        const img = e.target.files[0]
+        setUrlImage(img)
+        img.preview = URL.createObjectURL(img)
+        setPreviewImg(img)
+    }
     
     return (
         <div className="col-10">
@@ -14,17 +69,59 @@ function ProductAdd( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên món ăn</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control"/>
+                            <input 
+                                type="text" 
+                                className="form-control"
+                                value={nameFood}
+                                onChange={e => setNameFood(e.target.value)}
+                            />
                         </div>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label">Mô tả</label>
+                        <label className="col-sm-3 col-form-label">Đơn giá</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control"/>
+                            <input 
+                                type="text" 
+                                className="form-control"
+                                value={unitPrice}
+                                onChange={e => setUnitPrice(e.target.value)}
+                            />
                         </div>
                     </div>
+                    <div className="mb-3 row" style={{margin: '24px'}}>
+                        <label className="col-sm-3 col-form-label">Loại món</label>
+                        <div className="col-sm-9">
+                            <input 
+                                type="text" 
+                                className="form-control"
+                                value={categoryId}
+                                onChange={e => setCategoryId(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="mb-3 row" style={{margin: '24px'}}>
+                        <label className="col-sm-3 col-form-label">Ảnh</label>
+                        <div className="col-sm-6">
+                            <input 
+                                type="file" 
+                                className="form-control"    
+                                onChange={handleImg}
+                            />
+                        </div>
+                        <div className="col-sm-3">
+                            {previewImg && (
+                                <img src={previewImg.preview} style={{width: '100%', height: '100%'}}/>
+                            )}
+                        </div>
+                    </div>
+
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link to='/Product' className='btn btn-outline-primary' style={{marginRight:'6px'}}>
+                        <Link 
+                            to='/Product' 
+                            className='btn btn-outline-primary' 
+                            style={{marginRight:'6px'}}
+                            onClick={createProduct}
+                        >
                             Lưu
                         </Link>
                         <Link to='/Product' className='btn btn-outline-danger'>
