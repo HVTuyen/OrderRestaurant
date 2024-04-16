@@ -1,6 +1,9 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
+
+import { CATEGORY_API } from '../constants'
 
 
 function CategoryEdit( ) {
@@ -11,32 +14,33 @@ function CategoryEdit( ) {
     const [name,setName] = useState('')
     const [description,setDescription] = useState('')
 
-    const categoryApi = `http://localhost:3001/category/${id}`
+    const categoryApi = `${CATEGORY_API}${id}`
 
     useEffect(() => {
-        fetch(categoryApi)
-            .then(res => res.json())
-            .then(data => {
-                setCategory(data)
-                setName(data.name)
-                setDescription(data.description)
+        axios.get(`${CATEGORY_API}${id}`)
+            .then(res => {
+                setCategory(res.data)
+                setName(res.data.categoryName)
+                setDescription(res.data.description)
             })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
     }, [])
 
-    const updateCategory = () => {
+    const updateCategory = async () => {
         const newCategory = {
-            name: name,
+            categoryName: name,
             description: description,
         };
-        const options = {
-            method: 'PUT',
-            body: JSON.stringify(newCategory),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-        fetch(categoryApi, options)
-            .then(res => res.json())
+        axios.put(`${CATEGORY_API}${id}`, newCategory)
+            .then(() => {
+                console.log('Category deleted successfully');
+                window.location.href = '/Category'; // Điều hướng về Category sau khi xóa
+            })
+            .catch(error => {
+                console.error('Error delete category:', error);
+            });
     }
 
     console.log(category, name, description)

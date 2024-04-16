@@ -1,7 +1,9 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
+import { CATEGORY_API } from '../constants'
 
 function CategoryAdd( ) {
 
@@ -14,18 +16,11 @@ function CategoryAdd( ) {
 
     const createCategory = () => {
         const newCategory = {
-            name: name,
+            categoryName: name,
             description: description,
         };
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(newCategory),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-        fetch(categoryApi, options)
-            .then(res => res.json())
+        
+        axios.post(CATEGORY_API,newCategory)
     }
     
     return (

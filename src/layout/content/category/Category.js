@@ -1,33 +1,40 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
+import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './category.module.scss'
+import { CATEGORY_API } from '../constants'
+import {getCategoriesAPI} from '../../../api/category'
+import CategoryEdit from './CategoryEdit'
 
-function Category() {
+
+function Category({isrender}) {
     console.log('re-render-Category')
-    const [categorys,setCategorys] = useState([])
+    const [categories,setCategories] = useState([])
     const [categoriesSearch,setCategoriesSearch] = useState([])
     const [category,setCategory] = useState('')
 
     useEffect(() => {
-        fetch('http://localhost:3001/category')
-            .then(res => res.json())
-            .then(data => {
-                setCategorys(data)
-                setCategoriesSearch(data)
+        axios.get(CATEGORY_API)
+            .then(res => {
+                setCategories(res.data);
+                setCategoriesSearch(res.data);
             })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
     }, [])
 
     useEffect(() => {
-        setCategoriesSearch(Category ? categorys.filter(item => item.title.includes(category)) : categorys);
+        setCategoriesSearch(Category ? categories.filter(item => item.title.includes(category)) : categories);
     }, [category])
     
     console.log(category)
-    console.log(categorys)
+    console.log(categories)
     console.log(categoriesSearch)
 
     const classCategorySearch = clsx(style.categorySearch, 'input-group')
@@ -68,17 +75,17 @@ function Category() {
                 </thead>
                 <tbody>
                     {
-                        categoriesSearch.map((item) => {
+                        categoriesSearch?.map((item) => {
                             return (
-                                <tr key={item.id}>
-                                    <th className={classCategoryColId}>{item.id}</th>
-                                    <td className={classCategoryColName}>{item.name}</td>
+                                <tr key={item.categoryId}>
+                                    <th className={classCategoryColId}>{item.categoryId}</th>
+                                    <td className={classCategoryColName}>{item.categoryName}</td>
                                     <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>
-                                        <Link to={`/Category/Edit/${item.id}`}>
+                                        <Link to={`/Category/Edit/${item.categoryId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classCategoryTableIcon} style={{color:'#5c94ff'}}/>
                                         </Link>
-                                        <Link to={`/Category/Delete/${item.id}`}>
+                                        <Link to={`/Category/Delete/${item.categoryId}`}>
                                             <FontAwesomeIcon icon={faTrash} className={classCategoryTableIcon} style={{color:'#ff5252'}}/>
                                         </Link>
                                     </th>

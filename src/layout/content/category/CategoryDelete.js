@@ -1,6 +1,10 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
+
+import { CATEGORY_API } from '../constants'
+import {getCategoryAPI, deleteCategoryAPI} from '../../../api/category'
 
 
 function CategoryDelete( ) {
@@ -9,28 +13,27 @@ function CategoryDelete( ) {
 
     const [category,setCategory] = useState('')
 
-    const categoryApi = `http://localhost:3001/category/${id}`
+    const categoryApi = `${CATEGORY_API}${id}`
 
     useEffect(() => {
-        fetch(categoryApi)
-            .then(res => res.json())
-            .then(data => {
-                setCategory(data)
+        axios.get(`${CATEGORY_API}${id}`)
+            .then(res => {
+                setCategory(res.data)
             })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
     }, [])
 
-    const deleteCategory = () => {
-        const options = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-        fetch(categoryApi, options)
-            .then(res => res.json())
+    const deleteCategory = async () => {
+        axios.delete(`${CATEGORY_API}${id}`)
             .then(() => {
                 console.log('Category deleted successfully');
+                window.location.href = '/Category'; // Điều hướng về Category sau khi xóa
             })
+            .catch(error => {
+                console.error('Error delete category:', error);
+            });
     }
 
     console.log(category)
@@ -43,21 +46,21 @@ function CategoryDelete( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên loại món</label>
-                        <label className="col-sm-9 col-form-label">{category.name}</label>
+                        <label className="col-sm-9 col-form-label">{category.categoryName}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Mô tả</label>
                         <label className="col-sm-9 col-form-label">{category.description}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
+                        <button 
                             to='/Category' 
                             className='btn btn-outline-danger' 
                             style={{marginRight:'6px'}}
                             onClick={deleteCategory}
                         >
                             Xác nhận xóa
-                        </Link>
+                        </button>
                         <Link to='/Category' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
