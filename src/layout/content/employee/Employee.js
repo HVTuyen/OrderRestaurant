@@ -28,7 +28,7 @@ function Employee() {
 
 
     useEffect(() => {
-        setEmployeesSearch(employee ? employees.filter(item => item.title.includes(employee)) : employees);
+        setEmployeesSearch(employee ? employees.filter(item => item.employeeName.includes(employee)) : employees);
     }, [employee])
     
     console.log(employee)
@@ -39,6 +39,8 @@ function Employee() {
     const classEmployeeButton = clsx(style.employeeButton, 'btn btn-outline-primary')
     const classEmployeeIcon = clsx(style.employeeIcon)
     const classEmployeeItemIcon = clsx(style.employeeItemIcon)
+    const classEmployeeText = clsx(style.employeeText)
+
 
     return (
         <div className="col-10">
@@ -64,22 +66,22 @@ function Employee() {
                 <div className='col-10'>
                     <div className='row' style={{marginBottom:'24px'}}>
                         {
-                            employeesSearch.map((item) => {
+                            employeesSearch?.map((item) => {
                                 return (
-                                    <div key={item.employeeId} className='col-6' style={{padding:'24px 12px 8px 12px', fontSize:'14px'}}>
+                                    <div key={item.employeeId} className='col-6' style={{padding:'24px 12px 8px 12px'}}>
                                         <div className='border d-flex a-center' style={{}}>
-                                            <div className='col-4' style={{padding:'6px'}}>
-                                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
+                                            <div className='col-3' style={{padding:'6px'}}>
+                                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.title} style={{width:'100%',height:'100%', maxHeight:'150px', borderRadius:'8px', border:'1px solid #ccc'}}/>
                                             </div>
-                                            <div className='col-8'>
+                                            <div className='col-9'>
                                                 <div style={{padding:'8px 8px 8px 0'}}>
-                                                    <div style={{borderBottom:'1px solid #333'}}>
+                                                    <div className={classEmployeeText} >
                                                         Tên: {item.employeeName}
                                                     </div>
-                                                    <div style={{borderBottom:'1px solid #333'}}>
+                                                    <div className={classEmployeeText} >
                                                         SĐT: {item.phone}
                                                     </div>
-                                                    <div style={{borderBottom:'1px solid #333'}}>
+                                                    <div className={classEmployeeText} >
                                                         Email: {item.email}
                                                     </div>
                                                 </div>

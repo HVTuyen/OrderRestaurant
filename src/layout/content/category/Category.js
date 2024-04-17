@@ -30,7 +30,7 @@ function Category({isrender}) {
     }, [])
 
     useEffect(() => {
-        setCategoriesSearch(Category ? categories.filter(item => item.title.includes(category)) : categories);
+        setCategoriesSearch(Category ? categories.filter(item => item.categoryName.includes(category)) : categories);
     }, [category])
     
     console.log(category)
@@ -75,10 +75,10 @@ function Category({isrender}) {
                 </thead>
                 <tbody>
                     {
-                        categoriesSearch?.map((item) => {
+                        categoriesSearch?.map((item, index) => {
                             return (
                                 <tr key={item.categoryId}>
-                                    <th className={classCategoryColId}>{item.categoryId}</th>
+                                    <th className={classCategoryColId}>{index + 1}</th>
                                     <td className={classCategoryColName}>{item.categoryName}</td>
                                     <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>

@@ -7,13 +7,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './product.module.scss'
-import { PRODUCT_API } from '../constants'
+import { PRODUCT_API, CATEGORY_API } from '../constants'
 
 function Product() {
     console.log('re-render-product')
     const [products,setProducts] = useState([])
     const [productsSearch,setProductsSearch] = useState([])
     const [product,setProduct] = useState('')
+
+    const [categories,setCategories] = useState([])
+    const [categoryId,setCategoryId] = useState('')
 
     useEffect(() => {
         axios.get(PRODUCT_API)
@@ -22,17 +25,33 @@ function Product() {
                 setProductsSearch(res.data);
             })
             .catch(error => {
+                console.error('Error fetching Products:', error);
+            });
+    }, [])
+
+    useEffect(() => {
+        axios.get(CATEGORY_API)
+            .then(res => {
+                setCategories(res.data);
+            })
+            .catch(error => {
                 console.error('Error fetching categories:', error);
             });
     }, [])
 
     useEffect(() => {
-        setProductsSearch(product ? products.filter(item => item.title.includes(product)) : products);
+        setProductsSearch(product ? products.filter(item => item.nameFood.includes(product)) : products);
     }, [product])
+
+    useEffect(() => {
+        setProductsSearch(categoryId ? products.filter(item => item.categoryId == categoryId) : products);
+    }, [categoryId])
     
     console.log(product)
     console.log(products)
     console.log(productsSearch)
+
+    console.log(categoryId)
 
     const classProductSearch = clsx(style.productSearch, 'input-group')
     const classProductButton = clsx(style.productButton, 'btn btn-outline-primary')
@@ -50,9 +69,28 @@ function Product() {
         <div className="col-10">
             <div className='title'>Danh sách món ăn</div>
             <div className={classProductSearch}>
+
+                <select
+                    style={{maxWidth: '180px'}}
+                    className="form-select"
+                    value={categoryId}
+                    onChange={e => {
+                        setProduct('')
+                        setCategoryId(e.target.value)
+                    }}
+                >
+                    <option value="">Chọn loại món ăn</option>
+                    {categories.map(category => (
+                        <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                    ))}
+                </select>
+
                 <input type="text" className="form-control" placeholder="Nhập tên món ăn cần tìm..." 
                     value={product}
-                    onChange={e => setProduct(e.target.value)}
+                    onChange={e => {
+                        setProduct(e.target.value)
+                        setCategoryId('')
+                    }}
                 />
                 <button className={classProductButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classProductIcon} style={{width: '100%'}}/>
@@ -76,10 +114,10 @@ function Product() {
                 </thead>
                 <tbody>
                     {
-                        productsSearch.map((item) => {
+                        productsSearch?.map((item, index) => {
                             return (
                                 <tr key={item.foodId}>
-                                    <th className={classProductColId}>{item.foodId}</th>
+                                    <th className={classProductColId}>{index + 1}</th>
                                     <th className={classProductColImg}>
                                         <img src={`data:image/jpeg;base64,${item.urlImage}`} alt={item.nameFood} width="80" height="80"/>
                                     </th>

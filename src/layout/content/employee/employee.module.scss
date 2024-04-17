@@ -12,7 +12,7 @@
 }
 
 .employeeItemIcon {
-    font-size: 16px;
+    font-size: 22px;
     margin-right: 8px;
     opacity: 0.7;
 
@@ -20,4 +20,13 @@
         cursor: pointer;
         opacity: 1;
     }
+}
+
+.employeeText {
+    font-size: 16px;
+    border-bottom: 1px solid #333;
+    padding: 12px 8px 2px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

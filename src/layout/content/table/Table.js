@@ -1,12 +1,13 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
+import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './table.module.scss'
-import { height, width } from '@fortawesome/free-brands-svg-icons/fa42Group'
+import { TABLE_API } from '../constants'
 
 function Table() {
     console.log('re-render-Table')
@@ -15,16 +16,18 @@ function Table() {
     const [table,setTable] = useState('')
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/todos')
-            .then(res => res.json())
-            .then(data => {
-                setTables(data.slice(0, 100))
-                setTablesSearch(data.slice(0, 100))
+        axios.get(TABLE_API)
+            .then(res => {
+                setTables(res.data);
+                setTablesSearch(res.data);
             })
+            .catch(error => {
+                console.error('Error fetching employees:', error);
+            });
     }, [])
 
     useEffect(() => {
-        setTablesSearch(table ? tables.filter(item => item.title.includes(table)) : tables);
+        setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
     }, [table])
     
     console.log(table)
@@ -74,7 +77,7 @@ function Table() {
                             tablesSearch.map((item) => { 
                                 
                                 let classStatus;
-                                switch(item.userId) {
+                                switch(item.statusId) {
                                     case 1:
                                         classStatus = ' danger';
                                         countDanger++;
@@ -89,13 +92,13 @@ function Table() {
                                 }
 
                                 return (
-                                    <div className={classTable}>
+                                    <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
                                             <div className='col-3'>
-                                                <img src={'https://t3.gstatic.com/licensed-image?q=tbn:ANd9GcSh-wrQu254qFaRcoYktJ5QmUhmuUedlbeMaQeaozAVD4lh4ICsGdBNubZ8UlMvWjKC'} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
+                                                <img src={`data:image/jpeg;base64,${item.qR_id}`} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
                                             </div>
                                             <div className='col-6 d-flex a-center'>
-                                                <div> Bàn số {item.id}</div>
+                                                <div>{item.tableName}</div>
                                             </div>
                                             <div className='col-3 d-flex a-center'>
                                                 <Link to={`/Table/Edit/${item.id}`}>

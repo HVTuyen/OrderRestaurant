@@ -3,7 +3,7 @@ import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { PRODUCT_API } from '../constants'
+import { PRODUCT_API, CATEGORY_API } from '../constants'
 
 function ProductEdit( ) {
     const {id} = useParams()
@@ -15,6 +15,8 @@ function ProductEdit( ) {
     const [previewImg,setPreviewImg] = useState('')
     const [categoryId,setCategoryId] = useState('')
 
+    const [categories,setCategories] = useState([])
+
     useEffect(() => {
         axios.get(`${PRODUCT_API}${id}`)
             .then(res => {
@@ -24,10 +26,20 @@ function ProductEdit( ) {
                 setCategoryId(res.data.categoryId)
             })
             .catch(error => {
+                console.error('Error fetching product:', error);
+            });
+    }, [])
+    
+    useEffect(() => {
+        axios.get(CATEGORY_API)
+            .then(res => {
+                setCategories(res.data)
+            })
+            .catch(error => {
                 console.error('Error fetching categories:', error);
             });
     }, [])
-
+    console.log(categories)
 
     useEffect(() => {
         return () => {
@@ -94,12 +106,16 @@ function ProductEdit( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Loại món ăn</label>
                         <div className="col-sm-9">
-                            <input 
-                                type="text" 
-                                className="form-control" 
+                            <select
+                                className="form-select"
                                 value={categoryId}
                                 onChange={e => setCategoryId(e.target.value)}
-                            />
+                            >
+                                <option value="">Chọn loại món ăn</option>
+                                {categories.map(category => (
+                                    <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
