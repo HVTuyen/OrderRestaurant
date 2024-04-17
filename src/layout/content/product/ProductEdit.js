@@ -1,23 +1,67 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
+import { PRODUCT_API } from '../constants'
 
 function ProductEdit( ) {
     const {id} = useParams()
     console.log(id)
 
-    const [product,setProduct] = useState('')
+    const [nameFood,setNameFood] = useState('')
+    const [unitPrice,setUnitPrice] = useState('')
+    const [urlImage,setUrlImage] = useState('')
+    const [previewImg,setPreviewImg] = useState('')
+    const [categoryId,setCategoryId] = useState('')
 
     useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/photos/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                setProduct(data)
+        axios.get(`${PRODUCT_API}${id}`)
+            .then(res => {
+                setNameFood(res.data.nameFood)
+                setUnitPrice(res.data.unitPrice)
+                setPreviewImg(res.data.urlImage)
+                setCategoryId(res.data.categoryId)
             })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            });
     }, [])
 
-    console.log(product)
+
+    useEffect(() => {
+        return () => {
+            previewImg && URL.revokeObjectURL(previewImg.preview)
+        }
+    }, [previewImg])
+
+    const handleImg = (e) => {
+        const img = e.target.files[0]
+        setUrlImage(img)
+        img.preview = URL.createObjectURL(img)
+        setPreviewImg(img)
+    }
+
+    const updateProduct = async () => {
+        const formData = new FormData();
+        formData.append('nameFood', nameFood);
+        formData.append('unitPrice', unitPrice);
+        formData.append('categoryId', categoryId);
+        formData.append('image', urlImage);
+
+        try {
+            await axios.put(`${PRODUCT_API}${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Product update successfully.');
+            window.location.href = '/Product';
+        } catch (error) {
+            console.error('Error update product:', error);
+            // Handle error
+        }
+    }
     
     return (
         <div className="col-10">
@@ -28,17 +72,58 @@ function ProductEdit( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên món ăn</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control" value={product.title}/>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={nameFood}
+                                onChange={e => setNameFood(e.target.value)}
+                            />
                         </div>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label">Mô tả</label>
+                        <label className="col-sm-3 col-form-label">Đơn giá</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control" value={product.body}/>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={unitPrice}
+                                onChange={e => setUnitPrice(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="mb-3 row" style={{margin: '24px'}}>
+                        <label className="col-sm-3 col-form-label">Loại món ăn</label>
+                        <div className="col-sm-9">
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={categoryId}
+                                onChange={e => setCategoryId(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="mb-3 row" style={{margin: '24px'}}>
+                        <label className="col-sm-3 col-form-label">Ảnh</label>
+                        <div className="col-sm-6">
+                            <input 
+                                type="file" 
+                                className="form-control"    
+                                onChange={handleImg}
+                            />
+                        </div>
+                        <div className="col-sm-3">
+                            {previewImg && (
+                                <img src={`data:image/jpeg;base64,${previewImg}`} style={{width: '100%', height: '100%'}}/>
+                            )}
                         </div>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link to='/Product' className='btn btn-outline-primary' style={{marginRight:'6px'}}>
+                        <Link 
+                            to='/Product' 
+                            className='btn btn-outline-primary' 
+                            style={{marginRight:'6px'}}
+                            onClick={updateProduct}
+                        >
                             Lưu
                         </Link>
                         <Link to='/Product' className='btn btn-outline-danger'>

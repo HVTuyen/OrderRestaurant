@@ -5,7 +5,6 @@ import axios from 'axios'
 
 import { CATEGORY_API } from '../constants'
 
-
 function CategoryEdit( ) {
     const {id} = useParams()
     console.log(id)
@@ -13,8 +12,6 @@ function CategoryEdit( ) {
     const [category,setCategory] = useState('')
     const [name,setName] = useState('')
     const [description,setDescription] = useState('')
-
-    const categoryApi = `${CATEGORY_API}${id}`
 
     useEffect(() => {
         axios.get(`${CATEGORY_API}${id}`)

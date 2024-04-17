@@ -17,7 +17,7 @@ function ProductDelete( ) {
                 setProduct(res.data)
             })
             .catch(error => {
-                console.error('Error fetching categories:', error);
+                console.error('Error fetching product:', error);
             });
     }, [])
 

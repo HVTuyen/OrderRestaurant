@@ -15,17 +15,6 @@ function ProductAdd( ) {
 
     console.log(nameFood,unitPrice, categoryId, urlImage)
 
-    // const createProduct = () => {
-    //     const newProduct = {
-    //         nameFood: nameFood,
-    //         unitPrice: unitPrice,
-    //         urlImage: urlImage,
-    //         categoryId: categoryId,
-    //     };
-        
-    //     axios.post(`${PRODUCT_API}post-with-image/`,newProduct)
-    // }
-
     const createProduct = async () => {
         const formData = new FormData();
         formData.append('nameFood', nameFood);
@@ -55,6 +44,7 @@ function ProductAdd( ) {
 
     const handleImg = (e) => {
         const img = e.target.files[0]
+        console.log(typeof img)
         setUrlImage(img)
         img.preview = URL.createObjectURL(img)
         setPreviewImg(img)

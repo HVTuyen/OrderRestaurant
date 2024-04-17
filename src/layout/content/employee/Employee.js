@@ -1,12 +1,13 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
+import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './employee.module.scss'
-import { height, width } from '@fortawesome/free-brands-svg-icons/fa42Group'
+import { EMPLOYEE_API } from '../constants'
 
 function Employee() {
     console.log('re-render-Employee')
@@ -15,13 +16,16 @@ function Employee() {
     const [employee,setEmployee] = useState('')
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/todos')
-            .then(res => res.json())
-            .then(data => {
-                setEmployees(data.slice(0, 9))
-                setEmployeesSearch(data.slice(0, 9))
+        axios.get(EMPLOYEE_API)
+            .then(res => {
+                setEmployees(res.data);
+                setEmployeesSearch(res.data);
             })
+            .catch(error => {
+                console.error('Error fetching employees:', error);
+            });
     }, [])
+
 
     useEffect(() => {
         setEmployeesSearch(employee ? employees.filter(item => item.title.includes(employee)) : employees);
@@ -62,28 +66,28 @@ function Employee() {
                         {
                             employeesSearch.map((item) => {
                                 return (
-                                    <div className='col-4' style={{padding:'24px 12px 8px 12px'}}>
-                                        <div className='border d-flex' style={{}}>
-                                            <div className='col-4'>
-                                                <img src={'https://t3.gstatic.com/licensed-image?q=tbn:ANd9GcSh-wrQu254qFaRcoYktJ5QmUhmuUedlbeMaQeaozAVD4lh4ICsGdBNubZ8UlMvWjKC'} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
+                                    <div key={item.employeeId} className='col-6' style={{padding:'24px 12px 8px 12px', fontSize:'14px'}}>
+                                        <div className='border d-flex a-center' style={{}}>
+                                            <div className='col-4' style={{padding:'6px'}}>
+                                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
                                             </div>
                                             <div className='col-8'>
-                                                <div style={{padding:'8px 8px 0 0'}}>
+                                                <div style={{padding:'8px 8px 8px 0'}}>
                                                     <div style={{borderBottom:'1px solid #333'}}>
-                                                        Tên: 
+                                                        Tên: {item.employeeName}
                                                     </div>
                                                     <div style={{borderBottom:'1px solid #333'}}>
-                                                        SĐT: 
+                                                        SĐT: {item.phone}
                                                     </div>
                                                     <div style={{borderBottom:'1px solid #333'}}>
-                                                        Email: 
+                                                        Email: {item.email}
                                                     </div>
                                                 </div>
                                                 <div className='d-flex j-flex-end'>
-                                                    <Link to={`/Employee/Edit/${item.id}`}>
+                                                    <Link to={`/Employee/Edit/${item.employeeId}`}>
                                                         <FontAwesomeIcon icon={faEdit} className={classEmployeeItemIcon} style={{color:'#5c94ff'}}/>
                                                     </Link>
-                                                    <Link to={`/Employee/Delete/${item.id}`}>
+                                                    <Link to={`/Employee/Delete/${item.employeeId}`}>
                                                         <FontAwesomeIcon icon={faTrash} className={classEmployeeItemIcon} style={{color:'#ff5252'}}/>
                                                     </Link>
                                                 </div>
