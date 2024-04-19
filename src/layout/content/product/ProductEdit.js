@@ -129,7 +129,7 @@ function ProductEdit( ) {
                         </div>
                         <div className="col-sm-3">
                             {previewImg && (
-                                <img src={`data:image/jpeg;base64,${previewImg}`} style={{width: '100%', height: '100%'}}/>
+                                <img src={urlImage=='' ? `data:image/jpeg;base64,${previewImg}` : previewImg.preview} style={{width: '100%', height: '100%'}}/>
                             )}
                         </div>
                     </div>

@@ -47,21 +47,33 @@ function Navbar() {
             </div>
             <ul className={classNavbarUl}>
             <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Employee">
+                <Link className={classNavbarA} to="/Action/Order">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                  Nhân viên
+                  Đơn hàng
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Employee">
+                <Link className={classNavbarA} to="/Action/Bill">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                  Nhân viên
+                  Hóa đơn
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Employee">
+                <Link className={classNavbarA} to="/Action/Request">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                  Nhân viên
+                  Yêu cầu
+                </Link>
+              </li>
+              <li className={classNavbarLi}>
+                <Link className={classNavbarA} to="/Action/Table">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Bàn ăn
+                </Link>
+              </li>
+              <li className={classNavbarLi}>
+                <Link className={classNavbarA} to="/Action/ThongKe">
+                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
+                  Thống kê, báo cáo
                 </Link>
               </li>
             </ul>

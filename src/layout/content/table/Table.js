@@ -95,16 +95,16 @@ function Table() {
                                     <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
                                             <div className='col-3'>
-                                                <img src={`data:image/jpeg;base64,${item.qR_id}`} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
+                                                <img src={`data:image/jpeg;base64,${item.qR_id}`} alt={item.title} style={{width:'100%', borderRadius:'8px', maxHeight:'30px'}}/>
                                             </div>
-                                            <div className='col-6 d-flex a-center'>
+                                            <div className='col-5 d-flex a-center'>
                                                 <div>{item.tableName}</div>
                                             </div>
-                                            <div className='col-3 d-flex a-center'>
-                                                <Link to={`/Table/Edit/${item.id}`}>
+                                            <div className='col-4 d-flex a-center'>
+                                                <Link to={`/Table/Edit/${item.tableId}`}>
                                                     <FontAwesomeIcon icon={faEdit} className={classTableItemIcon} style={{color:'#5c94ff'}}/>
                                                 </Link>
-                                                <Link to={`/Table/Delete/${item.id}`}>
+                                                <Link to={`/Table/Delete/${item.tableId}`}>
                                                     <FontAwesomeIcon icon={faTrash} className={classTableItemIcon} style={{color:'#ff5252'}}/>
                                                 </Link>
                                             </div>

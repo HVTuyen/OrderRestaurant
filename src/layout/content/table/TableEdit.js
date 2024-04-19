@@ -1,23 +1,68 @@
 import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
+import { TABLE_API } from '../constants'
 
 function TableEdit( ) {
     const {id} = useParams()
     console.log(id)
 
-    const [table,setTable] = useState('')
+    const [tableName,setTableName] = useState('')
+    const [qR_id,setQR_id] = useState('')
+    const [previewImg,setPreviewImg] = useState('')
+    const [statusId,setStatusId] = useState('')
+    const [note,setNote] = useState('')
 
     useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/photos/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                setTable(data)
+        axios.get(`${TABLE_API}${id}`)
+            .then(res => {
+                setTableName(res.data.tableName)
+                setPreviewImg(res.data.qR_id)
+                setStatusId(res.data.statusId)
+                setNote(res.data.note)
             })
+            .catch(error => {
+                console.error('Error fetching table:', error);
+            });
     }, [])
 
-    console.log(table)
+    console.log(tableName, statusId, note, qR_id)
+
+    useEffect(() => {
+        return () => {
+            previewImg && URL.revokeObjectURL(previewImg.preview)
+        }
+    }, [previewImg])
+
+    const handleImg = (e) => {
+        const img = e.target.files[0]
+        setQR_id(img)
+        img.preview = URL.createObjectURL(img)
+        setPreviewImg(img)
+    }
+
+    const updateTable = async () => {
+        const formData = new FormData();
+        formData.append('tableName', tableName);
+        formData.append('qR_id', qR_id);
+        formData.append('statusId', statusId);
+        formData.append('note', note);
+
+        try {
+            await axios.put(`${TABLE_API}${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Table update successfully.');
+            window.location.href = '/Table';
+        } catch (error) {
+            console.error('Error update Table:', error);
+            // Handle error
+        }
+    }
     
     return (
         <div className="col-10">
@@ -28,25 +73,37 @@ function TableEdit( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên bàn</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control" value={table.title}/>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={tableName}
+                                onChange={e => setTableName(e.target.value)}
+                            />
                         </div>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Ảnh QR</label>
-                        <div className="col-sm-9">
-                            <input className="form-control" type="file" />
+                        <div className="col-sm-6">
+                            <input 
+                                type="file" 
+                                className="form-control"    
+                                onChange={handleImg}
+                            />
+                        </div>
+                        <div className="col-sm-3">
+                            {previewImg && (
+                                <img src={qR_id=='' ? `data:image/jpeg;base64,${previewImg}` : previewImg.preview} style={{width: '100%', height: '100%'}}/>
+                            )}
                         </div>
                     </div>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label"></label>
-                        <label className="col-sm-9 col-form-label">
-                            <img src={'https://t3.gstatic.com/licensed-image?q=tbn:ANd9GcSh-wrQu254qFaRcoYktJ5QmUhmuUedlbeMaQeaozAVD4lh4ICsGdBNubZ8UlMvWjKC'} alt={table.title} style={{width:'25%', borderRadius:'8px'}}/>
-                        </label>
-                    </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link to='/Table' className='btn btn-outline-primary' style={{marginRight:'6px'}}>
+                        <button 
+                            className='btn btn-outline-primary' 
+                            style={{marginRight:'6px'}}
+                            onClick={updateTable}
+                        >
                             Lưu
-                        </Link>
+                        </button>
                         <Link to='/Table' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

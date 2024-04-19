@@ -19,6 +19,7 @@ function CategoryAdd( ) {
         };
         
         axios.post(CATEGORY_API,newCategory)
+        window.location.href = '/Category';
     }
     
     return (

@@ -26,7 +26,7 @@ function EmployeeEdit( ) {
                 setPreviewImg(res.data.image)
             })
             .catch(error => {
-                console.error('Error fetching categories:', error);
+                console.error('Error fetching table:', error);
             });
     }, [])
 
@@ -126,19 +126,19 @@ function EmployeeEdit( ) {
                         </div>
                         <div className="col-sm-3">
                             {previewImg && (
-                                <img src={`data:image/jpeg;base64,${previewImg}`} style={{width: '100%', height: '100%'}}/>
+                                <img src={image=='' ? `data:image/jpeg;base64,${previewImg}` : previewImg.preview} style={{width: '100%', height: '100%'}}/>
                             )}
                         </div>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
+                        <button 
                             to='/Employee' 
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
                             onClick={updateEmployee}
                         >
                             Lưu
-                        </Link>
+                        </button>
                         <Link to='/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

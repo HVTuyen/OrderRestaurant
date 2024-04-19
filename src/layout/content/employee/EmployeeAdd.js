@@ -32,6 +32,7 @@ function EmployeeAdd( ) {
             });
             console.log('Employee created successfully.');
             // Redirect or handle success
+            window.location.href = '/Employee';
         } catch (error) {
             console.error('Error creating Employee:', error);
             // Handle error

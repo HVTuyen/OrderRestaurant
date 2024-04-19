@@ -42,6 +42,7 @@ function ProductAdd( ) {
             });
             console.log('Product created successfully.');
             // Redirect or handle success
+            window.location.href = '/Product';
         } catch (error) {
             console.error('Error creating product:', error);
             // Handle error
