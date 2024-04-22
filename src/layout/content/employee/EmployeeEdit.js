@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,9 @@ import { EMPLOYEE_API } from '../constants'
 import { storage } from '../../../firebaseConfig';
 
 function EmployeeEdit( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -105,7 +108,7 @@ function EmployeeEdit( ) {
         
         axios.put(`${EMPLOYEE_API}${id}`,newEmployee)
         .then(() => {
-            window.location.href = '/Employee';
+            navigate('/Employee');
         })
         .catch(error => {
             console.error('Error creating Employee:', error);

@@ -30,7 +30,7 @@ function Category({isrender}) {
     }, [])
 
     useEffect(() => {
-        setCategoriesSearch(Category ? categories.filter(item => item.categoryName.includes(category)) : categories);
+        setCategoriesSearch(category ? categories.filter(item => item.categoryName.includes(category)) : categories);
     }, [category])
     
     console.log(category)

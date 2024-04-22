@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams,useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,8 @@ import { TABLE_API } from '../constants'
 import { storage } from '../../../firebaseConfig';
 
 function TableAdd( ) {
+
+    const navigate = useNavigate();
 
     const [tableName,setTableName] = useState('')
     const [urlImage,setUrlImage] = useState('')
@@ -77,7 +79,7 @@ function TableAdd( ) {
         
         axios.post(TABLE_API,newTable)
         .then(() => {
-            window.location.href = '/Table';
+            navigate('/Table');
         })
         .catch(error => {
             console.error('Error creating Table:', error);

@@ -1,11 +1,14 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { EMPLOYEE_API } from '../constants'
 
 function EmployeeDelete( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -25,7 +28,7 @@ function EmployeeDelete( ) {
         axios.delete(`${EMPLOYEE_API}${id}`)
             .then(() => {
                 console.log('Empoyee deleted successfully');
-                window.location.href = '/Employee'; // Điều hướng về Empoyee sau khi xóa
+                navigate('/Employee')
             })
             .catch(error => {
                 console.error('Error delete Empoyee:', error);
@@ -57,14 +60,13 @@ function EmployeeDelete( ) {
                         <label className="col-sm-9 col-form-label">{employee.email}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
-                            to='/Employee' 
+                        <button 
                             className='btn btn-outline-danger' 
                             style={{marginRight:'6px'}}
                             onClick={deleteEmployee}
                         >
                             Xác nhận xóa
-                        </Link>
+                        </button>
                         <Link to='/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

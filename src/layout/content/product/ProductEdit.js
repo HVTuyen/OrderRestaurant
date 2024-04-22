@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,9 @@ import { PRODUCT_API, CATEGORY_API } from '../constants'
 import { storage } from '../../../firebaseConfig';
 
 function ProductEdit( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -118,7 +121,7 @@ function ProductEdit( ) {
         
         axios.put(`${PRODUCT_API}${id}`,newProduct)
         .then(() => {
-            window.location.href = '/Product';
+            navigate('/Product');
         })
         .catch(error => {
             console.error('Error creating product:', error);

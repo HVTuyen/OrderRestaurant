@@ -95,7 +95,7 @@ function Table() {
                                     <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
                                             <div className='col-3'>
-                                                <img src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px', maxHeight:'30px'}}/>
+                                                <img loading='lazy' src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px', maxHeight:'30px'}}/>
                                             </div>
                                             <div className='col-5 d-flex a-center'>
                                                 <div>{item.tableName}</div>

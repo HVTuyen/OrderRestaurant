@@ -1,11 +1,14 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { CATEGORY_API } from '../constants'
 
 function CategoryDelete( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -25,7 +28,9 @@ function CategoryDelete( ) {
         axios.delete(`${CATEGORY_API}${id}`)
             .then(() => {
                 console.log('Category deleted successfully');
-                window.location.href = '/Category'; // Điều hướng về Category sau khi xóa
+            })
+            .then(() => {
+                navigate('/Category');
             })
             .catch(error => {
                 console.error('Error delete category:', error);

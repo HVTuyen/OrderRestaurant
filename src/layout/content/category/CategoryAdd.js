@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,8 @@ import { CATEGORY_API } from '../constants'
 import { storage } from '../../../firebaseConfig';
 
 function CategoryAdd( ) {
+
+    const navigate = useNavigate();
 
     const [name,setName] = useState('')
     const [description,setDescription] = useState('')
@@ -65,7 +67,7 @@ function CategoryAdd( ) {
         
         axios.post(CATEGORY_API,newCategory)
         .then(() => {
-            window.location.href = '/Category';
+            navigate('/Category');
         })
         .catch(error => {
             console.error('Error creating category:', error);

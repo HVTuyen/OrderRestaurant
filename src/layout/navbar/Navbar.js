@@ -4,6 +4,8 @@ import style from './navbar.module.scss'
 
 import Qlorder from '../content/qlorder/Qlorder'
 
+import Qlbill from '../content/qlbill/Qlbill'
+
 import Category from '../content/category/Category'
 import CategoryAdd from '../content/category/CategoryAdd'
 import CategoryEdit from '../content/category/CategoryEdit'
@@ -52,12 +54,6 @@ function Navbar() {
                 <Link className={classNavbarA} to="/Action/Order">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Đơn hàng
-                </Link>
-              </li>
-              <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Action/Bill">
-                  <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
-                  Hóa đơn
                 </Link>
               </li>
               <li className={classNavbarLi}>
@@ -113,6 +109,8 @@ function Navbar() {
           </div>
           <Routes>
             <Route path="/Action/Order" element={<Qlorder/>} />
+
+            <Route path="/Action/Bill" element={<Qlbill/>} />
 
             <Route path="/Category" element={<Category/>} />
             <Route path="/Category/add" element={<CategoryAdd/>} />

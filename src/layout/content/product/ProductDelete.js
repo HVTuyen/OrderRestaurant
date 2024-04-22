@@ -1,11 +1,14 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { PRODUCT_API, CATEGORY_API } from '../constants'
 
 function ProductDelete( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -35,7 +38,7 @@ function ProductDelete( ) {
         axios.delete(`${PRODUCT_API}${id}`)
             .then(() => {
                 console.log('Product deleted successfully');
-                window.location.href = '/Product'; // Điều hướng về Product sau khi xóa
+                navigate('/Product');
             })
             .catch(error => {
                 console.error('Error delete Product:', error);

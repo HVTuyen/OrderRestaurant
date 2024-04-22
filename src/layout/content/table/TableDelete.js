@@ -1,11 +1,14 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { TABLE_API } from '../constants'
 
 function TableDelete( ) {
+
+    const navigate = useNavigate();
+
     const {id} = useParams()
     console.log(id)
 
@@ -25,7 +28,7 @@ function TableDelete( ) {
         axios.delete(`${TABLE_API}${id}`)
             .then(() => {
                 console.log('Table deleted successfully');
-                window.location.href = '/Table'; // Điều hướng về Table sau khi xóa
+                navigate('/Table');
             })
             .catch(error => {
                 console.error('Error delete Table:', error);
@@ -49,14 +52,13 @@ function TableDelete( ) {
                         <label className="col-sm-9 col-form-label">{table.tableName}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
-                            to='/Table' 
+                        <button 
                             className='btn btn-outline-danger' 
                             style={{marginRight:'6px'}}
                             onClick={deleteTable}
                         >
                             Xác nhận xóa
-                        </Link>
+                        </button>
                         <Link to='/Table' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

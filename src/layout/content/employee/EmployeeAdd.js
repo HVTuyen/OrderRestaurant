@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams } from 'react-router-dom'
+import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -8,6 +8,8 @@ import { EMPLOYEE_API } from '../constants'
 import { storage } from '../../../firebaseConfig';
 
 function EmployeeAdd( ) {
+
+    const navigate = useNavigate();
 
     const [employeeName,setEmployeeName] = useState('')
     const [phone,setPhone] = useState('')
@@ -85,7 +87,7 @@ function EmployeeAdd( ) {
         
         axios.post(`${EMPLOYEE_API}postEmployee`,newEmployee)
         .then(() => {
-            window.location.href = '/Employee';
+            navigate('/Employee');
         })
         .catch(error => {
             console.error('Error creating employee:', error);

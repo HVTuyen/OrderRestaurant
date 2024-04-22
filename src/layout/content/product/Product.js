@@ -119,7 +119,7 @@ function Product() {
                                 <tr key={item.foodId}>
                                     <th className={classProductColId}>{index + 1}</th>
                                     <th className={classProductColImg}>
-                                        <img src={item.urlImage} alt={item.nameFood} width="80" height="80"/>
+                                        <img loading='lazy' src={item.urlImage} alt={item.nameFood} width="80" height="80"/>
                                     </th>
                                     <td className={classProductColName}>{item.nameFood}</td>
                                     <td className={classProductColPrice}>{item.unitPrice}</td>
