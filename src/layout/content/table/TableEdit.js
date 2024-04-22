@@ -2,24 +2,88 @@ import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 import { TABLE_API } from '../constants'
+import { storage } from '../../../firebaseConfig';
 
 function TableEdit( ) {
     const {id} = useParams()
     console.log(id)
 
     const [tableName,setTableName] = useState('')
-    const [qR_id,setQR_id] = useState('')
+    const [urlImage,setUrlImage] = useState('')
     const [previewImg,setPreviewImg] = useState('')
     const [statusId,setStatusId] = useState('')
     const [note,setNote] = useState('')
+
+    //Xử lí ảnh
+    const [isUpload,setIsUpload] = useState(false)
+    const [image, setImage] = useState(null);
+    useEffect(() => {
+        return () => {
+            previewImg && URL.revokeObjectURL(previewImg.preview)
+        }
+    }, [previewImg])
+    const handleChange = (e) => {
+        const img = e.target.files[0]
+        if (img) {
+            setImage(img);
+            img.preview = URL.createObjectURL(img)
+            setPreviewImg(img)
+        }
+    };
+    const metadata = {
+        contentType: 'image/jpeg',
+    };
+    const handleUpload = () => {
+		const storageRef = ref(storage, `images/${image.name}`); // tạo 1 địa chỉ để chứa ảnh chuẩn bị tải lên store
+        const uploadTask = uploadBytesResumable(storageRef, image, metadata); // hàm tải ảnh lên store 
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (err) => {
+                
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setUrlImage(downloadURL);
+                        setIsUpload(true)
+                        setImage(null);
+                        console.log('File available at', downloadURL);
+                    });
+            }
+        );
+    }
+    const handleUpdate = () => {
+        if(image!=null) {
+            handleUpload()
+        }
+        else {
+            updateTable()
+        }
+    }
+    useEffect(() => {
+        if (urlImage) {
+            updateTable();
+        }
+    },[isUpload]);
 
     useEffect(() => {
         axios.get(`${TABLE_API}${id}`)
             .then(res => {
                 setTableName(res.data.tableName)
-                setPreviewImg(res.data.qR_id)
+                setUrlImage(res.data.qR_id)
                 setStatusId(res.data.statusId)
                 setNote(res.data.note)
             })
@@ -28,40 +92,21 @@ function TableEdit( ) {
             });
     }, [])
 
-    console.log(tableName, statusId, note, qR_id)
-
-    useEffect(() => {
-        return () => {
-            previewImg && URL.revokeObjectURL(previewImg.preview)
-        }
-    }, [previewImg])
-
-    const handleImg = (e) => {
-        const img = e.target.files[0]
-        setQR_id(img)
-        img.preview = URL.createObjectURL(img)
-        setPreviewImg(img)
-    }
-
     const updateTable = async () => {
-        const formData = new FormData();
-        formData.append('tableName', tableName);
-        formData.append('qR_id', qR_id);
-        formData.append('statusId', statusId);
-        formData.append('note', note);
-
-        try {
-            await axios.put(`${TABLE_API}${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log('Table update successfully.');
+        const newTable = {
+            tableName: tableName,
+            statusId: statusId,
+            note: note,
+            qR_id: urlImage,
+        };
+        
+        axios.put(`${TABLE_API}${id}`,newTable)
+        .then(() => {
             window.location.href = '/Table';
-        } catch (error) {
-            console.error('Error update Table:', error);
-            // Handle error
-        }
+        })
+        .catch(error => {
+            console.error('Error creating Table:', error);
+        });
     }
     
     return (
@@ -87,20 +132,18 @@ function TableEdit( ) {
                             <input 
                                 type="file" 
                                 className="form-control"    
-                                onChange={handleImg}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="col-sm-3">
-                            {previewImg && (
-                                <img src={qR_id=='' ? `data:image/jpeg;base64,${previewImg}` : previewImg.preview} style={{width: '100%', height: '100%'}}/>
-                            )}
+                            <img src={previewImg?previewImg.preview:urlImage} style={{width: '100%', height: '100%'}}/>
                         </div>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
                         <button 
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
-                            onClick={updateTable}
+                            onClick={handleUpdate}
                         >
                             Lưu
                         </button>

@@ -2,36 +2,19 @@ import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 import { TABLE_API } from '../constants'
+import { storage } from '../../../firebaseConfig';
 
 function TableAdd( ) {
 
     const [tableName,setTableName] = useState('')
-    const [image,setImage] = useState('')
+    const [urlImage,setUrlImage] = useState('')
     const [previewImg,setPreviewImg] = useState('')
 
-    console.log(tableName, image)
-
-    const createTable = async () => {
-        const formData = new FormData();
-        formData.append('tableName', tableName);
-        formData.append('qR_id', image);
-
-        try {
-            await axios.post(TABLE_API, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log('Table created successfully.');
-            // Redirect or handle success
-            window.location.href = '/Table';
-        } catch (error) {
-            console.error('Error creating Table:', error);
-            // Handle error
-        }
-    };
+    //Xử lý ảnh
+    const [image, setImage] = useState(null);
 
     useEffect(() => {
         return () => {
@@ -39,13 +22,67 @@ function TableAdd( ) {
         }
     }, [previewImg])
 
-    const handleImg = (e) => {
+    const handleChange = (e) => {
         const img = e.target.files[0]
-        console.log(typeof img)
-        setImage(img)
-        img.preview = URL.createObjectURL(img)
-        setPreviewImg(img)
+        if (img) {
+            setImage(img);
+            img.preview = URL.createObjectURL(img)
+            setPreviewImg(img)
+        }
+    };
+
+    const metadata = {
+        contentType: 'image/jpeg',
+    };
+
+    const handleUpload = () => {
+		const storageRef = ref(storage, `images/${image.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setUrlImage(downloadURL);
+                        setImage(null);
+                        console.log('File available at', downloadURL);
+                    });
+            }
+        );
     }
+
+    useEffect(() => {
+        if (urlImage) {
+            createTable();
+        }
+    },[urlImage]);
+
+    const createTable = async () => {
+        const newTable = {
+            tableName: tableName,
+            qR_id: urlImage,
+        };
+        
+        axios.post(TABLE_API,newTable)
+        .then(() => {
+            window.location.href = '/Table';
+        })
+        .catch(error => {
+            console.error('Error creating Table:', error);
+        });
+    };
     
     return (
         <div className="col-10">
@@ -70,7 +107,7 @@ function TableAdd( ) {
                             <input 
                                 type="file" 
                                 className="form-control"    
-                                onChange={handleImg}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="col-sm-3">
@@ -80,14 +117,13 @@ function TableAdd( ) {
                         </div>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
-                            to='/Table' 
+                        <button
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
-                            onClick={createTable}
+                            onClick={handleUpload}
                         >
                             Lưu
-                        </Link>
+                        </button>
                         <Link to='/Table' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

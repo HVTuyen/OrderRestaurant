@@ -52,7 +52,7 @@ function ProductDelete( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Ảnh</label>
-                        <img className="col-sm-4" src={`data:image/jpeg;base64,${product.urlImage}`} alt={product.nameFood} height="100%"/>
+                        <img src={product.urlImage} style={{maxWidth:'30%', height:'100%', border:'1px solid #f0e8e8'}}/>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên món ăn</label>
@@ -68,7 +68,6 @@ function ProductDelete( ) {
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
                         <button 
-                            to='/Product' 
                             className='btn btn-outline-danger' 
                             style={{marginRight:'6px'}}
                             onClick={deleteProduct}

@@ -42,7 +42,7 @@ function TableDelete( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Ảnh QR</label>
-                        <img className="col-sm-4" src={`data:image/jpeg;base64,${table.qR_id}`} alt={table.tableName} height="100%"/>
+                        <img className="col-sm-4" src={table.qR_id} alt={table.tableName} height="100%"/>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên bàn</label>

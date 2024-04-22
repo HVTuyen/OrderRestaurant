@@ -80,10 +80,7 @@ function Category({isrender}) {
                                 <tr key={item.categoryId}>
                                     <th className={classCategoryColId}>{index + 1}</th>
                                     <td className={classCategoryColName}>{item.categoryName}</td>
-                                    {/* <td className={classCategoryColDes}>{item.description}</td> */}
-                                    <td className={classCategoryColAction}>
-                                        <img src={item.description} style={{maxWidth:'20%'}}/>
-                                    </td>
+                                    <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>
                                         <Link to={`/Category/Edit/${item.categoryId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classCategoryTableIcon} style={{color:'#5c94ff'}}/>

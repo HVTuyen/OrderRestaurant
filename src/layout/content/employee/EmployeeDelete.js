@@ -42,7 +42,7 @@ function EmployeeDelete( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Ảnh</label>
-                        <img className="col-sm-4" src={`data:image/jpeg;base64,${employee.image}`} alt={employee.employeeName} height="100%"/>
+                        <img className="col-sm-4" src={employee.image} alt={employee.employeeName} height="100%"/>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tên nhân viên</label>

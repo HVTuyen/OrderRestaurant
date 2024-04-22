@@ -46,10 +46,7 @@ function CategoryDelete( ) {
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Mô tả</label>
-                        {/* <label className="col-sm-9 col-form-label">{category.description}</label> */}
-                        <label className="col-sm-9 col-form-label">
-                            <img src={category.description} style={{maxWidth:'100%'}}/>    
-                        </label>
+                        <label className="col-sm-9 col-form-label">{category.description}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
                         <button 

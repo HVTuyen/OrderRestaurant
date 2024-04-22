@@ -2,6 +2,8 @@ import clsx from 'clsx'
 import {Routes, Route, Link} from 'react-router-dom'
 import style from './navbar.module.scss'
 
+import Qlorder from '../content/qlorder/Qlorder'
+
 import Category from '../content/category/Category'
 import CategoryAdd from '../content/category/CategoryAdd'
 import CategoryEdit from '../content/category/CategoryEdit'
@@ -110,6 +112,8 @@ function Navbar() {
             </ul>
           </div>
           <Routes>
+            <Route path="/Action/Order" element={<Qlorder/>} />
+
             <Route path="/Category" element={<Category/>} />
             <Route path="/Category/add" element={<CategoryAdd/>} />
             <Route path="/Category/edit/:id" element={<CategoryEdit/>} />

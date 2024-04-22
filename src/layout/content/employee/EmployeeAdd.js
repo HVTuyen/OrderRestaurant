@@ -2,8 +2,10 @@ import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 import { EMPLOYEE_API } from '../constants'
+import { storage } from '../../../firebaseConfig';
 
 function EmployeeAdd( ) {
 
@@ -11,33 +13,13 @@ function EmployeeAdd( ) {
     const [phone,setPhone] = useState('')
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
-    const [image,setImage] = useState('')
+    const [urlImage,setUrlImage] = useState('')
     const [previewImg,setPreviewImg] = useState('')
 
-    console.log(employeeName,phone, email, password, image)
+    console.log(employeeName,phone, email, password)
 
-    const createEmployee = async () => {
-        const formData = new FormData();
-        formData.append('employeeName', employeeName);
-        formData.append('phone', phone);
-        formData.append('email', email);
-        formData.append('password', password);
-        formData.append('image', image);
-
-        try {
-            await axios.post(`${EMPLOYEE_API}postEmployee`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log('Employee created successfully.');
-            // Redirect or handle success
-            window.location.href = '/Employee';
-        } catch (error) {
-            console.error('Error creating Employee:', error);
-            // Handle error
-        }
-    };
+    //Xử lý ảnh
+    const [image, setImage] = useState(null);
 
     useEffect(() => {
         return () => {
@@ -45,13 +27,70 @@ function EmployeeAdd( ) {
         }
     }, [previewImg])
 
-    const handleImg = (e) => {
+    const handleChange = (e) => {
         const img = e.target.files[0]
-        console.log(typeof img)
-        setImage(img)
-        img.preview = URL.createObjectURL(img)
-        setPreviewImg(img)
+        if (img) {
+            setImage(img);
+            img.preview = URL.createObjectURL(img)
+            setPreviewImg(img)
+        }
+    };
+
+    const metadata = {
+        contentType: 'image/jpeg',
+    };
+
+    const handleUpload = () => {
+		const storageRef = ref(storage, `images/${image.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setUrlImage(downloadURL);
+                        setImage(null);
+                        console.log('File available at', downloadURL);
+                    });
+            }
+        );
     }
+
+    useEffect(() => {
+        if (urlImage) {
+            createEmployee();
+        }
+    },[urlImage]);
+
+    const createEmployee = async () => {
+        const newEmployee = {
+            employeeName: employeeName,
+            phone: phone,
+            email: email,
+            password: password,
+            image: urlImage,
+        };
+        
+        axios.post(`${EMPLOYEE_API}postEmployee`,newEmployee)
+        .then(() => {
+            window.location.href = '/Employee';
+        })
+        .catch(error => {
+            console.error('Error creating employee:', error);
+        });
+    };
     
     return (
         <div className="col-10">
@@ -109,7 +148,7 @@ function EmployeeAdd( ) {
                             <input 
                                 type="file" 
                                 className="form-control"    
-                                onChange={handleImg}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="col-sm-3">
@@ -119,14 +158,13 @@ function EmployeeAdd( ) {
                         </div>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
-                            to='/Employee' 
+                        <button
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
-                            onClick={createEmployee}
+                            onClick={handleUpload}
                         >
                             Lưu
-                        </Link>
+                        </button>
                         <Link to='/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>

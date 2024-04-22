@@ -2,8 +2,10 @@ import clsx from 'clsx'
 import {Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 import { PRODUCT_API, CATEGORY_API } from '../constants'
+import { storage } from '../../../firebaseConfig';
 
 function ProductAdd( ) {
 
@@ -12,8 +14,65 @@ function ProductAdd( ) {
     const [urlImage,setUrlImage] = useState('')
     const [previewImg,setPreviewImg] = useState('')
     const [categoryId,setCategoryId] = useState('')
-
+    
     const [categories,setCategories] = useState([])
+
+
+    //Xử lý ảnh
+    const [image, setImage] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            previewImg && URL.revokeObjectURL(previewImg.preview)
+        }
+    }, [previewImg])
+
+    const handleChange = (e) => {
+        const img = e.target.files[0]
+        if (img) {
+            setImage(img);
+            img.preview = URL.createObjectURL(img)
+            setPreviewImg(img)
+        }
+    };
+
+    const metadata = {
+        contentType: 'image/jpeg',
+    };
+
+    const handleUpload = () => {
+		const storageRef = ref(storage, `images/${image.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+        uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setUrlImage(downloadURL);
+                        setImage(null);
+                        console.log('File available at', downloadURL);
+                    });
+            }
+        );
+    }
+
+    useEffect(() => {
+        if (urlImage) {
+            createProduct();
+        }
+    },[urlImage]);
 
     console.log(nameFood,unitPrice, categoryId, urlImage)
 
@@ -28,40 +87,22 @@ function ProductAdd( ) {
     }, [])
 
     const createProduct = async () => {
-        const formData = new FormData();
-        formData.append('nameFood', nameFood);
-        formData.append('unitPrice', unitPrice);
-        formData.append('categoryId', categoryId);
-        formData.append('image', urlImage);
+        const newProduct = {
+            nameFood: nameFood,
+            unitPrice: unitPrice,
+            categoryId: categoryId,
+            image: urlImage,
 
-        try {
-            await axios.post(`${PRODUCT_API}post-with-image`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log('Product created successfully.');
-            // Redirect or handle success
+        };
+        
+        axios.post(`${PRODUCT_API}post-with-image`,newProduct)
+        .then(() => {
             window.location.href = '/Product';
-        } catch (error) {
+        })
+        .catch(error => {
             console.error('Error creating product:', error);
-            // Handle error
-        }
+        });
     };
-
-    useEffect(() => {
-        return () => {
-            previewImg && URL.revokeObjectURL(previewImg.preview)
-        }
-    }, [previewImg])
-
-    const handleImg = (e) => {
-        const img = e.target.files[0]
-        console.log(typeof img)
-        setUrlImage(img)
-        img.preview = URL.createObjectURL(img)
-        setPreviewImg(img)
-    }
     
     return (
         <div className="col-10">
@@ -112,7 +153,7 @@ function ProductAdd( ) {
                             <input 
                                 type="file" 
                                 className="form-control"    
-                                onChange={handleImg}
+                                onChange={handleChange}
                             />
                         </div>
                         <div className="col-sm-3">
@@ -123,14 +164,13 @@ function ProductAdd( ) {
                     </div>
 
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <Link 
-                            to='/Product' 
+                        <button 
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
-                            onClick={createProduct}
+                            onClick={handleUpload}
                         >
                             Lưu
-                        </Link>
+                        </button>
                         <Link to='/Product' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
