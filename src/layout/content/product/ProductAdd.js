@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { PRODUCT_API, CATEGORY_API } from '../constants'
+import { PRODUCT_API, CATEGORY_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 
 function ProductAdd( ) {
@@ -99,7 +99,7 @@ function ProductAdd( ) {
         
         axios.post(`${PRODUCT_API}post-with-image`,newProduct)
         .then(() => {
-            navigate('/Product');
+            navigate('/Ql/Product');
         })
         .catch(error => {
             console.error('Error creating product:', error);
@@ -173,7 +173,7 @@ function ProductAdd( ) {
                         >
                             Lưu
                         </button>
-                        <Link to='/Product' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Product' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

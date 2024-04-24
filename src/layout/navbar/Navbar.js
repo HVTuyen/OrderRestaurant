@@ -51,25 +51,25 @@ function Navbar() {
             </div>
             <ul className={classNavbarUl}>
             <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Action/Order">
+                <Link className={classNavbarA} to="/Ql/Action/Order">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Đơn hàng
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Action/Request">
+                <Link className={classNavbarA} to="/Ql/Action/Request">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Yêu cầu
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Action/Table">
+                <Link className={classNavbarA} to="/Ql/Action/Table">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Bàn ăn
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Action/ThongKe">
+                <Link className={classNavbarA} to="/Ql/Action/ThongKe">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Thống kê, báo cáo
                 </Link>
@@ -82,25 +82,25 @@ function Navbar() {
             </div>
             <ul className={classNavbarUl}>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Category">
+                <Link className={classNavbarA} to="/Ql/Category">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Loại món
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Product">
+                <Link className={classNavbarA} to="/Ql/Product">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Món ăn
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Table">
+                <Link className={classNavbarA} to="/Ql/Table">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Bàn ăn
                 </Link>
               </li>
               <li className={classNavbarLi}>
-                <Link className={classNavbarA} to="/Employee">
+                <Link className={classNavbarA} to="/Ql/Employee">
                   <FontAwesomeIcon icon={faCircle} className={classNavbarIconLI}/>
                   Nhân viên
                 </Link>

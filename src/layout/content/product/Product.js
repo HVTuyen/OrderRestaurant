@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './product.module.scss'
-import { PRODUCT_API, CATEGORY_API } from '../constants'
+import { PRODUCT_API, CATEGORY_API } from '../../constants'
 
 function Product() {
     console.log('re-render-product')
@@ -95,7 +95,7 @@ function Product() {
                 <button className={classProductButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classProductIcon} style={{width: '100%'}}/>
                 </button>
-                <Link className={classProductButton} to='/Product/Add'>
+                <Link className={classProductButton} to='/Ql/Product/Add'>
                     <FontAwesomeIcon icon={faPlus} className={classProductIcon}/>
                     Thêm
                 </Link>
@@ -125,10 +125,10 @@ function Product() {
                                     <td className={classProductColPrice}>{item.unitPrice}</td>
                                     <td className={classProductColCategory}>{item.category.categoryName}</td>
                                     <th className={classProductColAction}>
-                                        <Link to={`/Product/Edit/${item.foodId}`}>
+                                        <Link to={`/Ql/Product/Edit/${item.foodId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classProductTableIcon} style={{color:'#5c94ff'}}/>
                                         </Link>
-                                        <Link to={`/Product/Delete/${item.foodId}`}>
+                                        <Link to={`/Ql/Product/Delete/${item.foodId}`}>
                                             <FontAwesomeIcon icon={faTrash} className={classProductTableIcon} style={{color:'#ff5252'}}/>
                                         </Link>
                                     </th>

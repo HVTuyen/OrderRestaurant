@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { TABLE_API } from '../constants'
+import { TABLE_API } from '../../constants'
 
 function TableDelete( ) {
 
@@ -28,7 +28,7 @@ function TableDelete( ) {
         axios.delete(`${TABLE_API}${id}`)
             .then(() => {
                 console.log('Table deleted successfully');
-                navigate('/Table');
+                navigate('/Ql/Table');
             })
             .catch(error => {
                 console.error('Error delete Table:', error);
@@ -59,7 +59,7 @@ function TableDelete( ) {
                         >
                             Xác nhận xóa
                         </button>
-                        <Link to='/Table' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Table' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

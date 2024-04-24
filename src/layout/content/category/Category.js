@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './category.module.scss'
-import { CATEGORY_API } from '../constants'
-import {getCategoriesAPI} from '../../../api/category'
+import { CATEGORY_API } from '../../constants'
 import CategoryEdit from './CategoryEdit'
 
 
@@ -58,7 +57,7 @@ function Category({isrender}) {
                 <button className={classCategoryButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classCategoryIcon} style={{width: '100%'}}/>
                 </button>
-                <Link className={classCategoryButton} to='/Category/Add'>
+                <Link className={classCategoryButton} to='/Ql/Category/Add'>
                     <FontAwesomeIcon icon={faPlus} className={classCategoryIcon}/>
                     Thêm
                 </Link>
@@ -82,10 +81,10 @@ function Category({isrender}) {
                                     <td className={classCategoryColName}>{item.categoryName}</td>
                                     <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>
-                                        <Link to={`/Category/Edit/${item.categoryId}`}>
+                                        <Link to={`/Ql/Category/Edit/${item.categoryId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classCategoryTableIcon} style={{color:'#5c94ff'}}/>
                                         </Link>
-                                        <Link to={`/Category/Delete/${item.categoryId}`}>
+                                        <Link to={`/Ql/Category/Delete/${item.categoryId}`}>
                                             <FontAwesomeIcon icon={faTrash} className={classCategoryTableIcon} style={{color:'#ff5252'}}/>
                                         </Link>
                                     </th>

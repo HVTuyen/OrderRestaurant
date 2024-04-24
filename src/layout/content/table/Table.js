@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './table.module.scss'
-import { TABLE_API } from '../constants'
+import { TABLE_API } from '../../constants'
 
 function Table() {
     console.log('re-render-Table')
@@ -63,7 +63,7 @@ function Table() {
                 <button className={classTableButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classTableIcon} style={{width: '100%'}}/>
                 </button>
-                <Link className={classTableButton} to='/Table/Add'>
+                <Link className={classTableButton} to='/Ql/Table/Add'>
                     <FontAwesomeIcon icon={faPlus} className={classTableIcon}/>
                     Thêm
                 </Link>
@@ -101,10 +101,10 @@ function Table() {
                                                 <div>{item.tableName}</div>
                                             </div>
                                             <div className='col-4 d-flex a-center'>
-                                                <Link to={`/Table/Edit/${item.tableId}`}>
+                                                <Link to={`/Ql/Table/Edit/${item.tableId}`}>
                                                     <FontAwesomeIcon icon={faEdit} className={classTableItemIcon} style={{color:'#5c94ff'}}/>
                                                 </Link>
-                                                <Link to={`/Table/Delete/${item.tableId}`}>
+                                                <Link to={`/Ql/Table/Delete/${item.tableId}`}>
                                                     <FontAwesomeIcon icon={faTrash} className={classTableItemIcon} style={{color:'#ff5252'}}/>
                                                 </Link>
                                             </div>

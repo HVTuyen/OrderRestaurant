@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { EMPLOYEE_API } from '../constants'
+import { EMPLOYEE_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 
 function EmployeeEdit( ) {
@@ -108,7 +108,7 @@ function EmployeeEdit( ) {
         
         axios.put(`${EMPLOYEE_API}${id}`,newEmployee)
         .then(() => {
-            navigate('/Employee');
+            navigate('/Ql/Employee');
         })
         .catch(error => {
             console.error('Error creating Employee:', error);
@@ -180,14 +180,14 @@ function EmployeeEdit( ) {
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
                         <button 
-                            to='/Employee' 
+                            to='/Ql/Employee' 
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
                             onClick={handleUpdate}
                         >
                             Lưu
                         </button>
-                        <Link to='/Employee' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

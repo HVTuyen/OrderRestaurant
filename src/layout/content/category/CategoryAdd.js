@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { CATEGORY_API } from '../constants'
+import { CATEGORY_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 
 function CategoryAdd( ) {
@@ -67,7 +67,7 @@ function CategoryAdd( ) {
         
         axios.post(CATEGORY_API,newCategory)
         .then(() => {
-            navigate('/Category');
+            navigate('/Ql/Category');
         })
         .catch(error => {
             console.error('Error creating category:', error);
@@ -127,7 +127,7 @@ function CategoryAdd( ) {
                         >
                             Lưu
                         </button>
-                        <Link to='/Category' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Category' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

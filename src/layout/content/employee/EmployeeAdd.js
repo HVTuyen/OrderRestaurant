@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { EMPLOYEE_API } from '../constants'
+import { EMPLOYEE_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 
 function EmployeeAdd( ) {
@@ -87,7 +87,7 @@ function EmployeeAdd( ) {
         
         axios.post(`${EMPLOYEE_API}postEmployee`,newEmployee)
         .then(() => {
-            navigate('/Employee');
+            navigate('/Ql/Employee');
         })
         .catch(error => {
             console.error('Error creating employee:', error);
@@ -167,7 +167,7 @@ function EmployeeAdd( ) {
                         >
                             Lưu
                         </button>
-                        <Link to='/Employee' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

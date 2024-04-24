@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { EMPLOYEE_API } from '../constants'
+import { EMPLOYEE_API } from '../../constants'
 
 function EmployeeDelete( ) {
 
@@ -28,7 +28,7 @@ function EmployeeDelete( ) {
         axios.delete(`${EMPLOYEE_API}${id}`)
             .then(() => {
                 console.log('Empoyee deleted successfully');
-                navigate('/Employee')
+                navigate('/Ql/Employee')
             })
             .catch(error => {
                 console.error('Error delete Empoyee:', error);
@@ -67,7 +67,7 @@ function EmployeeDelete( ) {
                         >
                             Xác nhận xóa
                         </button>
-                        <Link to='/Employee' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Employee' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

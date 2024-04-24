@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './employee.module.scss'
-import { EMPLOYEE_API } from '../constants'
+import { EMPLOYEE_API } from '../../constants'
 
 function Employee() {
     console.log('re-render-Employee')
@@ -53,7 +53,7 @@ function Employee() {
                 <button className={classEmployeeButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classEmployeeIcon} style={{width: '100%'}}/>
                 </button>
-                <Link className={classEmployeeButton} to='/Employee/Add'>
+                <Link className={classEmployeeButton} to='/Ql/Employee/Add'>
                     <FontAwesomeIcon icon={faPlus} className={classEmployeeIcon}/>
                     Thêm
                 </Link>
@@ -86,10 +86,10 @@ function Employee() {
                                                     </div>
                                                 </div>
                                                 <div className='d-flex j-flex-end'>
-                                                    <Link to={`/Employee/Edit/${item.employeeId}`}>
+                                                    <Link to={`/Ql/Employee/Edit/${item.employeeId}`}>
                                                         <FontAwesomeIcon icon={faEdit} className={classEmployeeItemIcon} style={{color:'#5c94ff'}}/>
                                                     </Link>
-                                                    <Link to={`/Employee/Delete/${item.employeeId}`}>
+                                                    <Link to={`/Ql/Employee/Delete/${item.employeeId}`}>
                                                         <FontAwesomeIcon icon={faTrash} className={classEmployeeItemIcon} style={{color:'#ff5252'}}/>
                                                     </Link>
                                                 </div>

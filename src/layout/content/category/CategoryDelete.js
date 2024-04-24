@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { CATEGORY_API } from '../constants'
+import { CATEGORY_API } from '../../constants'
 
 function CategoryDelete( ) {
 
@@ -30,7 +30,7 @@ function CategoryDelete( ) {
                 console.log('Category deleted successfully');
             })
             .then(() => {
-                navigate('/Category');
+                navigate('/Ql/Category');
             })
             .catch(error => {
                 console.error('Error delete category:', error);
@@ -54,15 +54,14 @@ function CategoryDelete( ) {
                         <label className="col-sm-9 col-form-label">{category.description}</label>
                     </div>
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <button 
-                            to='/Category' 
+                        <button
                             className='btn btn-outline-danger' 
                             style={{marginRight:'6px'}}
                             onClick={deleteCategory}
                         >
                             Xác nhận xóa
                         </button>
-                        <Link to='/Category' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Category' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

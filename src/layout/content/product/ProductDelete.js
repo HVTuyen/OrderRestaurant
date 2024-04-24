@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { PRODUCT_API, CATEGORY_API } from '../constants'
+import { PRODUCT_API, CATEGORY_API } from '../../constants'
 
 function ProductDelete( ) {
 
@@ -38,7 +38,7 @@ function ProductDelete( ) {
         axios.delete(`${PRODUCT_API}${id}`)
             .then(() => {
                 console.log('Product deleted successfully');
-                navigate('/Product');
+                navigate('/Ql/Product');
             })
             .catch(error => {
                 console.error('Error delete Product:', error);
@@ -77,7 +77,7 @@ function ProductDelete( ) {
                         >
                             Xác nhận xóa
                         </button>
-                        <Link to='/Product' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Product' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>

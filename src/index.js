@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
+import {Routes, Route, Link, useNavigate} from 'react-router-dom'
 
 import './index.css';
 import App from './App';
+import Order from './layout/content/order/Order';
+import Cart from './layout/content/cart/Cart';
 import reportWebVitals from './reportWebVitals';
 
 
@@ -12,7 +15,12 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <App />
+      {/* <App /> */}
+      <Routes>
+        <Route path="/Ql/*" element={<App />} />
+        <Route path="/Order/:id" element={<Order />} />
+        <Route path="/Cart/:id" element={<Cart />} />
+      </Routes>
     </Router>
   </React.StrictMode>
 );

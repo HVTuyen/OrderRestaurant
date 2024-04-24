@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './qlbill.module.scss'
-import { QLBILL_API } from '../constants'
+import { QLBILL_API } from '../../constants'
 
 function Qlbill({isrender}) {
     console.log('re-render-qlbill')

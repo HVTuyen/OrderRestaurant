@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { TABLE_API } from '../constants'
+import { TABLE_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 
 function TableAdd( ) {
@@ -79,7 +79,7 @@ function TableAdd( ) {
         
         axios.post(TABLE_API,newTable)
         .then(() => {
-            navigate('/Table');
+            navigate('/Ql/Table');
         })
         .catch(error => {
             console.error('Error creating Table:', error);
@@ -126,7 +126,7 @@ function TableAdd( ) {
                         >
                             Lưu
                         </button>
-                        <Link to='/Table' className='btn btn-outline-danger'>
+                        <Link to='/Ql/Table' className='btn btn-outline-danger'>
                             Trở về
                         </Link>
                     </div>
