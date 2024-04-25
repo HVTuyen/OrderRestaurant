@@ -5,3 +5,16 @@ export const TABLE_API = 'https://192.168.1.152/api/Table/'
 
 export const QLORDER_API = 'https://192.168.1.152/api/Order/'
 export const QLBILL_API = 'https://192.168.1.152/api/Order/'
+
+export const CONFIG_API = 'https://192.168.1.152/api/Config/'
+
+export const ORDER_TYPE = 'DonHang'
+export const ORDER_APPROVE_SUB = 'ApproveOrder'
+export const ORDER_PAYMENT_SUB = 'PaymentOrder'
+export const ORDER_REFUSE_SUB = 'RefuseOrder'
+export const ORDER_APPROVE_CODE = 2
+export const ORDER_PAYMENT_CODE = 3
+export const ORDER_REFUSE_CODE = 4
+
+export const TABLE_TYPE = 'Ban'
+export const REQUEST_TYPE = 'YeuCau'

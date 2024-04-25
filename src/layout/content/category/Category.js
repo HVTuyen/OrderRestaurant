@@ -64,7 +64,7 @@ function Category({isrender}) {
             </div>
 
             <table className={classCategoryTable}>
-                <thead>
+                <thead className="table-secondary">
                     <tr>
                         <th className={classCategoryColId}>#</th>
                         <th className={classCategoryColName}>Tên loại</th>

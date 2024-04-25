@@ -102,7 +102,7 @@ function Product() {
             </div>
 
             <table className={classProductTable}>
-                <thead>
+                <thead className="table-secondary">
                     <tr>
                         <th align='center' className={classProductColId}>#</th>
                         <th className={classProductColImg}>Ảnh</th>

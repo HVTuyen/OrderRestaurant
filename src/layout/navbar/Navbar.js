@@ -3,6 +3,7 @@ import {Routes, Route, Link} from 'react-router-dom'
 import style from './navbar.module.scss'
 
 import Qlorder from '../content/qlorder/Qlorder'
+import QlorderDetail from '../content/qlorder/QlorderDetail'
 
 import Qlbill from '../content/qlbill/Qlbill'
 
@@ -109,6 +110,7 @@ function Navbar() {
           </div>
           <Routes>
             <Route path="/Action/Order" element={<Qlorder/>} />
+            <Route path="/Action/Order/:id" element={<QlorderDetail/>} />
 
             <Route path="/Action/Bill" element={<Qlbill/>} />
 

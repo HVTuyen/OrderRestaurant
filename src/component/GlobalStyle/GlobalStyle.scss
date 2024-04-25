@@ -22,6 +22,20 @@
     text-align: center;
 }
 
+.col-0-5 {
+    flex: 0 0 4.166667%;
+    max-width: 4.166667%;
+}
+
+.col-1-5 {
+    flex: 0 0 12.5%;
+    max-width: 12.5%;
+}
+
+.padding-6 {
+    padding: 6px;
+}
+
 .border {
     border: 1px solid #333;
     border-radius: 3px;
@@ -46,4 +60,9 @@
 
 .danger {
     background-color: #ffbebe;
+}
+
+.disable {
+    pointer-events: none;
+    opacity: 0.5;
 }
