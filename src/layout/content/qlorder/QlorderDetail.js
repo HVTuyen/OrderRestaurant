@@ -153,47 +153,55 @@ function QlorderDetail( ) {
                                     </td>
                                     <td className={classQlorderCol_2}>{item.foods.nameFood}</td>
                                     <td className={classQlorderCol_2}>
-                                        <div className='d-flex width-full'>
-                                            <button
-                                                className="btn btn-link px-2"
-                                                style={{border: '1px solid #ccc'}}
-                                                onClick={() => handleQuantityChange(item.foodId, -1)}
-                                            >
-                                                <FontAwesomeIcon icon={faMinus} style={{fontSize:'24px'}}/>
-                                            </button>
-                                            <input
-                                                type="number"
-                                                min='1'
-                                                className="form-control form-control-sm t-center" 
-                                                value={quantity[item.foods.foodId]}
-                                                onChange={() => {}}
-                                            />
-                                            <button 
-                                                className="btn btn-link px-2"
-                                                style={{border: '1px solid #ccc'}}
-                                                onClick={() => handleQuantityChange(item.foodId, 1)}
-                                            >
-                                                <FontAwesomeIcon icon={faPlus} style={{fontSize:'24px'}}/>
-                                            </button>
-                                            
-                                            <div style={{padding:'0 6px'}}>
-                                                <button 
-                                                    className='btn btn-outline-primary width-full'
-                                                    onClick={() => handleUpdateQuantity(id, item.foods.foodId)}
-                                                >
-                                                    Lưu
-                                                </button>
-                                            </div>
-                                        </div>
+                                        {
+                                            item.orders.code == 1 ? (
+                                                <div className='d-flex width-full'>
+                                                    <button
+                                                        className="btn btn-link px-2"
+                                                        style={{border: '1px solid #ccc'}}
+                                                        onClick={() => handleQuantityChange(item.foodId, -1)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faMinus} style={{fontSize:'24px'}}/>
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        min='1'
+                                                        className="form-control form-control-sm t-center" 
+                                                        value={quantity[item.foods.foodId]}
+                                                        onChange={() => {}}
+                                                    />
+                                                    <button 
+                                                        className="btn btn-link px-2"
+                                                        style={{border: '1px solid #ccc'}}
+                                                        onClick={() => handleQuantityChange(item.foodId, 1)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faPlus} style={{fontSize:'24px'}}/>
+                                                    </button>
+                                                    
+                                                    <div style={{padding:'0 6px'}}>
+                                                        <button 
+                                                            className='btn btn-outline-primary width-full'
+                                                            onClick={() => handleUpdateQuantity(id, item.foods.foodId)}
+                                                        >
+                                                            Lưu
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : item.quantity
+                                        }
                                     </td>
                                     <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.foods.unitPrice)}</td>
                                     <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalAmount)}</td>
                                     <td className={classQlorderCol_1 + ' t-center'}>
-                                        <FontAwesomeIcon 
-                                            icon={faTrash} 
-                                            style={{color:'#ff5252', fontSize:'28px'}}
-                                            onClick={() => handleDelete(id, item.foods.foodId)}
-                                        />
+                                        {
+                                            item.orders.code == 1 ? (
+                                                <FontAwesomeIcon 
+                                                    icon={faTrash} 
+                                                    style={{color:'#ff5252', fontSize:'28px', cursor: 'pointer'}}
+                                                    onClick={() => handleDelete(id, item.foods.foodId)}
+                                                />
+                                            ) : ''
+                                        }
                                     </td>
                                 </tr>
                             )

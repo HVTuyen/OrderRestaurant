@@ -159,10 +159,6 @@ function Qlorder({isrender}) {
                 <button className={classQlorderButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classQlorderIcon} style={{width: '100%'}}/>
                 </button>
-                <Link className={classQlorderButton} to='/Category/Add'>
-                    <FontAwesomeIcon icon={faPlus} className={classQlorderIcon}/>
-                    Thêm
-                </Link>
             </div>
 
             <table className={classQlorderTable}>
@@ -232,6 +228,17 @@ function Qlorder({isrender}) {
                                                     onClick={() => handleDeleteOrder(item.orderId)}
                                                 >
                                                     Xóa
+                                                </button>
+                                            )}
+
+                                            {item.code === 3 && (
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-outline-info padding-6"
+                                                    // style={{width:'130px'}}
+                                                    onClick={() => handleDeleteOrder(item.orderId)}
+                                                >
+                                                    Xuất hóa đơn
                                                 </button>
                                             )}
                                         </div>
