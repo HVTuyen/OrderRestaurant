@@ -39,7 +39,7 @@ function Category({isrender}) {
     const classCategorySearch = clsx(style.categorySearch, 'input-group')
     const classCategoryButton = clsx(style.categoryButton, 'btn btn-outline-primary')
     const classCategoryIcon = clsx(style.categoryIcon)
-    const classCategoryTable = clsx(style.categoryTable, 'table')
+    const classCategoryTable = clsx(style.categoryTable, 'table  table-center')
     const classCategoryColId = clsx(style.categoryCol, 'col-1')
     const classCategoryColName = clsx(style.categoryCol, 'col-4')
     const classCategoryColDes = clsx(style.categoryCol, 'col-6')

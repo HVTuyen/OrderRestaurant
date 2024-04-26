@@ -22,6 +22,14 @@
     text-align: center;
 }
 
+.table-center {
+    vertical-align: middle;
+}
+
+.width-full {
+    width: 100%;
+}
+
 .col-0-5 {
     flex: 0 0 4.166667%;
     max-width: 4.166667%;
@@ -30,6 +38,11 @@
 .col-1-5 {
     flex: 0 0 12.5%;
     max-width: 12.5%;
+}
+
+.col-2-5 {
+    flex: 0 0 12.5%;
+    max-width: 20.83%;
 }
 
 .padding-6 {

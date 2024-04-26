@@ -40,12 +40,18 @@ function Product() {
     }, [])
 
     useEffect(() => {
-        setProductsSearch(product ? products.filter(item => item.nameFood.includes(product)) : products);
-    }, [product])
-
-    useEffect(() => {
-        setProductsSearch(categoryId ? products.filter(item => item.categoryId == categoryId) : products);
-    }, [categoryId])
+        let filteredProducts = products;
+    
+        if (product && categoryId) {
+            filteredProducts = products.filter(item => item.nameFood.includes(product) && item.categoryId == categoryId);
+        } else if (product) {
+            filteredProducts = products.filter(item => item.nameFood.includes(product));
+        } else if (categoryId) {
+            filteredProducts = products.filter(item => item.categoryId == categoryId);
+        }
+        setProductsSearch(filteredProducts);
+    }, [product, categoryId]);
+    
     
     console.log(product)
     console.log(products)
@@ -56,7 +62,7 @@ function Product() {
     const classProductSearch = clsx(style.productSearch, 'input-group')
     const classProductButton = clsx(style.productButton, 'btn btn-outline-primary')
     const classProductIcon = clsx(style.productIcon)
-    const classProductTable = clsx(style.productTable, 'table')
+    const classProductTable = clsx(style.productTable, 'table table-center')
     const classProductColId = clsx(style.productCol, 'col-1')
     const classProductColImg = clsx(style.productCol, 'col-1')
     const classProductColName = clsx(style.productCol, 'col-3')
@@ -75,7 +81,6 @@ function Product() {
                     className="form-select"
                     value={categoryId}
                     onChange={e => {
-                        setProduct('')
                         setCategoryId(e.target.value)
                     }}
                 >
@@ -89,7 +94,6 @@ function Product() {
                     value={product}
                     onChange={e => {
                         setProduct(e.target.value)
-                        setCategoryId('')
                     }}
                 />
                 <button className={classProductButton} type="button">

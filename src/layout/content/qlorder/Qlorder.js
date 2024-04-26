@@ -9,7 +9,7 @@ import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-i
 
 import style from './qlorder.module.scss'
 import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_PAYMENT_CODE,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB } from '../../constants'
-import {formatDateTime} from '../../formatDateTime'
+import {formatDateTimeSQL} from '../../formatDateTime'
 import { db } from '../../../firebaseConfig';
 
 function Qlorder({isrender}) {
@@ -19,8 +19,8 @@ function Qlorder({isrender}) {
     const [qlOrder,setQlOrder] = useState('')
     const [status,setStatus] = useState([])
     const [statusSelect,setStatusSelect] = useState('')
-    const [isFirstRender, setIsFirstRender] = useState(true);
-
+    const [isRender, setIsRender] = useState('');
+    const [showAlert,setShowAlert] = useState(true)
     const [render, setRender] = useState(0)
 
     useEffect(() => {
@@ -49,22 +49,17 @@ function Qlorder({isrender}) {
     }, [render])
 
     useEffect(() => {
-        setQlOrderSearch(qlOrder ? qlOrders.filter(item => String(item.tables.tableName).includes(qlOrder)) : qlOrders);
-    }, [qlOrder])
-
-    useEffect(() => {
-        setQlOrderSearch(statusSelect ? qlOrders.filter(item => String(item.statusId).includes(statusSelect)) : qlOrders);
-    }, [statusSelect])
-
-    const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
-    const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
-    const classQlorderIcon = clsx(style.qlorderIcon)
-    const classQlorderTable = clsx(style.qlorderTable, 'table')
-    const classQlorderCol_0_5 = clsx(style.qlorderCol, 'col-0-5')
-    const classQlorderCol_1 = clsx(style.qlorderCol, 'col-1')
-    const classQlorderCol_1_5 = clsx(style.qlorderCol, 'col-1-5')
-    const classQlorderCol_2 = clsx(style.qlorderCol, 'col-2')
-    const classQlorderColHeader = clsx(style.qlorderCol, 'primary')
+        let filteredOrders = qlOrders;
+    
+        if (qlOrder && statusSelect) {
+            filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder) && item.code == statusSelect);
+        } else if (qlOrder) {
+            filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder));
+        } else if (statusSelect) {
+            filteredOrders = qlOrders.filter(item => item.code == statusSelect);
+        }
+        setQlOrderSearch(filteredOrders);
+    }, [qlOrder, statusSelect, isRender]);
 
     const ordersRef = collection(db, "orders");
 
@@ -91,22 +86,47 @@ function Qlorder({isrender}) {
     const handleOrder = (id, CODE, SUB) => {
         axios.post(`${QLORDER_API}${SUB}/${id}/1`)
         .then(res => {
-            setQlOrders(prev => {
-                const index = prev.findIndex(item => item.orderId === id)
-                const newQlOrders = [...prev]
-                newQlOrders[index].statusId = CODE
-                if(CODE === ORDER_PAYMENT_CODE) {
-                    newQlOrders[index].paymentTime = new Date()
-                }
-                return newQlOrders; // Trả về mảng cập nhật
+            axios.get(`${QLORDER_API}get-order-all`)
+            .then(res => {
+                setQlOrders(res.data);
+                setIsRender(Math.random())
+            })
+            .catch(error => {
+                console.error('Error fetching qlorder:', error);
             });
-            // Cập nhật mảng qlOrdersSearch với trạng thái mới
-            setQlOrderSearch(prev => prev.map(item => item.orderId === id ? { ...item, statusId: CODE } : item));
         })
         .catch(error => {
             console.error('Error accept:', error);
         });
     }
+
+    const handleDeleteOrder = (id) => {
+        axios.delete(`${QLORDER_API}${id}`)
+        .then(res => {
+            axios.get(`${QLORDER_API}get-order-all`)
+            .then(res => {
+                setQlOrders(res.data);
+                setIsRender(Math.random())
+            })
+            .catch(error => {
+                console.error('Error fetching qlorder:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error accept:', error);
+        });
+    }
+
+    const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
+    const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
+    const classQlorderIcon = clsx(style.qlorderIcon)
+    const classQlorderTable = clsx(style.qlorderTable, 'table table-center')
+    const classQlorderCol_0_5 = clsx(style.qlorderCol, 'col-0-5')
+    const classQlorderCol_1 = clsx(style.qlorderCol, 'col-1')
+    const classQlorderCol_1_5 = clsx(style.qlorderCol, 'col-1-5')
+    const classQlorderCol_2 = clsx(style.qlorderCol, 'col-2')
+    const classQlorderColHeader = clsx(style.qlorderCol, 'primary')
+
 
     console.table(render)
     console.table(qlOrdersSearch)
@@ -115,7 +135,7 @@ function Qlorder({isrender}) {
 
     return (
         <div className="col-10">
-            <div className='title'>Danh sách loại món ăn</div>
+            <div className='title'>Danh sách đơn hàng</div>
             <div className={classQlorderSearch}>
                 <select
                     style={{maxWidth: '180px'}}
@@ -127,12 +147,14 @@ function Qlorder({isrender}) {
                 >
                     <option value="">--Trạng thái đơn--</option>
                     {status.map(status => (
-                        <option key={status.statusId} value={status.code}>{status.value}</option>
+                        <option key={status.code} value={status.code}>{status.value}</option>
                     ))}
                 </select>
-                <input type="text" className="form-control" placeholder="Nhập loại món ăn cần tìm..." 
+                <input type="text" className="form-control" placeholder="Nhập tên bàn cần tìm..." 
                     value={qlOrder}
-                    onChange={e => setQlOrder(e.target.value)}
+                    onChange={e => {
+                        setQlOrder(e.target.value)
+                    }}
                 />
                 <button className={classQlorderButton} type="button">
                     <FontAwesomeIcon icon={faSearch} className={classQlorderIcon} style={{width: '100%'}}/>
@@ -148,12 +170,13 @@ function Qlorder({isrender}) {
                     <tr>
                         <th className={classQlorderCol_0_5}>#</th>
                         <th className={classQlorderCol_1}>Bàn</th>
-                        <th className={classQlorderCol_2}>Thời gian gửi</th>
+                        <th className={classQlorderCol_1_5}>Thời gian gửi</th>
                         <th className={classQlorderCol_1_5}>Khách hàng</th>
                         <th className={classQlorderCol_1_5}>Tình trạng</th>
                         <th className={classQlorderCol_2}>Thời gian thanh toán</th>
                         <th className={classQlorderCol_1_5}>Nhân viên phụ trách</th>
-                        <th className={classQlorderCol_1_5}></th>
+                        <th className={classQlorderCol_1_5} style={{width:'100%'}}>Xử lý</th>
+                        <th className={classQlorderCol_1}></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,19 +186,19 @@ function Qlorder({isrender}) {
                                 <tr key={item.orderId}>
                                     <th className={classQlorderCol_0_5}>{index + 1}</th>
                                     <td className={classQlorderCol_1}>{item.tables.tableName}</td>
-                                    <td className={classQlorderCol_2}>{formatDateTime(item.creationTime)}</td>
-                                    <td className={classQlorderCol_2}>{item.customers}</td>
-                                    <td className={classQlorderCol_1_5}>{getStatusByCode(item.statusId)?.value}</td>
-                                    <td className={classQlorderCol_2}>{item.paymentTime?formatDateTime(item.paymentTime):''}</td>
+                                    <td className={classQlorderCol_1_5}>{formatDateTimeSQL(item.creationTime)}</td>
+                                    <td className={classQlorderCol_1_5}>{item.customers}</td>
+                                    <td className={classQlorderCol_1_5}>{getStatusByCode(item.code)?.value}</td>
+                                    <td className={classQlorderCol_2}>{item.paymentTime?formatDateTimeSQL(item.paymentTime):''}</td>
                                     <td className={classQlorderCol_1_5}>{item.employees?.employeeName}</td>
-                                    <td className={classQlorderCol_1_5 + ' t-center'}>
-                                        <div className="btn-group" role="group" aria-label="Basic outlined example">
-                                            {item.statusId === 1 && (
+                                    <td className={classQlorderCol_1_5 + ' t-center'} style={{width:'100%'}}>
+                                        <div className="btn-group" role="group" aria-label="Basic outlined example" style={{width:'100%'}}>
+                                            {item.code === 1 && (
                                                 <>
                                                     <button 
                                                         type="button" 
                                                         className="btn btn-outline-primary padding-6"
-                                                        style={{marginRight:'1px', width:'66px'}}
+                                                        style={{marginRight:'1px', width:'50%'}}
                                                         onClick={() => handleOrder(item.orderId, ORDER_APPROVE_CODE, ORDER_APPROVE_SUB)}
                                                     >
                                                         Duyệt
@@ -190,28 +213,32 @@ function Qlorder({isrender}) {
                                                 </>
                                             )}
 
-                                            {item.statusId === 2 && (
+                                            {item.code === 2 && (
                                                 <button 
                                                     type="button" 
                                                     className="btn btn-outline-success padding-6"
-                                                    style={{width:'130px'}}
+                                                    // style={{width:'130px'}}
                                                     onClick={() => handleOrder(item.orderId, ORDER_PAYMENT_CODE, ORDER_PAYMENT_SUB)}
                                                 >
                                                     Đã thanh toán
                                                 </button>
                                             )}
 
-                                            {item.statusId === 4 && (
+                                            {item.code === 4 && (
                                                 <button 
                                                     type="button" 
                                                     className="btn btn-outline-danger padding-6"
-                                                    style={{width:'130px'}}
-                                                    onClick={() => handleOrder(item.orderId)}
+                                                    // style={{width:'130px'}}
+                                                    onClick={() => handleDeleteOrder(item.orderId)}
                                                 >
                                                     Xóa
                                                 </button>
                                             )}
                                         </div>
+                                    </td>
+                                    
+                                    <td className={classQlorderCol_1 +' t-center'}>
+                                        <Link to={`/Ql/Action/Order/${item.orderId}`}>Chi tiết...</Link>
                                     </td>
                                 </tr>
                             )

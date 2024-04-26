@@ -160,7 +160,7 @@ function Cart() {
                     console.error("Error adding document: ", e);
                   }
                 navigate(`/Cart/${id}`);
-                alert('order thành công')
+                alert('Order thành công')
             })
             .catch(error => {
                 console.error('Error creating order:', error);
