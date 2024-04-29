@@ -11,8 +11,9 @@ import style from './qlorder.module.scss'
 import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_PAYMENT_CODE,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB } from '../../constants'
 import {formatDateTimeSQL} from '../../formatDateTime'
 import { db } from '../../../firebaseConfig';
+import Notify from '../../../component/Notify/NotificationOrder'
 
-function Qlorder({isrender}) {
+function Qlorder() {
     console.log('re-render-qlorder')
     const [qlOrders,setQlOrders] = useState([])
     const [qlOrdersSearch,setQlOrderSearch] = useState([])
@@ -20,12 +21,12 @@ function Qlorder({isrender}) {
     const [status,setStatus] = useState([])
     const [statusSelect,setStatusSelect] = useState('')
     const [isRender, setIsRender] = useState('');
-    const [showAlert,setShowAlert] = useState(true)
     const [render, setRender] = useState(0)
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         if(render > 1) {
-            alert('Có đơn hàng mới!')
+            showNotification()
         }
         axios.get(`${QLORDER_API}get-order-all`)
         .then(res => {
@@ -117,6 +118,31 @@ function Qlorder({isrender}) {
         });
     }
 
+    const showNotification = () => {
+        setIsVisible(true);
+    };
+
+    const unShowNotification = () => {
+        setIsVisible(false);
+    }
+
+    document.addEventListener('click', unShowNotification);
+
+    // useEffect(() => {
+    //     if (isVisible) {
+    //       const handleClick = () => {
+    //         setIsVisible(false);
+    //         document.removeEventListener('click', handleClick);
+    //       };
+    
+    //       document.addEventListener('click', handleClick);
+    
+    //       return () => {
+    //         document.removeEventListener('click', handleClick);
+    //       };
+    //     }
+    //   }, [isVisible]);
+
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
     const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
     const classQlorderIcon = clsx(style.qlorderIcon)
@@ -125,7 +151,6 @@ function Qlorder({isrender}) {
     const classQlorderCol_1 = clsx(style.qlorderCol, 'col-1')
     const classQlorderCol_1_5 = clsx(style.qlorderCol, 'col-1-5')
     const classQlorderCol_2 = clsx(style.qlorderCol, 'col-2')
-    const classQlorderColHeader = clsx(style.qlorderCol, 'primary')
 
 
     console.table(render)
@@ -135,6 +160,11 @@ function Qlorder({isrender}) {
 
     return (
         <div className="col-10">
+            {
+                isVisible && (
+                    <Notify/>
+                )
+            }
             <div className='title'>Danh sách đơn hàng</div>
             <div className={classQlorderSearch}>
                 <select
@@ -171,7 +201,7 @@ function Qlorder({isrender}) {
                         <th className={classQlorderCol_1_5}>Tình trạng</th>
                         <th className={classQlorderCol_2}>Thời gian thanh toán</th>
                         <th className={classQlorderCol_1_5}>Nhân viên phụ trách</th>
-                        <th className={classQlorderCol_1_5} style={{width:'100%'}}>Xử lý</th>
+                        <th className={classQlorderCol_1_5}>Xử lý</th>
                         <th className={classQlorderCol_1}></th>
                     </tr>
                 </thead>
@@ -187,7 +217,7 @@ function Qlorder({isrender}) {
                                     <td className={classQlorderCol_1_5}>{getStatusByCode(item.code)?.value}</td>
                                     <td className={classQlorderCol_2}>{item.paymentTime?formatDateTimeSQL(item.paymentTime):''}</td>
                                     <td className={classQlorderCol_1_5}>{item.employees?.employeeName}</td>
-                                    <td className={classQlorderCol_1_5 + ' t-center'} style={{width:'100%'}}>
+                                    <td className={classQlorderCol_1_5 + ' t-center'}>
                                         <div className="btn-group" role="group" aria-label="Basic outlined example" style={{width:'100%'}}>
                                             {item.code === 1 && (
                                                 <>

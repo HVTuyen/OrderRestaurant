@@ -2,18 +2,21 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
+import { doc, onSnapshot, collection } from "firebase/firestore";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './table.module.scss'
 import { TABLE_API } from '../../constants'
+import { db } from '../../../firebaseConfig';
 
 function Table() {
     console.log('re-render-Table')
     const [tables,setTables] = useState([])
     const [tablesSearch,setTablesSearch] = useState([])
     const [table,setTable] = useState('')
+    const [render, setRender] = useState(0)
 
     useEffect(() => {
         axios.get(TABLE_API)
@@ -24,11 +27,29 @@ function Table() {
             .catch(error => {
                 console.error('Error fetching employees:', error);
             });
-    }, [])
+    }, [render])
 
     useEffect(() => {
         setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
     }, [table])
+
+    const ordersRef = collection(db, "orders");
+
+    useEffect(() => {
+        // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "orders"
+        const unsub = onSnapshot(ordersRef, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    console.log("orders: ", change.doc.data());
+                }
+            });
+                setRender(prevCount => prevCount + 1);
+        }, (error) => {
+            console.error("Error getting orders:", error);
+        });
+    
+        return () => unsub(); // Dọn dẹp listener khi component unmount
+    }, []);
     
     console.log(table)
     console.log(tables)
@@ -77,9 +98,9 @@ function Table() {
                             tablesSearch.map((item) => { 
                                 
                                 let classStatus;
-                                switch(item.statusId) {
+                                switch(item.code) {
                                     case 1:
-                                        classStatus = ' danger';
+                                        classStatus = ' ';
                                         countDanger++;
                                         break;
                                     case 2:
@@ -87,7 +108,7 @@ function Table() {
                                         countPrimary++;
                                         break;
                                     default:
-                                        classStatus = ' ';
+                                        classStatus = ' danger';
                                         count++;
                                 }
 
