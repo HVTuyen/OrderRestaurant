@@ -5,20 +5,20 @@ import style from './notify.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-regular-svg-icons'
 
-const NotificationOrrder = () => {
+const NotificationRequest = () => {
   
 
-  const notificationContainer = clsx(style.notificationContainer)
+  const notificationContainerRequest = clsx(style.notificationContainerRequest)
   const notification = clsx(style.notification)
 
   return (
-    <div className={notificationContainer}>
+    <div className={notificationContainerRequest}>
         <div className={notification}>
             <FontAwesomeIcon icon={faBell} style={{paddingRight:'8px'}}/>
-            Có đơn hàng mới!
+            Có yêu cầu mới!
         </div>
     </div>
   );
 };
 
-export default NotificationOrrder;
+export default NotificationRequest;

@@ -6,7 +6,7 @@ import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMinus, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
-import { QLORDER_API, ORDER_TYPE, CONFIG_API} from '../../constants'
+import { QLORDER_API, ORDER_TYPE, CONFIG_API,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB} from '../../constants'
 import style from './qlorder.module.scss'
 import {formatDateTimeSQL} from '../../formatDateTime'
 
@@ -85,6 +85,40 @@ function QlorderDetail( ) {
         });
     }
 
+    const handleOrder = (id, SUB) => {
+        axios.post(`${QLORDER_API}${SUB}/${id}/1`)
+        .then(res => {
+            axios.get(`${QLORDER_API}get-order-details/${id}`)
+            .then(res => {
+                setOrder(res.data);
+                setRender(Math.random())
+            })
+            .catch(error => {
+                console.error('Error fetching qlorder:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+        });
+    }
+
+    const handleDeleteOrder = (id) => {
+        axios.delete(`${QLORDER_API}${id}`)
+        .then(res => {
+            axios.get(`${QLORDER_API}get-order-all`)
+            .then(res => {
+                alert('Xóa đơn hàng thành công')
+                navigate('/Ql/Action/Order');
+            })
+            .catch(error => {
+                console.error('Error fetching qlorder:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error accept:', error);
+        });
+    }
+
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
     const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
     const classQlorderIcon = clsx(style.qlorderIcon)
@@ -113,12 +147,71 @@ function QlorderDetail( ) {
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tình trạng</label>
-                        <label className="col-sm-3 col-form-label">{getStatusByCode(order[0]?.orders?.code)?.value}</label>
+                        <label className="col-sm-5 col-form-label">{getStatusByCode(order[0]?.orders?.code)?.value}</label>
+                        <label className="col-sm-4 col-form-label d-flex">
+                            {order[0]?.orders?.code === 1 && (
+                                <>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-outline-primary padding-6 col-6"
+                                        style={{marginRight:'1px'}}
+                                        onClick={() => handleOrder(id, ORDER_APPROVE_SUB)}
+                                    >
+                                        Duyệt
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-outline-danger padding-6 col-6"
+                                        style={{marginRight:'1px'}}
+                                        onClick={() => handleOrder(id, ORDER_REFUSE_SUB)}
+                                    >
+                                        Từ chối
+                                    </button>
+                                </>
+                            )}
+
+                            {order[0]?.orders?.code === 2 && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-outline-success padding-6 col-12"
+                                    // style={{width:'130px'}}
+                                    onClick={() => handleOrder(id, ORDER_PAYMENT_SUB)}
+                                >
+                                    Đã thanh toán
+                                </button>
+                            )}
+
+                            {order[0]?.orders?.code === 4 && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-outline-danger padding-6 col-12"
+                                    // style={{width:'130px'}}
+                                    onClick={() => handleDeleteOrder(id)}
+                                >
+                                    Xóa
+                                </button>
+                            )}
+
+                            {order[0]?.orders?.code === 3 && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-outline-info padding-6 col-12"
+                                    // style={{width:'130px'}}
+                                    onClick={() => handleDeleteOrder(id)}
+                                >
+                                    Xuất hóa đơn
+                                </button>
+                            )}
+                        </label>
+                    </div>
+                    <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Nhân viên phụ trách</label>
-                        <label className="col-sm-3 col-form-label">{order[0]?.orders?.employees?.employeeName}</label>
+                        <label className="col-sm-9 col-form-label">{order[0]?.orders.employees?.employeeName}</label>
                     </div>
                 </div>
                 <div className='col-2 d-flex j-flex-end' style={{height:'40px', paddingRight:'24px'}}>
+                    
+                    
                     <button 
                         className='btn btn-outline-danger'
                         onClick={() => {

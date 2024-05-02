@@ -8,6 +8,7 @@ import './index.css';
 import App from './App';
 import Order from './layout/content/order/Order';
 import Cart from './layout/content/cart/Cart';
+import Home from './layout/content/home/Home';
 import reportWebVitals from './reportWebVitals';
 
 
@@ -17,6 +18,7 @@ root.render(
       {/* <App /> */}
       <Routes>
         <Route path="/Ql/*" element={<App />} />
+        <Route path="/Home/:id" element={<Home />} />
         <Route path="/Order/:id" element={<Order />} />
         <Route path="/Cart/:id" element={<Cart />} />
       </Routes>

@@ -115,13 +115,13 @@ function Table() {
                                 return (
                                     <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
-                                            <div className='col-3'>
-                                                <img loading='lazy' src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px', maxHeight:'30px'}}/>
+                                            <div className='col-3' style={{maxHeight:'42px', padding:'0 4px'}}>
+                                                <img loading='lazy' src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
                                             </div>
-                                            <div className='col-5 d-flex a-center'>
+                                            <div className='col-4 d-flex a-center' style={{padding:'0 4px'}}>
                                                 <div>{item.tableName}</div>
                                             </div>
-                                            <div className='col-4 d-flex a-center'>
+                                            <div className='col-5 d-flex a-center j-flex-end' style={{padding:'0 4px'}}>
                                                 <Link to={`/Ql/Table/Edit/${item.tableId}`}>
                                                     <FontAwesomeIcon icon={faEdit} className={classTableItemIcon} style={{color:'#5c94ff'}}/>
                                                 </Link>

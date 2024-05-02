@@ -11,7 +11,7 @@ import style from './qlorder.module.scss'
 import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_PAYMENT_CODE,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB } from '../../constants'
 import {formatDateTimeSQL} from '../../formatDateTime'
 import { db } from '../../../firebaseConfig';
-import Notify from '../../../component/Notify/NotificationOrder'
+import NotificationOrder from '../../../component/Notify/NotificationOrder'
 
 function Qlorder() {
     console.log('re-render-qlorder')
@@ -162,7 +162,7 @@ function Qlorder() {
         <div className="col-10">
             {
                 isVisible && (
-                    <Notify/>
+                    <NotificationOrder/>
                 )
             }
             <div className='title'>Danh sách đơn hàng</div>

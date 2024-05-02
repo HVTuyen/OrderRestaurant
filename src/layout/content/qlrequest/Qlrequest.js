@@ -11,7 +11,8 @@ import style from './qlrequest.module.scss'
 import { QLREQUEST_API, CONFIG_API, REQUEST_TYPE, REQUEST_COMPLETE_CODE, REQUEST_REFUSE_CODE, REQUEST_COMPLETE_SUB, REQUEST_REFUSE_SUB} from '../../constants'
 import {formatDateTimeSQL} from '../../formatDateTime'
 import { db } from '../../../firebaseConfig';
-import Notify from '../../../component/Notify/NotificationOrder'
+import NotificationOrder from '../../../component/Notify/NotificationOrder'
+import NotificationRequest from '../../../component/Notify/NotificationRequest'
 
 function Qlrequest() {
     console.log('re-render-qlorder')
@@ -23,11 +24,12 @@ function Qlrequest() {
     const [isRender, setIsRender] = useState('');
     const [render, setRender] = useState(0)
     const [renderNotificationOrder, setRenderNotificationOrder] = useState(0)
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisibleOrder, setIsVisibleOrder] = useState(false);
+    const [isVisibleRequest, setIsVisibleRequest] = useState(false);
 
     useEffect(() => {
         if(render > 1) {
-            alert('Có yêu cầu mới!')
+            showNotificationRequest()
         }
         axios.get(`${QLREQUEST_API}get-request-all`)
         .then(res => {
@@ -64,10 +66,12 @@ function Qlrequest() {
     }, [qlRequest, statusSelect, isRender]);
 
     const ordersRef = collection(db, "orders");
+    const requestRef = collection(db, "requests");
+    
     //Thông báo order
     useEffect(() => {
         if(renderNotificationOrder >1) {
-            showNotification()
+            showNotificationOrder()
         }
     },[renderNotificationOrder])
 
@@ -87,27 +91,66 @@ function Qlrequest() {
         return () => unsub(); // Dọn dẹp listener khi component unmount
     }, []);
 
-    const showNotification = () => {
-        setIsVisible(true);
+    const showNotificationOrder = () => {
+        setIsVisibleOrder(true);
     };
 
-    const unShowNotification = (e) => {
+    const unShowNotificationOrder = (e) => {
         const isButtonClick = e.target.closest('.btn');
         const isInputGroupClick = e.target.closest('.input-group');
         
         if (!isButtonClick && !isInputGroupClick) {
-            setIsVisible(false);
+            setIsVisibleOrder(false);
         }
     }
 
-    document.addEventListener('click', unShowNotification);
+
+
+    //Thông báo Request
+    useEffect(() => {
+        // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "orders"
+        const unsub = onSnapshot(requestRef, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    console.log("requests: ", change.doc.data());
+                }
+            });
+                setRender(prevCount => prevCount + 1);
+        }, (error) => {
+            console.error("Error getting orders:", error);
+        });
+    
+        return () => unsub(); // Dọn dẹp listener khi component unmount
+    }, []);
+
+    const showNotificationRequest = () => {
+        setIsVisibleRequest(true);
+    };
+
+    const unShowNotificationRequest = (e) => {
+        const isButtonClick = e.target.closest('.btn');
+        const isInputGroupClick = e.target.closest('.input-group');
+        
+        if (!isButtonClick && !isInputGroupClick) {
+            setIsVisibleRequest(false);
+        }
+    }
+
+
+
+    const handleUnShowNotification = (e) => {
+        unShowNotificationOrder(e)
+        unShowNotificationRequest(e)
+    }
+
+    document.addEventListener('click', handleUnShowNotification);
     
     function getStatusByCode(code) {
         return status.find(statusinfo => statusinfo.code === code);
     }
 
     const handleRequest = (id, CODE, SUB) => {
-        axios.put(`${QLREQUEST_API}${SUB}/${id}`)
+        axios.post(`${QLREQUEST_API}${SUB}/${id}`)
         .then(res => {
             axios.get(`${QLREQUEST_API}get-request-all`)
             .then(res => {
@@ -159,8 +202,14 @@ function Qlrequest() {
     return (
         <div className="col-10">
             {
-                isVisible && (
-                    <Notify/>
+                isVisibleOrder && (
+                    <NotificationOrder/>
+                )
+            }
+
+            {
+                isVisibleRequest && (
+                    <NotificationRequest/>
                 )
             }
             <div className='title'>Danh sách yêu cầu</div>
@@ -196,8 +245,8 @@ function Qlrequest() {
                         <th className={classQlrequestCol_1}>Bàn</th>
                         <th className={classQlrequestCol_2}>Thời gian gửi</th>
                         <th className={classQlrequestCol_2}>Tình trạng</th>
-                        <th className={classQlrequestCol_3}>Tiêu đề</th>
-                        <th className={classQlrequestCol_2}>Xử lý</th>
+                        <th className={classQlrequestCol_2}>Tiêu đề</th>
+                        <th className={classQlrequestCol_3}>Xử lý</th>
                         <th className={classQlrequestCol_1}></th>
                     </tr>
                 </thead>
@@ -210,8 +259,8 @@ function Qlrequest() {
                                     <td className={classQlrequestCol_1}>{item.tables.tableName}</td>
                                     <td className={classQlrequestCol_2}>{formatDateTimeSQL(item.requestTime)}</td>
                                     <td className={classQlrequestCol_2}>{getStatusByCode(item.code)?.value}</td>
-                                    <td className={classQlrequestCol_3}>{item.title}</td>
-                                    <td className={classQlrequestCol_2 + ' t-center'}>
+                                    <td className={classQlrequestCol_2}>{item.title}</td>
+                                    <td className={classQlrequestCol_3 + ' t-center'}>
                                         <div className="btn-group" role="group" aria-label="Basic outlined example" style={{width:'100%'}}>
                                             {item.code === 1 && (
                                                 <>
@@ -226,6 +275,7 @@ function Qlrequest() {
                                                     <button 
                                                         type="button" 
                                                         className="btn btn-outline-danger padding-6"
+                                                        style={{width:'50%'}}
                                                         onClick={() => handleRequest(item.requestId, REQUEST_REFUSE_CODE, REQUEST_REFUSE_SUB)}
                                                     >
                                                         Từ chối
@@ -247,7 +297,7 @@ function Qlrequest() {
                                     </td>
                                     
                                     <td className={classQlrequestCol_1 +' t-center'}>
-                                        <Link to={`/Ql/Action/Order/${item.orderId}`}>Chi tiết...</Link>
+                                        <Link to={`/Ql/Action/Request/${item.requestId}`}>Chi tiết...</Link>
                                     </td>
                                 </tr>
                             )

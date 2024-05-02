@@ -8,6 +8,9 @@ import QlorderDetail from '../content/qlorder/QlorderDetail'
 import Qlbill from '../content/qlbill/Qlbill'
 
 import Qlrequest from '../content/qlrequest/Qlrequest'
+import QlrequestDetail from '../content/qlrequest/QlrequestDetail'
+
+import Qltable from '../content/qltable/Qltable'
 
 import Category from '../content/category/Category'
 import CategoryAdd from '../content/category/CategoryAdd'
@@ -117,6 +120,9 @@ function Navbar() {
             <Route path="/Action/Bill" element={<Qlbill/>} />
 
             <Route path="/Action/Request" element={<Qlrequest/>} />
+            <Route path="/Action/Request/:id" element={<QlrequestDetail/>} />
+
+            <Route path='/Action/Table' element={<Qltable/>} />
 
             <Route path="/Category" element={<Category/>} />
             <Route path="/Category/add" element={<CategoryAdd/>} />
