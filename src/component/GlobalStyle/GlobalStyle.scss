@@ -2,6 +2,11 @@
     min-height: 100vh;
 }
 
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .j-flex-end {
     justify-content: flex-end;
 }
@@ -78,4 +83,17 @@
 .disable {
     pointer-events: none;
     opacity: 0.5;
+}
+
+@media (max-width: 1000px) {
+    .col-10 {
+        width: calc(100% - 64px);
+    }
+    .logo {
+        margin: 0;
+    }
+}
+
+.content {
+    min-height: calc(100vh - 56px - 36px);
 }

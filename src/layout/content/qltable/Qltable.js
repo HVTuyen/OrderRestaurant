@@ -123,12 +123,12 @@ function Qltable() {
                                                 <div style={{width:'100%'}}>
                                                     {
                                                         item.code == 2 && (
-                                                            <button className={classTableButtonPayment} style={{fontSize:'14px', width:'100%', padding:'4px'}}>Thanh toán</button>
+                                                            <button className={classTableButtonPayment} style={{fontSize:'12px', width:'100%', padding:'4px'}}>Thanh toán</button>
                                                         )
                                                     }
                                                     {
                                                         item.code == 1 && (
-                                                            <button className={classTableButtonBook} style={{fontSize:'14px', width:'100%', padding:'4px'}}>Đặt bàn</button>
+                                                            <button className={classTableButtonBook} style={{fontSize:'12px', width:'100%', padding:'4px'}}>Đặt bàn</button>
                                                         )
                                                     }
                                                 </div>

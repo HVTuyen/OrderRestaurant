@@ -265,7 +265,7 @@ function Cart() {
                                 <div className="card-body d-flex" style={{justifyContent:'center'}}>
                                     <div style={{padding: '0 4px', minWidth: '90px'}}>
                                         <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link to='/' style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Trở về</Link>
+                                            <Link to={`/Home/${id}`} style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Trở về</Link>
                                         </button>
                                     </div>
                                     <div style={{padding: '0 4px', minWidth: '90px'}}>
@@ -275,12 +275,12 @@ function Cart() {
                                     </div>
                                     <div style={{padding: '0 4px', minWidth: '90px'}}>
                                         <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <div 
+                                            <Link 
                                                 style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}
                                                 onClick={createOrder}
                                             >
                                                 Xác nhận
-                                            </div>
+                                            </Link>
                                         </button>
                                     </div>
                                 </div>

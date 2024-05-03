@@ -12,6 +12,7 @@ import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_C
 import {formatDateTimeSQL} from '../../formatDateTime'
 import { db } from '../../../firebaseConfig';
 import NotificationOrder from '../../../component/Notify/NotificationOrder'
+import NotificationRequest from '../../../component/Notify/NotificationRequest';
 
 function Qlorder() {
     console.log('re-render-qlorder')
@@ -22,7 +23,9 @@ function Qlorder() {
     const [statusSelect,setStatusSelect] = useState('')
     const [isRender, setIsRender] = useState('');
     const [render, setRender] = useState(0)
-    const [isVisible, setIsVisible] = useState(false);
+    const [renderNotificationRequest, setRenderNotificationRequest] = useState(0)
+    const [isVisibleOrder, setIsVisibleOrder] = useState(false);
+    const [isVisibleRequest, setIsVisibleRequest] = useState(false);
 
     useEffect(() => {
         if(render > 1) {
@@ -63,7 +66,9 @@ function Qlorder() {
     }, [qlOrder, statusSelect, isRender]);
 
     const ordersRef = collection(db, "orders");
+    const requestRef = collection(db, "requests");
 
+    //Thông báo Order
     useEffect(() => {
         // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "orders"
         const unsub = onSnapshot(ordersRef, (snapshot) => {
@@ -119,19 +124,60 @@ function Qlorder() {
     }
 
     const showNotification = () => {
-        setIsVisible(true);
+        setIsVisibleOrder(true);
     };
 
-    const unShowNotification = () => {
-        setIsVisible(false);
+    const unShowNotificationOrder = () => {
+        setIsVisibleOrder(false);
     }
 
-    document.addEventListener('click', unShowNotification);
+    //Thông báo Request
+    useEffect(() => {
+        if(renderNotificationRequest >1) {
+            showNotificationRequest()
+        }
+    },[renderNotificationRequest])
+
+    useEffect(() => {
+        // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "requests"
+        const unsub = onSnapshot(requestRef, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    console.log("requests: ", change.doc.data());
+                }
+            });
+                setRenderNotificationRequest(prevCount => prevCount + 1);
+        }, (error) => {
+            console.error("Error getting Requests:", error);
+        });
+    
+        return () => unsub(); // Dọn dẹp listener khi component unmount
+    }, []);
+
+    const showNotificationRequest = () => {
+        setIsVisibleRequest(true);
+    };
+
+    const unShowNotificationRequest = (e) => {
+        const isButtonClick = e.target.closest('.btn');
+        const isInputGroupClick = e.target.closest('.input-group');
+        
+        if (!isButtonClick && !isInputGroupClick) {
+            setIsVisibleRequest(false);
+        }
+    }
+
+    const handleUnShowNotification = (e) => {
+        unShowNotificationOrder(e)
+        unShowNotificationRequest(e)
+    }
+
+    document.addEventListener('click', handleUnShowNotification);
 
     // useEffect(() => {
-    //     if (isVisible) {
+    //     if (isVisibleOrder) {
     //       const handleClick = () => {
-    //         setIsVisible(false);
+    //         setIsVisibleOrder(false);
     //         document.removeEventListener('click', handleClick);
     //       };
     
@@ -141,7 +187,7 @@ function Qlorder() {
     //         document.removeEventListener('click', handleClick);
     //       };
     //     }
-    //   }, [isVisible]);
+    //   }, [isVisibleOrder]);
 
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
     const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
@@ -161,8 +207,14 @@ function Qlorder() {
     return (
         <div className="col-10">
             {
-                isVisible && (
+                isVisibleOrder && (
                     <NotificationOrder/>
+                )
+            }
+
+            {
+                isVisibleRequest && (
+                    <NotificationRequest/>
                 )
             }
             <div className='title'>Danh sách đơn hàng</div>

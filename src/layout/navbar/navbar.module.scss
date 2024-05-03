@@ -3,10 +3,24 @@
     padding: 0px;
 }
 
+.navBarSub {
+    min-height: calc(100vh - 56px - 36px);
+    padding: 0px;
+    position: absolute;
+    z-index: 99;
+    width: 50%;
+}
+
+.btnCloseNav {
+    position: absolute;
+    left: 50%;
+}
+
 .title {
     padding: 12px 0 12px 28px;
     align-items: center;
     background-color: #3b4e57;
+    text-decoration: none;
 
     &:hover {
         cursor: pointer;
@@ -53,8 +67,60 @@
     align-items: center;
 }
 
+.menuBarsIcon {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+    background-color: #3b4e57;
+    border: 1px solid #ccc;
+    margin: 12px;
+    border-radius: 3px;
+    display: none;
+
+    &:hover {
+        cursor: pointer;
+        .icon {
+            color: #fff;
+        }
+    }
+}
+
+.menuBarsIconClose {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    padding: 6px;
+    left: 50%;
+    background-color: #3b4e57;
+    border-bottom-right-radius: 3px;
+    display: none;
+
+    &:hover {
+        cursor: pointer;
+        .icon {
+            color: #fff;
+        }
+    }
+}
+
 .iconLi {
     font-size: 14px;
     color: #cec6c6;
     margin-right: 12px;
+}
+
+@media (max-width: 1000px) {
+    .navBar {
+        display: none !important;
+    }
+    .menuBarsIcon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+    .menuBarsIconClose {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
 }

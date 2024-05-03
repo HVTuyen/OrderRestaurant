@@ -11,7 +11,7 @@ $breakpoint: 460px;
   }
 
   .containerRequest {
-    width: 240px !important;
+    width: 90% !important;
   }
 }
 
@@ -22,12 +22,12 @@ $breakpoint: 460px;
   top: 0;
   z-index: 999;
   background-color: rgba($color: #ccc, $alpha: 0.6);
-  animation: slideIn 0.5s ease-in-out;
+  animation: fadeOut 0.5s ease-in-out
 }
 
 .containerRequest {
-  width: 420px;
-  margin: 24px auto auto auto;
+  width: 60%;
+  margin: 30px auto auto auto;
   background-color: #fff;
   border-radius: 8px;
 }
@@ -38,6 +38,6 @@ $breakpoint: 460px;
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

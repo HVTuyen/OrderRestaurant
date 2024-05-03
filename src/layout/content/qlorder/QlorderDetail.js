@@ -148,7 +148,7 @@ function QlorderDetail( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tình trạng</label>
                         <label className="col-sm-5 col-form-label">{getStatusByCode(order[0]?.orders?.code)?.value}</label>
-                        <label className="col-sm-4 col-form-label d-flex">
+                        <div className="col-sm-4 col-form-label d-flex">
                             {order[0]?.orders?.code === 1 && (
                                 <>
                                     <button 
@@ -202,7 +202,7 @@ function QlorderDetail( ) {
                                     Xuất hóa đơn
                                 </button>
                             )}
-                        </label>
+                        </div>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Nhân viên phụ trách</label>

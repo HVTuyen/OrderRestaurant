@@ -98,11 +98,10 @@ function QlrequestDetail( ) {
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tình trạng</label>
                         <label className="col-sm-4 col-form-label">{getStatusByCode(request.code)?.value}</label>
-                        <label className="col-sm-5 col-form-label d-flex">
+                        <div className="col-sm-5 col-form-label d-flex">
                             {request.code === 1 && (
                                 <>
                                     <button 
-                                        type="button" 
                                         className="btn btn-outline-primary padding-6 col-6"
                                         style={{marginRight:'1px'}}
                                         onClick={() => handleRequest(id, REQUEST_COMPLETE_SUB)}
@@ -110,7 +109,6 @@ function QlrequestDetail( ) {
                                         Đã hoàn thành
                                     </button>
                                     <button 
-                                        type="button" 
                                         className="btn btn-outline-danger padding-6 col-6"
                                         style={{marginRight:'1px'}}
                                         onClick={() => handleRequest(id, REQUEST_REFUSE_SUB)}
@@ -130,7 +128,8 @@ function QlrequestDetail( ) {
                                     Xóa
                                 </button>
                             )}
-                        </label>
+                        </div>
+                        
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tiêu đề</label>
