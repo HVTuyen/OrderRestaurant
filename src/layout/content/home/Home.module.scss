@@ -22,7 +22,7 @@ $breakpoint: 460px;
   top: 0;
   z-index: 999;
   background-color: rgba($color: #ccc, $alpha: 0.6);
-  animation: fadeOut 0.5s ease-in-out
+  animation: slideIn 0.5s ease-in-out;
 }
 
 .containerRequest {

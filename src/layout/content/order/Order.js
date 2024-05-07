@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import {Link, useParams} from 'react-router-dom'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
+import { faMinus, faPlus, faArrowUp} from '@fortawesome/free-solid-svg-icons'
 
 import {PRODUCT_API} from '../../constants'
 
@@ -16,6 +16,7 @@ function Order() {
     const [productsSearch,setProductsSearch] = useState([])
     const [product,setProduct] = useState('')
     const [quantity, setQuantity] = useState({});
+    const [isVisible, setIsVisible] = useState(false);
 
     console.table(products)
 
@@ -68,6 +69,29 @@ function Order() {
         alert('Thêm vào giỏ hàng thành công!');
     };
 
+    const handleScroll = () => {
+        if (document.documentElement.scrollTop > 20) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
+    };
+    
+    const scrollToTop = () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        // Clean up the event listener when component unmounts
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     return (
         <div>
             <section className="h-100" style={{ backgroundColor: "#eee" }}>
@@ -103,8 +127,9 @@ function Order() {
                                                 <div className="row d-flex justify-content-between align-items-center">
                                                     <div className="t-center col-md-2 col-lg-2 col-xl-2">
                                                         <img
+                                                        loading="lazy"
                                                             src={item.urlImage}
-                                                            className="img-fluid rounded-3" alt="Cotton T-shirt"
+                                                            className="img-fluid rounded-3" alt="food-img"
                                                             
                                                         />
                                                     </div>
@@ -141,7 +166,7 @@ function Order() {
                                                     </div>
                                                     <div className="t-center col-md-2 col-lg-2 col-xl-2 text-end">
                                                         <button 
-                                                            className="btn btn-primary"
+                                                            className="btn btn-outline-primary"
                                                             onClick={() => handleAddToCart(item.foodId)}
                                                         >
                                                             <div>Add</div>
@@ -153,26 +178,28 @@ function Order() {
                                     )
                                 })
                             }
-
-                            <div className="card">
-                                <div className="card-body d-flex" style={{justifyContent:'center'}}>
-                                    <div style={{padding: '0 4px', minWidth: '90px'}}>
-                                        <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link to={`/Home/${id}`} style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Trở về</Link>
-                                        </button>
-                                    </div>
-                                    <div style={{padding: '0 4px', minWidth: '90px'}}>
-                                        <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link to={`/Cart/${id}`} style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Giỏ hàng</Link>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </section>
+            <div className="card pinToBottom">
+                <div className="card-body d-flex" style={{justifyContent:'center'}}>
+                    <div style={{padding: '0 4px'}}>
+                        <Link to={`/Home/${id}`} className="btn btn-outline-danger" style={{minWidth:'90px'}}>Trở về</Link>
+                    </div>
+                    <div style={{padding: '0 4px'}}>
+                        <Link to={`/Cart/${id}`} className="btn btn-outline-primary" style={{minWidth:'90px'}}>Giỏ hàng</Link>
+                    </div>
+                </div>
+            </div>
+            <div 
+                className={`pinToBottomRight ${isVisible ? 'show' : ''}`}
+                onClick={scrollToTop}
+            >
+                <button className="btn btn-outline-secondary d-flex a-center">
+                    <FontAwesomeIcon icon={faArrowUp} style={{fontSize:'24px'}}/>
+                </button>
+            </div>
         </div>
     );
 }

@@ -147,7 +147,7 @@ function Cart() {
         };
     
         // Gửi request POST đến API để tạo đơn hàng mới
-        axios.post(`${QLORDER_API}checkout`, newOrder)
+        axios.post(`${QLORDER_API}createOrder`, newOrder)
             .then( async () => {
                 try {
                     const docRef = await addDoc(collection(db, "orders"), {
@@ -156,10 +156,19 @@ function Cart() {
                       totalAmount: newOrder.totalAmount
                     });
                     console.log("Document written with ID: ", docRef.id);
-                  } catch (e) {
-                    console.error("Error adding document: ", e);
-                  }
-                navigate(`/Cart/${id}`);
+                } catch (e) {
+                console.error("Error adding document: ", e);
+                }
+                localStorage.removeItem('cartItems');
+    
+                // Cập nhật state products và quantity về trạng thái rỗng
+                setProducts([]);
+                setQuantity({});
+            
+                // Cập nhật tổng tiền về 0
+                setTotalPrice(0);
+                
+                navigate(`/Order/${id}`);
                 alert('Order thành công')
             })
             .catch(error => {
@@ -195,6 +204,7 @@ function Cart() {
                                                         <div key={item.foodId} className="row d-flex justify-content-between align-items-center" style={{ borderBottom: index === products.length - 1 ? 'none' : '1px solid #ccc' , paddingBottom:'4px', paddingTop: index === 0 ? '0' : '8px'}}>
                                                             <div className="t-center col-md-2 col-lg-2 col-xl-2">
                                                                 <img
+                                                                    loading="lazy"
                                                                     src={item.urlImage}
                                                                     className="img-fluid rounded-3" alt="Cotton T-shirt"
                                                                     
@@ -233,7 +243,7 @@ function Cart() {
                                                             </div>
                                                             <div className="t-center col-md-2 col-lg-2 col-xl-2 text-end">
                                                                 <button 
-                                                                    className="btn btn-primary"
+                                                                    className="btn btn-outline-danger"
                                                                     onClick={() => handleRemoveToCart(item.foodId)}
                                                                 >
                                                                     <div>Xóa</div>
@@ -260,36 +270,26 @@ function Cart() {
                                     </div>
                                 </>
                             )}
-
-                            <div className="card">
-                                <div className="card-body d-flex" style={{justifyContent:'center'}}>
-                                    <div style={{padding: '0 4px', minWidth: '90px'}}>
-                                        <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link to={`/Home/${id}`} style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Trở về</Link>
-                                        </button>
-                                    </div>
-                                    <div style={{padding: '0 4px', minWidth: '90px'}}>
-                                        <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link to={`/Order/${id}`} style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}>Order</Link>
-                                        </button>
-                                    </div>
-                                    <div style={{padding: '0 4px', minWidth: '90px'}}>
-                                        <button type="button" className="btn btn-warning btn-block btn-lg" style={{width:'100%', padding:'0', height:'40px'}}>
-                                            <Link 
-                                                style={{textDecoration:'none', fontSize:'16px', display:'flex', justifyContent:'center',alignItems:'center', height:'100%'}}
-                                                onClick={createOrder}
-                                            >
-                                                Xác nhận
-                                            </Link>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </section>
+            <div className="card pinToBottom">
+                <div className="card-body d-flex" style={{justifyContent:'center'}}>
+                    <div style={{padding: '0 4px'}}>
+                        <Link to={`/Order/${id}`} className="btn btn-outline-danger" style={{minWidth:'90px'}}>Trở về</Link>
+                    </div>
+                    <div style={{padding: '0 4px'}}>
+                        <Link 
+                            style={{minWidth:'90px'}}
+                            className="btn btn-outline-primary"
+                            onClick={createOrder}
+                        >
+                            Xác nhận
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

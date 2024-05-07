@@ -175,7 +175,7 @@ function QlorderDetail( ) {
                                     type="button" 
                                     className="btn btn-outline-success padding-6 col-12"
                                     // style={{width:'130px'}}
-                                    onClick={() => handleOrder(id, ORDER_PAYMENT_SUB)}
+                                    onClick={() => handleOrder(order[0]?.orders?.tableId, ORDER_PAYMENT_SUB)}
                                 >
                                     Đã thanh toán
                                 </button>

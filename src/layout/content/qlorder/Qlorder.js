@@ -295,8 +295,8 @@ function Qlorder() {
                                                 <button 
                                                     type="button" 
                                                     className="btn btn-outline-success padding-6"
-                                                    // style={{width:'130px'}}
-                                                    onClick={() => handleOrder(item.orderId, ORDER_PAYMENT_CODE, ORDER_PAYMENT_SUB)}
+                                                    style={{width:'130px'}}
+                                                    onClick={() => handleOrder(item.tableId, ORDER_PAYMENT_CODE, ORDER_PAYMENT_SUB)}
                                                 >
                                                     Đã thanh toán
                                                 </button>
@@ -306,7 +306,7 @@ function Qlorder() {
                                                 <button 
                                                     type="button" 
                                                     className="btn btn-outline-danger padding-6"
-                                                    // style={{width:'130px'}}
+                                                    style={{width:'130px'}}
                                                     onClick={() => handleDeleteOrder(item.orderId)}
                                                 >
                                                     Xóa

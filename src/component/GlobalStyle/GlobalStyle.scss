@@ -97,3 +97,22 @@
 .content {
     min-height: calc(100vh - 56px - 36px);
 }
+
+.pinToBottom{
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    z-index: 99;
+}
+
+.pinToBottomRight{
+    position: fixed;
+    bottom: 80px;
+    right: 4px;
+    z-index: 99;
+    display: none;
+}
+
+.show {
+    display: block !important;
+}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Carousel from 'react-bootstrap/Carousel';
 import { Link, useParams } from 'react-router-dom';
 import { useState } from 'react';
@@ -15,7 +15,7 @@ import { collection, addDoc } from "firebase/firestore";
 
 import { db } from '../../../firebaseConfig';
 import style from './Home.module.scss'
-import {QLREQUEST_API} from '../../constants'
+import {QLREQUEST_API, TABLE_API} from '../../constants'
 
 function Home() {
 
@@ -24,10 +24,21 @@ function Home() {
     const [isShowRequest, setIsShowRequest] = useState(false)
     const [title, setTitle] = useState('')
     const  [requestNote, setRequestNote] = useState('')
+    const [table, setTable] = useState()
 
     const handleRequest = () => {
         setIsShowRequest(true)
     }
+
+    useEffect(() => {
+        axios.get(`${TABLE_API}${id}`)
+            .then(res => {
+                setTable(res.data)
+            })
+            .catch(error => {
+                console.error('Error fetching table:', error);
+            });
+    }, [])
 
     const handleSendRequest = () => {
         if (title.length === 0) {
@@ -104,11 +115,11 @@ function Home() {
                             <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
                                 style={{ backgroundColor: '#efefef' }}>
                                 <div>
-                                    <p className="mb-1">Bàn 01</p>
+                                    <p className="mb-1">{table?.tableName}</p>
                                 </div>
                             </div>
                             <div className="d-flex pt-1">
-                                <MDBBtn className="flex-grow-1">Sửa tên </MDBBtn>
+                                <button className="btn btn-outline-primary">Sửa tên </button>
                             </div>
                         </div>
                     </div>
@@ -127,7 +138,7 @@ function Home() {
                             <FontAwesomeIcon icon={faBell} /> Yêu cầu
                         </Button>
                     </Link>
-                    <Link className='col-6' style={{paddingRight:'8px'}}>
+                    <Link to={`/HistoryOrder/${id}`} className='col-6' style={{paddingRight:'8px'}}>
                         <Button variant="secondary" size="lg" style={{ padding: '8px 12px', margin: '5px', height:'100px', width:'100%'}}>
                             <FontAwesomeIcon icon={faHistory} /> Lịch sử gọi món
                         </Button>
