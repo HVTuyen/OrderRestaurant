@@ -62,7 +62,7 @@ function Home() {
                 } catch (e) {
                     console.error("Error adding document: ", e);
                 }
-                alert('Order thành công')
+                alert('Gửi yêu cầu thành công')
                 setIsShowRequest(false)
             })
             .catch(error => {

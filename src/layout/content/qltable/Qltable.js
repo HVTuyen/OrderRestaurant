@@ -99,7 +99,7 @@ function Qltable() {
                                 switch(item.code) {
                                     case 1:
                                         classStatus = ' ';
-                                        countDanger++;
+                                        count++;
                                         break;
                                     case 2:
                                         classStatus = ' primary';
@@ -107,13 +107,13 @@ function Qltable() {
                                         break;
                                     default:
                                         classStatus = ' danger';
-                                        count++;
+                                        countDanger++;
                                 }
 
                                 return (
                                     <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
-                                            <div className='col-3' style={{maxHeight:'42px', padding:'0 4px'}}>
+                                            <div className='col-3' style={{padding:'0 4px'}}>
                                                 <img loading='lazy' src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
                                             </div>
                                             <div className='col-4 d-flex a-center' style={{padding:'0 4px'}}>
@@ -123,7 +123,7 @@ function Qltable() {
                                                 <div style={{width:'100%'}}>
                                                     {
                                                         item.code == 2 && (
-                                                            <button className={classTableButtonPayment} style={{fontSize:'12px', width:'100%', padding:'4px'}}>Thanh toán</button>
+                                                            <Link to={`/Ql/Action/Table/${item.tableId}`} className={classTableButtonPayment} style={{fontSize:'12px', width:'100%', padding:'4px'}}>Hóa đơn</Link>
                                                         )
                                                     }
                                                     {

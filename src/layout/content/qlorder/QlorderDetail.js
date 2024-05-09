@@ -8,7 +8,7 @@ import { faMinus, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-ic
 
 import { QLORDER_API, ORDER_TYPE, CONFIG_API,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB} from '../../constants'
 import style from './qlorder.module.scss'
-import {formatDateTimeSQL} from '../../formatDateTime'
+import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
 
 function QlorderDetail( ) {
 
@@ -170,17 +170,6 @@ function QlorderDetail( ) {
                                 </>
                             )}
 
-                            {order[0]?.orders?.code === 2 && (
-                                <button 
-                                    type="button" 
-                                    className="btn btn-outline-success padding-6 col-12"
-                                    // style={{width:'130px'}}
-                                    onClick={() => handleOrder(order[0]?.orders?.tableId, ORDER_PAYMENT_SUB)}
-                                >
-                                    Đã thanh toán
-                                </button>
-                            )}
-
                             {order[0]?.orders?.code === 4 && (
                                 <button 
                                     type="button" 
@@ -189,17 +178,6 @@ function QlorderDetail( ) {
                                     onClick={() => handleDeleteOrder(id)}
                                 >
                                     Xóa
-                                </button>
-                            )}
-
-                            {order[0]?.orders?.code === 3 && (
-                                <button 
-                                    type="button" 
-                                    className="btn btn-outline-info padding-6 col-12"
-                                    // style={{width:'130px'}}
-                                    onClick={() => handleDeleteOrder(id)}
-                                >
-                                    Xuất hóa đơn
                                 </button>
                             )}
                         </div>

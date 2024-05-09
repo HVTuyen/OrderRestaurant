@@ -1,16 +1,23 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
+import { useAuth } from '../../../component/Context/AuthProvider';
+import { renewToken} from '../../../CallApi/renewToken'
 import style from './product.module.scss'
 import { PRODUCT_API, CATEGORY_API } from '../../constants'
 
 function Product() {
     console.log('re-render-product')
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
+
     const [products,setProducts] = useState([])
     const [productsSearch,setProductsSearch] = useState([])
     const [product,setProduct] = useState('')
@@ -30,12 +37,41 @@ function Product() {
     }, [])
 
     useEffect(() => {
-        axios.get(CATEGORY_API)
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        }
+        axios.get(CATEGORY_API, config)
             .then(res => {
                 setCategories(res.data);
             })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
+            .catch(async error => {
+                if (error.response && error.response.status === 401) {
+                    try {
+                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                        
+                        localStorage.setItem('accessToken', accessToken);
+                        localStorage.setItem('refreshToken', refreshToken);
+                        reNewToken(accessToken, refreshToken)
+                        // Gọi lại API với token mới
+                        const newConfig = {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        }
+                        const response = await axios.get(CATEGORY_API, newConfig);
+                        setCategories(response.data);
+                    } catch (error) {
+                        console.error('Error fetching categories after token renewal:', error);
+                    }
+                } else {
+                    console.error('Error fetching categories:', error);
+                }
             });
     }, [])
 

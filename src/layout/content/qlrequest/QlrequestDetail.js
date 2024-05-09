@@ -8,7 +8,7 @@ import { faMinus, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-ic
 
 import { QLREQUEST_API, REQUEST_TYPE, CONFIG_API, REQUEST_COMPLETE_SUB, REQUEST_REFUSE_SUB} from '../../constants'
 import style from './qlrequest.module.scss'
-import {formatDateTimeSQL} from '../../formatDateTime'
+import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
 
 function QlrequestDetail( ) {
 

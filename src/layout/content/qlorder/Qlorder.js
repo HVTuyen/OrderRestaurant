@@ -9,13 +9,18 @@ import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-i
 
 import style from './qlorder.module.scss'
 import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_PAYMENT_CODE,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB } from '../../constants'
-import {formatDateTimeSQL} from '../../formatDateTime'
+import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import NotificationOrder from '../../../component/Notify/NotificationOrder'
 import NotificationRequest from '../../../component/Notify/NotificationRequest';
+import { useAuth } from '../../../component/Context/AuthProvider';
+import { decodeJWT } from '../../../Functions/decodeJWT'
 
 function Qlorder() {
     console.log('re-render-qlorder')
+
+    const { token } = useAuth();
+
     const [qlOrders,setQlOrders] = useState([])
     const [qlOrdersSearch,setQlOrderSearch] = useState([])
     const [qlOrder,setQlOrder] = useState('')
@@ -26,6 +31,15 @@ function Qlorder() {
     const [renderNotificationRequest, setRenderNotificationRequest] = useState(0)
     const [isVisibleOrder, setIsVisibleOrder] = useState(false);
     const [isVisibleRequest, setIsVisibleRequest] = useState(false);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if(token) {
+            setUser(decodeJWT(token))
+        }
+    },[])
+
+    console.log(user)
 
     useEffect(() => {
         if(render > 1) {
@@ -90,7 +104,7 @@ function Qlorder() {
     }
 
     const handleOrder = (id, CODE, SUB) => {
-        axios.post(`${QLORDER_API}${SUB}/${id}/1`)
+        axios.post(`${QLORDER_API}${SUB}/${id}/${user.EmployeeId}`)
         .then(res => {
             axios.get(`${QLORDER_API}get-order-all`)
             .then(res => {
@@ -291,17 +305,6 @@ function Qlorder() {
                                                 </>
                                             )}
 
-                                            {item.code === 2 && (
-                                                <button 
-                                                    type="button" 
-                                                    className="btn btn-outline-success padding-6"
-                                                    style={{width:'130px'}}
-                                                    onClick={() => handleOrder(item.tableId, ORDER_PAYMENT_CODE, ORDER_PAYMENT_SUB)}
-                                                >
-                                                    Đã thanh toán
-                                                </button>
-                                            )}
-
                                             {item.code === 4 && (
                                                 <button 
                                                     type="button" 
@@ -310,17 +313,6 @@ function Qlorder() {
                                                     onClick={() => handleDeleteOrder(item.orderId)}
                                                 >
                                                     Xóa
-                                                </button>
-                                            )}
-
-                                            {item.code === 3 && (
-                                                <button 
-                                                    type="button" 
-                                                    className="btn btn-outline-info padding-6"
-                                                    // style={{width:'130px'}}
-                                                    onClick={() => handleDeleteOrder(item.orderId)}
-                                                >
-                                                    Xuất hóa đơn
                                                 </button>
                                             )}
                                         </div>

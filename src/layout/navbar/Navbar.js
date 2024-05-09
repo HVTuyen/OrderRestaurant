@@ -13,6 +13,7 @@ import Qlrequest from '../content/qlrequest/Qlrequest'
 import QlrequestDetail from '../content/qlrequest/QlrequestDetail'
 
 import Qltable from '../content/qltable/Qltable'
+import Bill from '../content/qltable/Bill'
 
 import Category from '../content/category/Category'
 import CategoryAdd from '../content/category/CategoryAdd'
@@ -215,6 +216,7 @@ function Navbar() {
             <Route path="/Action/Request/:id" element={<QlrequestDetail/>} />
 
             <Route path='/Action/Table' element={<Qltable/>} />
+            <Route path='/Action/Table/:id' element={<Bill/>} />
 
             <Route path="/Category" element={<Category/>} />
             <Route path="/Category/add" element={<CategoryAdd/>} />

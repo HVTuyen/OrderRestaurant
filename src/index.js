@@ -5,19 +5,25 @@ import 'bootstrap/dist/css/bootstrap.css';
 import {Routes, Route, Link, useNavigate} from 'react-router-dom'
 
 import './index.css';
+import Login from './component/Login/Login';
 import App from './App';
 import Order from './layout/content/order/Order';
 import Cart from './layout/content/cart/Cart';
 import HistoryOrder from './layout/content/historyOrder/HistoryOrder';
 import Home from './layout/content/home/Home';
 import reportWebVitals from './reportWebVitals';
+import { AuthProvider, useAuth } from './component/Context/AuthProvider';
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
+  <AuthProvider>
     <Router>
       {/* <App /> */}
       <Routes>
+        <Route path="/Login" element={<Login />} />
         <Route path="/Ql/*" element={<App />} />
         <Route path="/Home/:id" element={<Home />} />
         <Route path="/Order/:id" element={<Order />} />
@@ -25,6 +31,7 @@ root.render(
         <Route path="/HistoryOrder/:id" element={<HistoryOrder />} />
       </Routes>
     </Router>
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

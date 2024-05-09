@@ -1,3 +1,6 @@
+export const LOGIN_API = 'https://192.168.1.152/Login'
+export const RENEW_TOKEN_API = 'https://192.168.1.152/api/User/RenewToken'
+
 export const CATEGORY_API = 'https://192.168.1.152/api/Category/';
 export const PRODUCT_API = 'https://192.168.1.152/api/Food/';
 export const EMPLOYEE_API = 'https://192.168.1.152/api/Employee/'

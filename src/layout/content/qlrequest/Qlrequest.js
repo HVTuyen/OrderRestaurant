@@ -9,7 +9,7 @@ import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-i
 
 import style from './qlrequest.module.scss'
 import { QLREQUEST_API, CONFIG_API, REQUEST_TYPE, REQUEST_COMPLETE_CODE, REQUEST_REFUSE_CODE, REQUEST_COMPLETE_SUB, REQUEST_REFUSE_SUB} from '../../constants'
-import {formatDateTimeSQL} from '../../formatDateTime'
+import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import NotificationOrder from '../../../component/Notify/NotificationOrder'
 import NotificationRequest from '../../../component/Notify/NotificationRequest'

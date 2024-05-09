@@ -1,0 +1,24 @@
+.qltableList {
+    margin: 24px 12px 24px 12px;
+    padding-right: 24px;
+    width: 98%;
+}
+
+.qltablePagination {
+    margin-top: 24px;
+}
+
+.qltableCol {
+    border: 1px solid #ccc;
+}
+
+.qltableListIcon {
+    width: 50%;
+    font-size: 24px;
+    opacity: 0.7;
+
+    &:hover {
+        cursor: pointer;
+        opacity: 1;
+    }
+}
