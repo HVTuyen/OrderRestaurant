@@ -3,12 +3,14 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 import style from './qltable.module.scss'
 import { QLORDER_API, TABLE_API, ORDER_PAYMENT_SUB, CONFIG_API, TABLE_TYPE } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 import { update } from 'firebase/database';
-import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
+import {formatDateTime, formatDateTimeSQL} from '../../../Functions/formatDateTime'
+import { MyDocument } from '../../../component/exportPDF/MyDocument';
 
 function Bill( ) {
 
@@ -20,6 +22,8 @@ function Bill( ) {
     const [order,setOrder] = useState()
     const [table, setTable] = useState()
     const [status,setStatus] = useState()
+
+    const [showExportFile, setShowExportFile] = useState(true)
 
     useEffect(() => {
         axios.get(`${QLORDER_API}get_bill?tableId=${id}`)
@@ -64,10 +68,10 @@ function Bill( ) {
     }, [])
 
     function getStatusByCode(code) {
-        return status.find(statusinfo => statusinfo.code === code);
+        return status?.find(statusinfo => statusinfo.code == code);
     }
 
-    console.log(order)
+    console.log(order, status)
 
     const classQltableList = clsx(style.qltableList, 'table table-center')
     const classQltableCol_0_5 = clsx(style.qltableCol, 'col-0-5')
@@ -91,11 +95,6 @@ function Bill( ) {
                         <label className="col-sm-6 col-form-label">{formatDateTimeSQL(order?.orders[order?.orders.length - 1].creationTime)}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-6 col-form-label">Tình trạng</label>
-                        <label className="col-sm-6 col-form-label">{order?.code}
-                        </label>
-                    </div>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-6 col-form-label">Nhân viên phụ trách</label>
                         <label className="col-sm-6 col-form-label">{order?.orders[0].employees.employeeName}</label>
                     </div>
@@ -103,13 +102,56 @@ function Bill( ) {
                         <label className="col-sm-6 col-form-label" style={{fontSize:'24px', fontWeight:'700'}}>Tổng tiền</label>
                         <label className="col-sm-6 col-form-label" style={{fontSize:'24px', fontWeight:'700'}}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order?.totalAmount)}</label>
                     </div>
-                    <div className="d-flex j-flex-end" style={{margin: '24px'}}>
-                        <button 
-                        className='btn btn-outline-primary'
-                        onClick={() => handleOrder(id, ORDER_PAYMENT_SUB)}
-                        >
-                            Thanh toán
-                        </button>
+                    <div className="d-flex j-space-between" style={{margin: '24px'}}>
+                        {
+                            showExportFile ? (
+                                <PDFDownloadLink 
+                                    document={
+                                        <MyDocument 
+                                            Prop={{
+                                                tableName: table?.tableName,
+                                                paymentTime: formatDateTime(new Date()),
+                                                employeeName: order?.orders[0].employees.employeeName,
+                                                totalAmount: order?.totalAmount,
+                                                allFoods: order?.allFoods
+                                            }}
+                                        />
+                                    } 
+                                    fileName={`Hoa_Don_Ban_${table?.tableName}.pdf`}
+                                    className='btn btn-outline-primary'
+                                    onClick={() => setShowExportFile(false)}
+                                >
+                                    {({ blob, url, loading, error }) => (loading ? 'Đang tạo...' : 'Xuất hóa đơn')}
+                                </PDFDownloadLink>
+                            ) : (
+                                <>
+                                    <PDFDownloadLink 
+                                        document={
+                                            <MyDocument 
+                                                Prop={{
+                                                    tableName: table?.tableName,
+                                                    paymentTime: formatDateTime(new Date()),
+                                                    employeeName: order?.orders[0].employees.employeeName,
+                                                    totalAmount: order?.totalAmount,
+                                                    allFoods: order?.allFoods
+                                                }}
+                                            />
+                                        } 
+                                        fileName={`Hoa_Don_Ban_${table?.tableName}_${formatDateTime(new Date())}.pdf`}
+                                        className='btn btn-outline-primary'
+                                        onClick={() => setShowExportFile(false)}
+                                    >
+                                        {({ blob, url, loading, error }) => (loading ? 'Đang tạo...' : 'Xuất hóa đơn')}
+                                    </PDFDownloadLink>
+                                    <button 
+                                        className='btn btn-outline-primary'
+                                        onClick={() => handleOrder(id, ORDER_PAYMENT_SUB)}
+                                    >
+                                        Thanh toán
+                                    </button>
+                                </>
+                            )
+                        }
                     </div>
                 </div>
                 <div className='col-2 d-flex j-flex-end' style={{height:'40px', paddingRight:'24px'}}>

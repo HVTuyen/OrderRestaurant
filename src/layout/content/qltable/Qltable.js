@@ -33,14 +33,14 @@ function Qltable() {
         setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
     }, [table])
 
-    const ordersRef = collection(db, "orders");
+    const ordersRef = collection(db, "table");
 
     useEffect(() => {
         // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "orders"
         const unsub = onSnapshot(ordersRef, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
-                    console.log("orders: ", change.doc.data());
+                    console.log("table: ", change.doc.data());
                 }
             });
                 setRender(prevCount => prevCount + 1);
@@ -73,7 +73,6 @@ function Qltable() {
     let countPrimary=0;
     let countDanger=0;
     let count=0
-
 
     return (
         <div className="col-10">
@@ -128,7 +127,12 @@ function Qltable() {
                                                     }
                                                     {
                                                         item.code == 1 && (
-                                                            <button className={classTableButtonBook} style={{fontSize:'12px', width:'100%', padding:'4px'}}>Đặt bàn</button>
+                                                            <button 
+                                                                className={classTableButtonBook} 
+                                                                style={{fontSize:'12px', width:'100%', padding:'4px'}}
+                                                            >
+                                                                Đặt bàn
+                                                            </button>
                                                         )
                                                     }
                                                 </div>

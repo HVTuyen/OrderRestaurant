@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import { doc, onSnapshot, collection } from "firebase/firestore";
+import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
@@ -81,6 +81,7 @@ function Qlorder() {
 
     const ordersRef = collection(db, "orders");
     const requestRef = collection(db, "requests");
+    const tableRef = collection(db, "table");
 
     //Thông báo Order
     useEffect(() => {
@@ -103,9 +104,12 @@ function Qlorder() {
         return status.find(statusinfo => statusinfo.code === code);
     }
 
-    const handleOrder = (id, CODE, SUB) => {
+    const handleOrder = (id, tableId, CODE, SUB) => {
         axios.post(`${QLORDER_API}${SUB}/${id}/${user.EmployeeId}`)
         .then(res => {
+            const docRef = addDoc(collection(db, "table"), {
+                tableId: tableId,
+            });
             axios.get(`${QLORDER_API}get-order-all`)
             .then(res => {
                 setQlOrders(res.data);
@@ -291,7 +295,7 @@ function Qlorder() {
                                                         type="button" 
                                                         className="btn btn-outline-primary padding-6"
                                                         style={{marginRight:'1px', width:'50%'}}
-                                                        onClick={() => handleOrder(item.orderId, ORDER_APPROVE_CODE, ORDER_APPROVE_SUB)}
+                                                        onClick={() => handleOrder(item.orderId, item.tableId, ORDER_APPROVE_CODE, ORDER_APPROVE_SUB)}
                                                     >
                                                         Duyệt
                                                     </button>

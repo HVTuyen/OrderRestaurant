@@ -8,6 +8,7 @@ import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-i
 
 import { useAuth } from '../../../component/Context/AuthProvider';
 import { renewToken} from '../../../CallApi/renewToken'
+import { getCategories } from '../../../CallApi/CategoryApi/getCategories'
 import style from './product.module.scss'
 import { PRODUCT_API, CATEGORY_API } from '../../constants'
 
@@ -36,44 +37,85 @@ function Product() {
             });
     }, [])
 
-    useEffect(() => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        const oldtoken = {
-            accessToken: token,
-            refreshToken: refreshToken
-        }
-        axios.get(CATEGORY_API, config)
-            .then(res => {
-                setCategories(res.data);
-            })
-            .catch(async error => {
-                if (error.response && error.response.status === 401) {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+    // useEffect(() => {
+    //     const config = {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     }
+    //     const oldtoken = {
+    //         accessToken: token,
+    //         refreshToken: refreshToken
+    //     }
+    //     axios.get(CATEGORY_API, config)
+    //         .then(res => {
+    //             setCategories(res.data);
+    //         })
+    //         .catch(async error => {
+    //             if (error.response && error.response.status === 401) {
+    //                 try {
+    //                     const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
                         
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken)
-                        // Gọi lại API với token mới
-                        const newConfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        }
-                        const response = await axios.get(CATEGORY_API, newConfig);
-                        setCategories(response.data);
-                    } catch (error) {
-                        console.error('Error fetching categories after token renewal:', error);
-                    }
-                } else {
-                    console.error('Error fetching categories:', error);
+    //                     localStorage.setItem('accessToken', accessToken);
+    //                     localStorage.setItem('refreshToken', refreshToken);
+    //                     reNewToken(accessToken, refreshToken)
+    //                     // Gọi lại API với token mới
+    //                     const newConfig = {
+    //                         headers: {
+    //                             Authorization: `Bearer ${accessToken}`
+    //                         }
+    //                     }
+    //                     const response = await axios.get(CATEGORY_API, newConfig);
+    //                     setCategories(response.data);
+    //                 } catch (error) {
+    //                     console.error('Error fetching categories after token renewal:', error);
+    //                 }
+    //             } else {
+    //                 console.error('Error fetching categories:', error);
+    //             }
+    //         });
+    // }, [])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-            });
-    }, [])
+            };
+            const oldtoken = {
+                accessToken: token,
+                refreshToken: refreshToken
+            };
+            const response = await getCategories(config);
+            if (response && response.data) {
+                setCategories(response.data);
+            } else if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getCategories(newconfig);
+                    if (newDataResponse && newDataResponse.data) {
+                        setCategories(newDataResponse.data);
+                    } else {
+                        console.error('Error fetching categories after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error fetching categories:', response.error || 'Unknown error');
+            }
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         let filteredProducts = products;

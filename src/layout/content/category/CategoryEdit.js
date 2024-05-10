@@ -7,10 +7,16 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { CATEGORY_API } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 import { update } from 'firebase/database';
+import { getCategory } from '../../../CallApi/CategoryApi/getCategory'
+import { editCategory } from '../../../CallApi/CategoryApi/editCategory';
+import { renewToken } from '../../../CallApi/renewToken'
+import { useAuth } from '../../../component/Context/AuthProvider';
 
 function CategoryEdit( ) {
 
     const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
 
     const {id} = useParams()
     console.log(id)
@@ -19,84 +25,120 @@ function CategoryEdit( ) {
     const [name,setName] = useState('')
     const [description,setDescription] = useState('')
 
-
-    // const [isUpload,setIsUpload] = useState('')
-    // const [image, setImage] = useState(null);
-    // const handleChange = (e) => {
-    //     if (e.target.files[0]) {
-    //         setImage(e.target.files[0]);
-    //     }
-    // };
-    // const metadata = {
-    //     contentType: 'image/jpeg',
-    // };
-    // const handleUpload = () => {
-	// 	const storageRef = ref(storage, `images/${image.name}`); // tạo 1 địa chỉ để chứa ảnh chuẩn bị tải lên store
-    //     const uploadTask = uploadBytesResumable(storageRef, image, metadata); // hàm tải ảnh lên store 
-    //     uploadTask.on(
-    //         'state_changed',
-    //         (snapshot) => {
-    //             switch (snapshot.state) {
-    //                 case 'paused':
-    //                     console.log('Upload is paused');
-    //                     break;
-    //                 case 'running':
-    //                     console.log('Upload is running');
-    //                     break;
-    //             }
-    //         },
-    //         () => {
-    //             getDownloadURL(uploadTask.snapshot.ref)
-    //                 .then((downloadURL) => {
-    //                     setDescription(downloadURL);
-    //                     setIsUpload('true')
-    //                     setImage(null);
-    //                     console.log('File available at', downloadURL);
-    //                 });
-    //         }
-    //     );
-    // }
-    // const handleUpdate = () => {
-    //     if(image!=null) {
-    //         handleUpload()
-    //     }
-    //     else {
-    //         updateCategory()
-    //     }
-    // }
-    // useEffect(() => {
-    //     if (name && description) {
-    //         updateCategory();
-    //     }
-    // },[isUpload]);
-
-
     useEffect(() => {
-        axios.get(`${CATEGORY_API}${id}`)
-            .then(res => {
-                setCategory(res.data)
-                setName(res.data.categoryName)
-                setDescription(res.data.description)
-            })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-            });
-    }, [])
+        const fetchData = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            };
+            const oldtoken = {
+                accessToken: token,
+                refreshToken: refreshToken
+            };
+            const response = await getCategory(config, id);
+            if (response && response.data) {
+                setCategory(response.data);
+                setName(response.data.categoryName)
+                setDescription(response.data.description)
+            } else if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getCategory(newconfig, id);
+                    if (newDataResponse && newDataResponse.data) {
+                        setCategory(newDataResponse.data);
+                        setName(newDataResponse.data.categoryName)
+                        setDescription(newDataResponse.data.description)
+                    } else {
+                        console.error('Error fetching categories after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error fetching categories:', response.error || 'Unknown error');
+            }
+        };
+        fetchData();
+    }, []);
+    
+    // useEffect(() => {
+    //     axios.get(`${CATEGORY_API}${id}`)
+    //         .then(res => {
+    //             setCategory(res.data)
+    //             setName(res.data.categoryName)
+    //             setDescription(res.data.description)
+    //         })
+    //         .catch(error => {
+    //             console.error('Error fetching categories:', error);
+    //         });
+    // }, [])
 
-    const updateCategory = async () => {
-        const newCategory = {
+    const handleUpdate = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const data = {
             categoryName: name,
             description: description,
-        };
-        axios.put(`${CATEGORY_API}${id}`, newCategory)
-            .then(() => {
-                console.log('Category deleted successfully');
-                navigate('/Ql/Category');
-            })
-            .catch(error => {
-                console.error('Error delete category:', error);
-            });
+        }
+        const response = await editCategory(config, id, data);
+        if (response && response.data) {
+            navigate('/Ql/Category/')
+        } else 
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await editCategory(newconfig, id, data);
+                    if (newDataResponse && newDataResponse.data) {
+                        navigate('/Ql/Category/')
+                    } else {
+                        console.error('Error delete category after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                // navigate('/Ql/Category/')
+            }
     }
+
+    // const updateCategory = async () => {
+    //     const newCategory = {
+    //         categoryName: name,
+    //         description: description,
+    //     };
+    //     axios.put(`${CATEGORY_API}${id}`, newCategory)
+    //         .then(() => {
+    //             console.log('Category deleted successfully');
+    //             navigate('/Ql/Category');
+    //         })
+    //         .catch(error => {
+    //             console.error('Error delete category:', error);
+    //         });
+    // }
 
     console.log(category, name, description)
     
@@ -129,23 +171,11 @@ function CategoryEdit( ) {
                         </div>
                     </div>
 
-                    {/* <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label">Mô tả</label>
-                        <div className="col-sm-9">
-                            <input 
-                                type="file" 
-                                className="form-control"
-                                onChange={handleChange}
-                            />
-                            <img src={description} style={{maxWidth:'100%'}}/>    
-                        </div>
-                    </div> */}
-
                     <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
                         <button 
                             className='btn btn-outline-primary' 
                             style={{marginRight:'6px'}}
-                            onClick={updateCategory}
+                            onClick={handleUpdate}
                         >
                             Lưu
                         </button>

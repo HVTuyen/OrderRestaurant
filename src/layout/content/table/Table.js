@@ -33,14 +33,14 @@ function Table() {
         setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
     }, [table])
 
-    const ordersRef = collection(db, "orders");
+    const ordersRef = collection(db, "table");
 
     useEffect(() => {
         // Đăng ký hàm callback để lắng nghe sự thay đổi trong collection "orders"
         const unsub = onSnapshot(ordersRef, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
-                    console.log("orders: ", change.doc.data());
+                    console.log("table: ", change.doc.data());
                 }
             });
                 setRender(prevCount => prevCount + 1);
