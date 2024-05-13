@@ -1,16 +1,19 @@
-export const LOGIN_API = 'https://192.168.1.152/Login'
-export const RENEW_TOKEN_API = 'https://192.168.1.152/api/User/RenewToken'
+export const LOGIN_API = 'https://192.168.1.145/Login'
+export const RENEW_TOKEN_API = 'https://192.168.1.145/api/User/RenewToken'
 
-export const CATEGORY_API = 'https://192.168.1.152/api/Category/';
-export const PRODUCT_API = 'https://192.168.1.152/api/Food/';
-export const EMPLOYEE_API = 'https://192.168.1.152/api/Employee/'
-export const TABLE_API = 'https://192.168.1.152/api/Table/'
+export const CATEGORY_API = 'https://192.168.1.145/api/Category/';
+export const PRODUCT_API = 'https://192.168.1.145/api/Food/';
+export const EMPLOYEE_API = 'https://192.168.1.145/api/Employee/'
+export const TABLE_API = 'https://192.168.1.145/api/Table/'
 
-export const QLORDER_API = 'https://192.168.1.152/api/Order/'
-export const QLREQUEST_API = 'https://192.168.1.152/api/Requirement/'
-export const QLBILL_API = 'https://192.168.1.152/api/Order/'
+export const QLORDER_API = 'https://192.168.1.145/api/Order/'
+export const QLREQUEST_API = 'https://192.168.1.145/api/Requirement/'
+export const QLBILL_API = 'https://192.168.1.145/api/Order/'
 
-export const CONFIG_API = 'https://192.168.1.152/api/Config/'
+export const STATISTICAL_API = 'https://192.168.1.145/api/Statistics/'
+export const REVENUE_SUB = 'revenue'
+
+export const CONFIG_API = 'https://192.168.1.145/api/Config/'
 
 export const ORDER_TYPE = 'DonHang'
 export const ORDER_APPROVE_SUB = 'ApproveOrder'

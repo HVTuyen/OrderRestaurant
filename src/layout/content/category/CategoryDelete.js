@@ -119,7 +119,7 @@ function CategoryDelete( ) {
                     console.error('Error renewing token:', error);
                 }
             } else {
-                navigate('/Ql/Category/')
+                console.error('Error delete category');
             }
     }
 

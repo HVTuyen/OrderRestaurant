@@ -115,13 +115,13 @@ function CategoryEdit( ) {
                     if (newDataResponse && newDataResponse.data) {
                         navigate('/Ql/Category/')
                     } else {
-                        console.error('Error delete category after token renewal');
+                        console.error('Error edit category after token renewal');
                     }
                 } catch (error) {
                     console.error('Error renewing token:', error);
                 }
             } else {
-                // navigate('/Ql/Category/')
+                console.error('Error edit category');
             }
     }
 

@@ -90,7 +90,7 @@ export const MyDocument = ({ Prop }) => (
         <Text style={styles.description}>{Prop.tableName}</Text>
       </View>
       <View style={styles.detail}>
-        <Text style={styles.title}>Thời gian thanh toán: </Text>
+        <Text style={styles.title}>Thời gian lập hóa đơn: </Text>
         <Text style={styles.description}>{Prop.paymentTime}</Text>
       </View>
       <View style={styles.detail}>

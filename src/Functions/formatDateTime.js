@@ -21,3 +21,10 @@ export const formatDateTime = (date) => {
     const minutes = addLeadingZero(date.getMinutes());
     return `${day}/${month}/${year} | ${hours}:${minutes}`;
 };
+
+export const formatDateTimeSearch = (date) => {
+    const year = date.getFullYear();
+    const month = addLeadingZero(date.getMonth() + 1);
+    const day = addLeadingZero(date.getDate());
+    return `${year}-${month}-${day}`;
+}

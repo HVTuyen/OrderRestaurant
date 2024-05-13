@@ -1,3 +1,7 @@
+.background {
+    background-color: #4a5b6b;
+}
+
 .navBar {
     min-height: calc(100vh - 56px - 36px);
     padding: 0px;
@@ -33,13 +37,13 @@
 .titleText {
     font-size: 18px;
     padding-left: 12px;
-    color: #cec6c6;
+    color: #e4e4e4;
     margin-bottom: 0
 }
 
 .icon {
     font-size: 26px;
-    color: #cec6c6;
+    color: #e4e4e4;
 }
 
 .li{
@@ -57,7 +61,7 @@
 
 .a {
     font-size: 16px;
-    color: #cec6c6;
+    color: #e4e4e4;
     padding-left: 8px;
     display: block;
     text-decoration: none;
@@ -105,8 +109,12 @@
 
 .iconLi {
     font-size: 14px;
-    color: #cec6c6;
+    color: #e4e4e4;
     margin-right: 12px;
+}
+
+.active {
+    background-color: #ffffff40;
 }
 
 @media (max-width: 1000px) {
