@@ -16,19 +16,49 @@ export default function MoneyReport(Prop) {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const data = [
-    {
-      name: "07/05/2024",
-      Doanhthu: Prop.revenue,
-    },
-  ];
+  const data = Object.entries(Prop.data).map(([name, value]) => ({
+      name: name,
+      value: value,
+  }));
 
   const formatTooltip = (value) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    let valueformat;
+    if(Prop.type ==='money') {
+      valueformat = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    }
+    else if(Prop.type ==='food') {
+      valueformat = `${value} món`;
+    }
+    else if(Prop.type ==='order') {
+      valueformat = `${value} đơn`;
+    }
+    return valueformat;
   };
 
   const formatYAxis = (value) => {
-    return `${value/1000000} triệu`;
+    let valueformat;
+    if(Prop.type ==='money') {
+      valueformat = `${value/1000000} triệu`
+    }
+    else if(Prop.type ==='food') {
+      valueformat = value;
+    }
+    else if(Prop.type ==='order') {
+      valueformat = value;
+    }
+    return valueformat;
+  };
+
+  const getColor = () => {
+    if(Prop.type ==='money') {
+      return "#7f7ccd";
+    }
+    else if(Prop.type ==='food') {
+      return "#75c480";
+    }
+    else if(Prop.type ==='order') {
+      return "#cb858d";
+    }
   };
 
   useEffect(() => {
@@ -62,7 +92,7 @@ export default function MoneyReport(Prop) {
                   <YAxis tickFormatter={formatYAxis}/>
                   <Tooltip formatter={formatTooltip}/>
                   <Legend />
-                  <Bar dataKey="Doanhthu" name="Doanh thu" fill="#8884d8"/>
+                  <Bar dataKey="value" name={Prop.type === 'money' ? 'Doanh thu' : Prop.type === 'food' ? 'Món ăn đã bán' : 'Đơn hàng được đặt'} fill={getColor()}/>
                 </BarChart>
               </div>
             </div>

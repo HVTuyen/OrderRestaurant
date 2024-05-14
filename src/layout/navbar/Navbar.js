@@ -59,9 +59,12 @@ function Navbar() {
 
     const [isShow, setIsShow] = useState(false)
 
-    const [activeMenu, setActiveMenu] = useState('');
+    const [activeMenu, setActiveMenu] = useState(
+      sessionStorage.getItem('activeMenu') || ''
+    );
 
     const handleMenuClick = (menu) => {
+      sessionStorage.setItem('activeMenu', menu);
       setActiveMenu(menu);
     };
     
@@ -88,7 +91,7 @@ function Navbar() {
             </div>
             <ul className={classNavbarUl}>
               <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
-                <Link className={classNavbarA} to="/Ql/Action/Order">
+                <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
                   <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                   Đơn hàng
                 </Link>
@@ -155,7 +158,7 @@ function Navbar() {
                   </div>
                   <ul className={classNavbarUl}>
                     <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
-                      <Link className={classNavbarA} to="/Ql/Action/Order">
+                      <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
                         <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                         Đơn hàng
                       </Link>

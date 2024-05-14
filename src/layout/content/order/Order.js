@@ -169,7 +169,7 @@ function Order() {
                                                             className="btn btn-outline-primary"
                                                             onClick={() => handleAddToCart(item.foodId)}
                                                         >
-                                                            <div>Add</div>
+                                                            <div>Thêm</div>
                                                         </button>
                                                     </div>
                                                 </div>

@@ -21,10 +21,17 @@ const Statistical = () => {
 
     const [startDate, setStartDate] = useState(formatDateTimeSearch(new Date()));
     const [endDate, setEndDate] = useState(formatDateTimeSearch(new Date()));
-    const [revenue, setRevenue] = useState(0)
-    const [showStatistical, setShowStatistical] = useState({
-        isShow: false
-    })
+
+    const [TotalRevenue, setTotalRevenue] = useState(0)
+    const [dataRevenue, setDataRevenue] = useState({})
+    const [totalFood, setTotalFood] = useState(0)
+    const [dataFood, setDataFood] = useState({})
+    const [totalOrder, setTotalOrder] = useState(0)
+    const [dataOrder, setDataOrder] = useState({})
+    
+    const [showRevenue, setShowRevenue] = useState(false)
+    const [showFood, setShowFood] = useState(false)
+    const [showOrder, setShowOrder] = useState(false)
 
     const handleGetSatistical = () => {
         const fetchData = async () => {
@@ -43,7 +50,12 @@ const Statistical = () => {
             };
             const response = await getRevenue(config, date);
             if (response && response.data) {
-                setRevenue(response.data.doanhSo);
+                setTotalRevenue(response.data.totalRevenue);
+                setDataRevenue(response.data.doanhSo)
+                setTotalFood(response.data.food.totalFood);
+                setDataFood(response.data.dayFood);
+                setTotalOrder(response.data.totalOrder);
+                setDataOrder(response.data.donHang)
             } else if (response && response.error === 'Unauthorized') {
                 try {
                     const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
@@ -57,7 +69,12 @@ const Statistical = () => {
                     };
                     const newDataResponse = await getRevenue(newconfig, date);
                     if (newDataResponse && newDataResponse.data) {
-                        setRevenue(newDataResponse.data);
+                        setTotalRevenue(response.data.totalRevenue);
+                        setDataRevenue(response.data.doanhSo)
+                        setTotalFood(response.data.food.totalFood);
+                        setDataFood(response.data.dayFood);
+                        setTotalOrder(response.data.totalOrder);
+                        setDataOrder(response.data.donHang)
                     } else {
                         console.error('Error fetching revenue after token renewal');
                     }
@@ -65,13 +82,15 @@ const Statistical = () => {
                     console.error('Error renewing token:', error);
                 }
             } else {
-                console.error('Error fetching revenue:');
+                if(response.error === 'Date') {
+                    alert('Ngày bắt đầu phải trước ngày kết thúc thống kê!')
+                }
             }
         };
         fetchData();
     }
 
-    console.log(revenue)
+    console.log(TotalRevenue)
     console.log(startDate)
 
     useEffect(() => {
@@ -128,20 +147,17 @@ const Statistical = () => {
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng doanh thu</h4>
-                                        <h3 className="h1 mb-0">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(revenue)}</h3>
+                                        <h3 className="h1 mb-0">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(TotalRevenue)}</h3>
                                         
                                     </div>
                                 </div>
                                 <div className="align-self-center">
                                     <button 
                                         className="btn btn-outline-primary"
-                                        onClick={() => setShowStatistical({
-                                            Statistical: 'revenue',
-                                            isShow: !showStatistical.isShow
-                                        })}
+                                        onClick={() => setShowRevenue(!showRevenue)}
                                     >
                                         {
-                                            showStatistical.Statistical === 'revenue' && showStatistical.isShow ? 'Ẩn' : 'Chi tiết'
+                                            showRevenue ? 'Ẩn' : 'Chi tiết'
                                         }
                                     </button>
                                 </div>
@@ -156,12 +172,19 @@ const Statistical = () => {
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng số món ăn đã bán</h4>
-                                        <h3 className="h1 mb-0">1</h3>
+                                        <h3 className="h1 mb-0">{totalFood}</h3>
                                         
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button className="btn btn-outline-primary" type="button" data-toggle="tooltip" data-placement>Chi tiết</button>
+                                    <button 
+                                        className="btn btn-outline-primary"
+                                        onClick={() => setShowFood(!showFood)}
+                                    >
+                                        {
+                                            showFood ? 'Ẩn' : 'Chi tiết'
+                                        }
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -174,12 +197,19 @@ const Statistical = () => {
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng số đơn</h4>
-                                        <h3 className="h1 mb-0">25.000</h3>
+                                        <h3 className="h1 mb-0">{totalOrder}</h3>
                                         
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button className="btn btn-outline-primary" type="button" data-toggle="tooltip" data-placement>Chi tiết</button>
+                                    <button 
+                                        className="btn btn-outline-primary"
+                                        onClick={() => setShowOrder(!showOrder)}
+                                    >
+                                        {
+                                            showOrder ? 'Ẩn' : 'Chi tiết'
+                                        }
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -188,8 +218,27 @@ const Statistical = () => {
             </div>
 
             {
-                showStatistical.Statistical === 'revenue' && showStatistical.isShow ? (
-                    <MoneyReport revenue={revenue}/>
+                showRevenue ? (
+                    <MoneyReport 
+                        type='money'
+                        data={dataRevenue}
+                    />
+                ) : null
+            }
+            {
+                showFood ? (
+                    <MoneyReport 
+                        type='food'
+                        data={dataFood}
+                    />
+                ) : null
+            }
+            {
+                showOrder ? (
+                    <MoneyReport 
+                        type='order'
+                        data={dataOrder}
+                    />
                 ) : null
             }
         </div>

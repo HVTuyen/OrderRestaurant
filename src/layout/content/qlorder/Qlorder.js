@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
 
@@ -8,22 +8,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './qlorder.module.scss'
-import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_PAYMENT_CODE,ORDER_APPROVE_SUB,ORDER_PAYMENT_SUB,ORDER_REFUSE_SUB } from '../../constants'
+import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE,ORDER_APPROVE_SUB,ORDER_REFUSE_SUB } from '../../constants'
 import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import NotificationOrder from '../../../component/Notify/NotificationOrder'
 import NotificationRequest from '../../../component/Notify/NotificationRequest';
 import { useAuth } from '../../../component/Context/AuthProvider';
 import { decodeJWT } from '../../../Functions/decodeJWT'
+import Pagination from '../../../component/Pagination/Pagination'
 
 function Qlorder() {
     console.log('re-render-qlorder')
+
+    const [searchParams] = useSearchParams();
+    const page = searchParams.get('page');
+    console.log(page)
 
     const { token } = useAuth();
 
     const [qlOrders,setQlOrders] = useState([])
     const [qlOrdersSearch,setQlOrderSearch] = useState([])
-    const [qlOrder,setQlOrder] = useState('')
+    const [qlOrder,setQlOrder] = useState(null)
     const [status,setStatus] = useState([])
     const [statusSelect,setStatusSelect] = useState('')
     const [isRender, setIsRender] = useState('');
@@ -32,6 +37,8 @@ function Qlorder() {
     const [isVisibleOrder, setIsVisibleOrder] = useState(false);
     const [isVisibleRequest, setIsVisibleRequest] = useState(false);
     const [user, setUser] = useState(null);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         if(token) {
@@ -45,15 +52,22 @@ function Qlorder() {
         if(render > 1) {
             showNotification()
         }
-        axios.get(`${QLORDER_API}get-order-all`)
+        axios.get(`${QLORDER_API}get-search-page`, {
+            params: {
+                Search: qlOrder,
+                PageNumber: page,
+                PageSize: pageSize
+            }
+        })
         .then(res => {
-            setQlOrders(res.data);
-            setQlOrderSearch(res.data);
+            setQlOrders(res.data.orders);
+            setQlOrderSearch(res.data.orders);
+            setTotalPages(res.data.totalPages)
         })
         .catch(error => {
             console.error('Error fetching qlorder:', error);
         });
-    }, [render])
+    }, [render, page])
 
     useEffect(() => {
         console.log('re-render 2')
@@ -66,18 +80,18 @@ function Qlorder() {
             });
     }, [render])
 
-    useEffect(() => {
-        let filteredOrders = qlOrders;
+    // useEffect(() => {
+    //     let filteredOrders = qlOrders;
     
-        if (qlOrder && statusSelect) {
-            filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder) && item.code == statusSelect);
-        } else if (qlOrder) {
-            filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder));
-        } else if (statusSelect) {
-            filteredOrders = qlOrders.filter(item => item.code == statusSelect);
-        }
-        setQlOrderSearch(filteredOrders);
-    }, [qlOrder, statusSelect, isRender]);
+    //     if (qlOrder && statusSelect) {
+    //         filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder) && item.code == statusSelect);
+    //     } else if (qlOrder) {
+    //         filteredOrders = qlOrders.filter(item => item.tables.tableName.includes(qlOrder));
+    //     } else if (statusSelect) {
+    //         filteredOrders = qlOrders.filter(item => item.code == statusSelect);
+    //     }
+    //     setQlOrderSearch(filteredOrders);
+    // }, [qlOrder, statusSelect, isRender]);
 
     const ordersRef = collection(db, "orders");
     const requestRef = collection(db, "requests");
@@ -110,9 +124,15 @@ function Qlorder() {
             const docRef = addDoc(collection(db, "table"), {
                 tableId: tableId,
             });
-            axios.get(`${QLORDER_API}get-order-all`)
+            axios.get(`${QLORDER_API}get-search-page`, {
+                params: {
+                    Search: qlOrder,
+                    PageNumber: page,
+                    PageSize: pageSize
+                }
+            })
             .then(res => {
-                setQlOrders(res.data);
+                setQlOrders(res.data.orders);
                 setIsRender(Math.random())
             })
             .catch(error => {
@@ -127,9 +147,15 @@ function Qlorder() {
     const handleDeleteOrder = (id) => {
         axios.delete(`${QLORDER_API}${id}`)
         .then(res => {
-            axios.get(`${QLORDER_API}get-order-all`)
+            axios.get(`${QLORDER_API}get-search-page`, {
+                params: {
+                    Search: qlOrder,
+                    PageNumber: page,
+                    PageSize: pageSize
+                }
+            })
             .then(res => {
-                setQlOrders(res.data);
+                setQlOrders(res.data.orders);
                 setIsRender(Math.random())
             })
             .catch(error => {
@@ -356,28 +382,11 @@ function Qlorder() {
                         })
                     }
                 </tbody>
-
-                
             </table>
-            <div className='d-flex j-center'>
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <Pagination
+                totalPages = {totalPages}
+                currentPage = {page}
+            />
         </div>
     )
 }
