@@ -2,3 +2,37 @@
     height: 53.6px;
     background-color: #155967;
 }
+
+.active {
+    color: #fff;
+}
+
+.notification {
+    &:hover {
+        cursor: pointer;
+        .notificationIcon {
+            color: #fff;
+        }
+        .notificationTotal {
+            color: #fff;
+        }
+    }
+}
+
+.notificationIcon {
+    font-size: 28px;
+    color:#bfbfbf;
+}
+
+.notificationTotal {
+    position:absolute;
+    font-size: 12px;
+    font-weight: 700;
+    border: 2px solid #155967;
+    border-radius: 8px;
+    padding: 1px 4px;
+    top: -8px;
+    right: -8px;
+    color: #bfbfbf;
+    background-color: #ff3e3e;
+}

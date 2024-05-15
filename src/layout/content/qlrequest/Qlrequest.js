@@ -201,7 +201,7 @@ function Qlrequest() {
 
     return (
         <div className="col-10">
-            {
+            {/* {
                 isVisibleOrder && (
                     <NotificationOrder/>
                 )
@@ -211,7 +211,7 @@ function Qlrequest() {
                 isVisibleRequest && (
                     <NotificationRequest/>
                 )
-            }
+            } */}
             <div className='title'>Danh sách yêu cầu</div>
             <div className={classQlrequestSearch}>
                 <select

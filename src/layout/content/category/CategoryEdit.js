@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { CATEGORY_API } from '../../constants'
+import { CATEGORY_API, CATEGORY_TITLE } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 import { update } from 'firebase/database';
 import { getCategory } from '../../../CallApi/CategoryApi/getCategory'
 import { editCategory } from '../../../CallApi/CategoryApi/editCategory';
 import { renewToken } from '../../../CallApi/renewToken'
 import { useAuth } from '../../../component/Context/AuthProvider';
+import Update from '../../../component/crud/Update';
 
 function CategoryEdit( ) {
 
@@ -69,20 +70,8 @@ function CategoryEdit( ) {
         };
         fetchData();
     }, []);
-    
-    // useEffect(() => {
-    //     axios.get(`${CATEGORY_API}${id}`)
-    //         .then(res => {
-    //             setCategory(res.data)
-    //             setName(res.data.categoryName)
-    //             setDescription(res.data.description)
-    //         })
-    //         .catch(error => {
-    //             console.error('Error fetching categories:', error);
-    //         });
-    // }, [])
 
-    const handleUpdate = async () => {
+    const handleDataFromUpdate = async ( formData ) => {
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -93,13 +82,13 @@ function CategoryEdit( ) {
             refreshToken: refreshToken
         };
         const data = {
-            categoryName: name,
-            description: description,
+            categoryName: formData.name ? formData.name : name,
+            description: formData.description ? formData.description : description,
         }
         const response = await editCategory(config, id, data);
         if (response && response.data) {
             navigate('/Ql/Category/')
-        } else 
+        } else {
             if (response && response.error === 'Unauthorized') {
                 try {
                     const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
@@ -123,69 +112,32 @@ function CategoryEdit( ) {
             } else {
                 console.error('Error edit category');
             }
-    }
-
-    // const updateCategory = async () => {
-    //     const newCategory = {
-    //         categoryName: name,
-    //         description: description,
-    //     };
-    //     axios.put(`${CATEGORY_API}${id}`, newCategory)
-    //         .then(() => {
-    //             console.log('Category deleted successfully');
-    //             navigate('/Ql/Category');
-    //         })
-    //         .catch(error => {
-    //             console.error('Error delete category:', error);
-    //         });
-    // }
-
-    console.log(category, name, description)
+        }
+    };
     
     return (
         <div className="col-10">
-            <div className='title'>Chỉnh sửa loại món</div>
-            <div className='row'>
-                <div className='col-2'></div>
-                <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label">Tên loại món</label>
-                        <div className="col-sm-9">
-                            <input 
-                                type="text" 
-                                className="form-control" 
-                                value={name}
-                                onChange={e => setName(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-3 col-form-label">Mô tả</label>
-                        <div className="col-sm-9">
-                            <input 
-                                type="text" 
-                                className="form-control" 
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className='d-flex j-flex-end' style={{margin: '24px 38px 24px 24px'}}>
-                        <button 
-                            className='btn btn-outline-primary' 
-                            style={{marginRight:'6px'}}
-                            onClick={handleUpdate}
-                        >
-                            Lưu
-                        </button>
-                        <Link to='/Ql/Category' className='btn btn-outline-danger'>
-                            Trở về
-                        </Link>
-                    </div>
-                </div>
-                <div className='col-2'></div>
-            </div>
+            <Update
+                url='/Ql/Category'
+                title={CATEGORY_TITLE}
+                item={
+                    [
+                        {
+                            title: 'Tên loại món',
+                            name: 'name',
+                            value: name,
+                            type: 'Text',
+                        },
+                        {
+                            title: 'Mô tả',
+                            name: 'description',
+                            value: description,
+                            type: 'Text',
+                        }
+                    ]
+                }
+                sendData={handleDataFromUpdate} 
+            />
         </div>
     )
 }

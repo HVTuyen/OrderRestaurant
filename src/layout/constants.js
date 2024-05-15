@@ -30,3 +30,8 @@ export const REQUEST_COMPLETE_CODE = 2
 export const REQUEST_REFUSE_CODE = 3
 
 export const TABLE_TYPE = 'Ban'
+
+export const CATEGORY_TITLE = 'loại hàng'
+export const PRODUCT_TITLE = 'Ban'
+export const TABLE_TITLE = 'Ban'
+export const EMPLOYEE_TITLE = 'Ban'

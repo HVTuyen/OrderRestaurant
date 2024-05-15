@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 
 import style from './navbar.module.scss'
 
+import Wellcome from '../content/wellcome/Wellcome'
+
 import Qlorder from '../content/qlorder/Qlorder'
 import QlorderDetail from '../content/qlorder/QlorderDetail'
 
@@ -82,13 +84,17 @@ function Navbar() {
       };
     }, []);
 
+    const activeMenuChild = (activeMenu) => {
+      setActiveMenu(activeMenu);
+    }
+
     return (
         <>
           <div className={classNavbar}>
-            <div className={classTitle}>
+            <Link className={classTitle} to='/Ql/Action'>
               <FontAwesomeIcon icon={faUtensils} className={classNavbarIcon}/>
               <h3 className={classTitleText}>Quản lý hoạt động</h3>
-            </div>
+            </Link>
             <ul className={classNavbarUl}>
               <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
                 <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
@@ -110,10 +116,10 @@ function Navbar() {
               </li>
             </ul>
 
-            <div className={classTitle}>
+            <Link className={classTitle} to='/Ql/Action'>
               <FontAwesomeIcon icon={faDatabase} className={classNavbarIcon}/>
               <h3 className={classTitleText}>Quản lý dữ liệu</h3>
-            </div>
+            </Link>
             <ul className={classNavbarUl}>
               <li className={activeMenu === 'category' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('category')}>
                 <Link className={classNavbarA} to="/Ql/Category">
@@ -152,10 +158,10 @@ function Navbar() {
             isShow && (
               <>
                 <div className={classNavbarSub}>
-                  <div className={classTitle}>
+                  <Link className={classTitle} to='/Ql/Action'>
                     <FontAwesomeIcon icon={faUtensils} className={classNavbarIcon}/>
                     <h3 className={classTitleText}>Quản lý hoạt động</h3>
-                  </div>
+                  </Link>
                   <ul className={classNavbarUl}>
                     <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
                       <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
@@ -177,10 +183,10 @@ function Navbar() {
                     </li>
                   </ul>
 
-                  <div className={classTitle}>
+                  <Link className={classTitle} to='/Ql/Action'>
                     <FontAwesomeIcon icon={faDatabase} className={classNavbarIcon}/>
                     <h3 className={classTitleText}>Quản lý dữ liệu</h3>
-                  </div>
+                  </Link>
                   <ul className={classNavbarUl}>
                     <li className={activeMenu === 'category' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('category')}>
                       <Link className={classNavbarA} to="/Ql/Category">
@@ -219,6 +225,9 @@ function Navbar() {
             )
           }
           <Routes>
+            <Route path="/" element={<Wellcome activeMenu = {activeMenuChild}/>} />
+            <Route path="/Action" element={<Wellcome activeMenu = {activeMenuChild}/>} />
+
             <Route path="/Action/Order" element={<Qlorder/>} />
             <Route path="/Action/Order/:id" element={<QlorderDetail/>} />
 

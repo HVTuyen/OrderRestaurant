@@ -132,7 +132,7 @@ function Qlorder() {
                 }
             })
             .then(res => {
-                setQlOrders(res.data.orders);
+                setQlOrderSearch(res.data.orders);
                 setIsRender(Math.random())
             })
             .catch(error => {
@@ -155,7 +155,7 @@ function Qlorder() {
                 }
             })
             .then(res => {
-                setQlOrders(res.data.orders);
+                setQlOrderSearch(res.data.orders);
                 setIsRender(Math.random())
             })
             .catch(error => {
@@ -250,7 +250,7 @@ function Qlorder() {
 
     return (
         <div className="col-10">
-            {
+            {/* {
                 isVisibleOrder && (
                     <NotificationOrder/>
                 )
@@ -260,7 +260,7 @@ function Qlorder() {
                 isVisibleRequest && (
                     <NotificationRequest/>
                 )
-            }
+            } */}
             <div className='title'>Danh sách đơn hàng</div>
             <div className={classQlorderSearch}>
                 <select
@@ -354,7 +354,7 @@ function Qlorder() {
                                                     <button 
                                                         type="button" 
                                                         className="btn btn-outline-danger padding-6"
-                                                        onClick={() => handleOrder(item.orderId, ORDER_REFUSE_CODE, ORDER_REFUSE_SUB)}
+                                                        onClick={() => handleOrder(item.orderId, item.tableId, ORDER_REFUSE_CODE, ORDER_REFUSE_SUB)}
                                                     >
                                                         Từ chối
                                                     </button>
