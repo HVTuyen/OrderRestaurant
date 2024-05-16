@@ -97,7 +97,7 @@ function Navbar() {
             </Link>
             <ul className={classNavbarUl}>
               <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
-                <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
+                <Link className={classNavbarA} to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder')}`}>
                   <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                   Đơn hàng
                 </Link>
@@ -116,7 +116,7 @@ function Navbar() {
               </li>
             </ul>
 
-            <Link className={classTitle} to='/Ql/Action'>
+            <Link className={classTitle} to='/Ql'>
               <FontAwesomeIcon icon={faDatabase} className={classNavbarIcon}/>
               <h3 className={classTitleText}>Quản lý dữ liệu</h3>
             </Link>
@@ -164,7 +164,7 @@ function Navbar() {
                   </Link>
                   <ul className={classNavbarUl}>
                     <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
-                      <Link className={classNavbarA} to="/Ql/Action/Order?page=1">
+                      <Link className={classNavbarA} to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder')}`}>
                         <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                         Đơn hàng
                       </Link>
@@ -183,7 +183,7 @@ function Navbar() {
                     </li>
                   </ul>
 
-                  <Link className={classTitle} to='/Ql/Action'>
+                  <Link className={classTitle} to='/Ql'>
                     <FontAwesomeIcon icon={faDatabase} className={classNavbarIcon}/>
                     <h3 className={classTitleText}>Quản lý dữ liệu</h3>
                   </Link>
@@ -225,15 +225,15 @@ function Navbar() {
             )
           }
           <Routes>
-            <Route path="/" element={<Wellcome activeMenu = {activeMenuChild}/>} />
-            <Route path="/Action" element={<Wellcome activeMenu = {activeMenuChild}/>} />
+            <Route path="/" element={<Wellcome title='dữ liệu' activeMenu = {activeMenuChild}/>} />
+            <Route path="/Action" element={<Wellcome title='hoạt động' activeMenu = {activeMenuChild}/>} />
 
-            <Route path="/Action/Order" element={<Qlorder/>} />
+            <Route path="/Action/Order" element={<Qlorder activeMenu = {activeMenuChild}/>} />
             <Route path="/Action/Order/:id" element={<QlorderDetail/>} />
 
             <Route path="/Action/Bill" element={<Qlbill/>} />
 
-            <Route path="/Action/Request" element={<Qlrequest/>} />
+            <Route path="/Action/Request" element={<Qlrequest activeMenu = {activeMenuChild}/>} />
             <Route path="/Action/Request/:id" element={<QlrequestDetail/>} />
 
             <Route path='/Action/Table' element={<Qltable/>} />

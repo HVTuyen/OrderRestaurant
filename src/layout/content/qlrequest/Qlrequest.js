@@ -14,8 +14,14 @@ import { db } from '../../../firebaseConfig';
 import NotificationOrder from '../../../component/Notify/NotificationOrder'
 import NotificationRequest from '../../../component/Notify/NotificationRequest'
 
-function Qlrequest() {
+function Qlrequest({ activeMenu }) {
     console.log('re-render-qlorder')
+
+    useEffect(() => {
+        sessionStorage.setItem('activeMenu', 'request');
+        activeMenu('request')
+    }, [])
+
     const [qlRequests,setQlRequests] = useState([])
     const [qlRequestsSearch,setQlRequestSearch] = useState([])
     const [qlRequest,setQlRequest] = useState('')

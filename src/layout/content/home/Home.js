@@ -55,7 +55,7 @@ function Home() {
         axios.post(`${QLREQUEST_API}request`, newRequest)
             .then( async () => {
                 try {
-                    const docRef = await addDoc(collection(db, "requests"), {
+                    const docRef = await addDoc(collection(db, "orders"), {
                       request: newRequest
                     });
                     console.log("Document written with ID: ", docRef.id);

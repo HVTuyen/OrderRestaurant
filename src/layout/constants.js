@@ -7,11 +7,18 @@ export const EMPLOYEE_API = 'https://192.168.1.145/api/Employee/'
 export const TABLE_API = 'https://192.168.1.145/api/Table/'
 
 export const QLORDER_API = 'https://192.168.1.145/api/Order/'
+export const GET_ORDER_SUB = 'get-search-page'
 export const QLREQUEST_API = 'https://192.168.1.145/api/Requirement/'
 export const QLBILL_API = 'https://192.168.1.145/api/Order/'
 
 export const STATISTICAL_API = 'https://192.168.1.145/api/Statistics/'
 export const REVENUE_SUB = 'revenue'
+
+export const NOTIFICATION_API = 'https://192.168.1.145/api/Notification/'
+export const GET_NOTIFICATION_SUB = '10-time'
+export const GET_NOTIFICATION_COUNT_SUB = 'count-notification'
+export const SEEN_NOTIFICATION_SUB = 'mark-read'
+export const SEEN_NOTIFICATION_ALL_SUB = 'mark-all-read'
 
 export const CONFIG_API = 'https://192.168.1.145/api/Config/'
 

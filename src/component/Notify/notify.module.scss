@@ -12,18 +12,51 @@
 
 .notification {
   background-color: #fff;
-  color: #de3434;
-  padding: 6px 20px;
-  border: 1px solid #de3434;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 10px 18px #888888;
   font-size: 24px;
-  animation: slideIn 0.5s ease-in-out;
+  transform-origin: 50% top;
+  animation: slideIn 0.3s ease-in;
+}
+
+.notificationSeen {
+  font-size: 16px;
+  background-color: #b5b5b5;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  &:hover {
+    cursor: pointer;
+    color: #588aff;
+  }
+}
+
+.notificationItem {
+  padding: 6px 12px;
+  border-bottom: 1px solid #ccc;
+  &:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #b6b6b6;
+  }
+}
+
+.notificationItemCheck {
+  background-color: #e6e6e6;
+  font-weight: 600;
+}
+
+.notificationTitle {
+  font-size: 16px;
+}
+
+.notificationTime {
+  font-size: 14px;
 }
 
 @keyframes slideIn {
-  0% { opacity: 0; transform: translateY(-50px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: scale(0); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes fadeOut {

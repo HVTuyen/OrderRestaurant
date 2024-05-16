@@ -9,11 +9,11 @@ import {
 }
     from 'mdb-react-ui-kit';
 
-function Wellcome({ activeMenu }) {
+function Wellcome( props ) {
 
     useEffect(() => {
         sessionStorage.setItem('activeMenu', 'wellcome');
-        activeMenu('wellcome')
+        props.activeMenu('wellcome')
     }, [])
 
     return (
@@ -27,7 +27,7 @@ function Wellcome({ activeMenu }) {
                             <MDBCardBody className='p-5 shadow-5 text-center'>
                                 <h2 className="fw-bold mb-5">Chào mừng đến trang quản lý</h2>
                                 <div>
-                                    <p>Chúng tôi sẽ giúp quản lý các dữ liệu của bạn</p>
+                                    <p>Chúng tôi sẽ giúp quản lý các {props.title} của bạn</p>
                                 </div>
                             </MDBCardBody>
                         </MDBCard>
