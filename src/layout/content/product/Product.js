@@ -6,11 +6,11 @@ import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
+import style from './product.module.scss'
 import { useAuth } from '../../../component/Context/AuthProvider';
 import { renewToken} from '../../../CallApi/renewToken'
 import { getCategories } from '../../../CallApi/CategoryApi/getCategories'
-import style from './product.module.scss'
-import { PRODUCT_API, CATEGORY_API } from '../../constants'
+import { getProducts } from '../../../CallApi/ProductApi/getProducts'
 
 function Product() {
     console.log('re-render-product')
@@ -26,55 +26,16 @@ function Product() {
     const [categories,setCategories] = useState([])
     const [categoryId,setCategoryId] = useState('')
 
-    useEffect(() => {
-        axios.get(PRODUCT_API)
-            .then(res => {
-                setProducts(res.data);
-                setProductsSearch(res.data);
-            })
-            .catch(error => {
-                console.error('Error fetching Products:', error);
-            });
-    }, [])
+    const [user, setUser] = useState(null);
 
-    // useEffect(() => {
-    //     const config = {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         }
-    //     }
-    //     const oldtoken = {
-    //         accessToken: token,
-    //         refreshToken: refreshToken
-    //     }
-    //     axios.get(CATEGORY_API, config)
-    //         .then(res => {
-    //             setCategories(res.data);
-    //         })
-    //         .catch(async error => {
-    //             if (error.response && error.response.status === 401) {
-    //                 try {
-    //                     const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        
-    //                     localStorage.setItem('accessToken', accessToken);
-    //                     localStorage.setItem('refreshToken', refreshToken);
-    //                     reNewToken(accessToken, refreshToken)
-    //                     // Gọi lại API với token mới
-    //                     const newConfig = {
-    //                         headers: {
-    //                             Authorization: `Bearer ${accessToken}`
-    //                         }
-    //                     }
-    //                     const response = await axios.get(CATEGORY_API, newConfig);
-    //                     setCategories(response.data);
-    //                 } catch (error) {
-    //                     console.error('Error fetching categories after token renewal:', error);
-    //                 }
-    //             } else {
-    //                 console.error('Error fetching categories:', error);
-    //             }
-    //         });
-    // }, [])
+    useEffect(() => {
+        if(account) {
+            setUser(account)
+            if(account.role !== 'admin') {
+                navigate('/ql')
+            }
+        }
+    },[])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,10 +72,53 @@ function Product() {
                     console.error('Error renewing token:', error);
                 }
             } else {
-                console.error('Error fetching categories:', response.error || 'Unknown error');
+                console.error('Error fetching categories:');
             }
         };
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchDataProducts = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            };
+            const oldtoken = {
+                accessToken: token,
+                refreshToken: refreshToken
+            };
+            const response = await getProducts(config);
+            if (response && response.data) {
+                setProducts(response.data);
+                setProductsSearch(response.data);
+            } else if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getProducts(newconfig);
+                    if (newDataResponse && newDataResponse.data) {
+                        setProducts(newDataResponse.data);
+                        setProductsSearch(newDataResponse.data);
+                    } else {
+                        console.error('Error fetching products after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error fetching products:');
+            }
+        };
+        fetchDataProducts();
     }, []);
 
     useEffect(() => {

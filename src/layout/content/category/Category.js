@@ -7,15 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './category.module.scss'
-import { CATEGORY_API, RENEW_TOKEN_API } from '../../constants'
-import CategoryEdit from './CategoryEdit'
 import { useAuth } from '../../../component/Context/AuthProvider';
-import { decodeJWT } from '../../../Functions/decodeJWT'
 import { renewToken} from '../../../CallApi/renewToken'
 import { getCategories } from '../../../CallApi/CategoryApi/getCategories'
 
 
-function Category({isrender}) {
+function Category() {
     console.log('re-render-Category')
 
     const navigate = useNavigate();
@@ -36,49 +33,6 @@ function Category({isrender}) {
             }
         }
     },[])
-
-    console.log(user)
-
-    // useEffect(() => {
-    //     const config = {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         }
-    //     }
-    //     const oldtoken = {
-    //         accessToken: token,
-    //         refreshToken: refreshToken
-    //     }
-    //     axios.get(CATEGORY_API, config)
-    //         .then(res => {
-    //             setCategories(res.data);
-    //             setCategoriesSearch(res.data);
-    //         })
-    //         .catch(async error => {
-    //             if (error.response && error.response.status === 401) {
-    //                 try {
-    //                     const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        
-    //                     localStorage.setItem('accessToken', accessToken);
-    //                     localStorage.setItem('refreshToken', refreshToken);
-    //                     reNewToken(accessToken, refreshToken)
-    //                     // Gọi lại API với token mới
-    //                     const newConfig = {
-    //                         headers: {
-    //                             Authorization: `Bearer ${accessToken}`
-    //                         }
-    //                     }
-    //                     const response = await axios.get(CATEGORY_API, newConfig);
-    //                     setCategories(response.data);
-    //                     setCategoriesSearch(response.data);
-    //                 } catch (error) {
-    //                     console.error('Error fetching categories after token renewal:', error);
-    //                 }
-    //             } else {
-    //                 console.error('Error fetching categories:', error);
-    //             }
-    //         });
-    // }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,7 +71,7 @@ function Category({isrender}) {
                     console.error('Error renewing token:', error);
                 }
             } else {
-                console.error('Error fetching categories:', response.error || 'Unknown error');
+                console.error('Error fetching categories:');
             }
         };
         fetchData();

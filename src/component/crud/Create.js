@@ -1,9 +1,19 @@
 import { useState } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { createCategory } from '../../CallApi/CategoryApi/createCategory';
+import { renewToken } from '../../CallApi/renewToken'
+import { useAuth } from '../Context/AuthProvider';
 
 import TextInput from "../input/TextInput"
+import SelectInput from "../input/SelectInput"
+import ImageInput from "../input/ImageInput"
 
 const Create =(props) => {
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
 
     const [formData, setFormData] = useState({});
 
@@ -14,9 +24,57 @@ const Create =(props) => {
         }));
     };
 
-    const handleCreate = () => {
-        props.sendData(formData)
+    const handleCreateType = async (config) => {
+        if(props.type === 'Category') {
+            const data = {
+                categoryName: formData.name,
+                description: formData.description,
+            }
+            return createCategory(config, data)
+        }
+    }
+
+    const handleCreate = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleCreateType(config);
+        if (response && response.data) {
+            navigate(props.url)
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleCreateType(newconfig);
+                    if (newDataResponse && newDataResponse.data) {
+                        navigate('/Ql/Category/')
+                    } else {
+                        console.error(`Error create ${props.type} after token renewal`);
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error(`Error create ${props.type}`);
+            }
+        }
     };
+
+    console.log(props)
 
     return (
         <>
@@ -35,6 +93,23 @@ const Create =(props) => {
                                     sendData={handleDataFromInput} 
                                 />
                             )}
+                            {item.type === 'Select' && (
+                                <SelectInput
+                                    title={item.title}
+                                    name={item.name}
+                                    type={item.type}
+                                    options={item.options}
+                                    sendData={handleDataFromInput} 
+                                />
+                            )}
+                            {/* {item.type === 'Image' && (
+                                <ImageInput 
+                                    title={item.title}
+                                    name={item.name}
+                                    type={item.type} 
+                                    sendData={handleDataFromInput} 
+                                />
+                            )} */}
                         </div>
                     ))}
 

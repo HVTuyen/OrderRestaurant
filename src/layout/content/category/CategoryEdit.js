@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { CATEGORY_API, CATEGORY_TITLE } from '../../constants'
+import { CATEGORY_API, CATEGORY_TITLE, CATEGORY_TYPE } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 import { update } from 'firebase/database';
 import { getCategory } from '../../../CallApi/CategoryApi/getCategory'
@@ -71,53 +71,11 @@ function CategoryEdit( ) {
         fetchData();
     }, []);
 
-    const handleDataFromUpdate = async ( formData ) => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        };
-        const oldtoken = {
-            accessToken: token,
-            refreshToken: refreshToken
-        };
-        const data = {
-            categoryName: formData.name ? formData.name : name,
-            description: formData.description ? formData.description : description,
-        }
-        const response = await editCategory(config, id, data);
-        if (response && response.data) {
-            navigate('/Ql/Category/')
-        } else {
-            if (response && response.error === 'Unauthorized') {
-                try {
-                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    reNewToken(accessToken, refreshToken);
-                    const newconfig = {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    };
-                    const newDataResponse = await editCategory(newconfig, id, data);
-                    if (newDataResponse && newDataResponse.data) {
-                        navigate('/Ql/Category/')
-                    } else {
-                        console.error('Error edit category after token renewal');
-                    }
-                } catch (error) {
-                    console.error('Error renewing token:', error);
-                }
-            } else {
-                console.error('Error edit category');
-            }
-        }
-    };
-    
     return (
         <div className="col-10">
             <Update
+                id={id}
+                type={CATEGORY_TYPE}
                 url='/Ql/Category'
                 title={CATEGORY_TITLE}
                 item={
@@ -136,7 +94,6 @@ function CategoryEdit( ) {
                         }
                     ]
                 }
-                sendData={handleDataFromUpdate} 
             />
         </div>
     )

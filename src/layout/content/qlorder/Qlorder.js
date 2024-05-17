@@ -280,6 +280,7 @@ function Qlorder({ activeMenu }) {
                             </tbody>
                         </table>
                         <Pagination
+                            url='Order'
                             totalPages={totalPages}
                             currentPage={page}
                             search={search}

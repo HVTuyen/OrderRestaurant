@@ -8,7 +8,10 @@ export const TABLE_API = 'https://192.168.1.145/api/Table/'
 
 export const QLORDER_API = 'https://192.168.1.145/api/Order/'
 export const GET_ORDER_SUB = 'get-search-page'
+
 export const QLREQUEST_API = 'https://192.168.1.145/api/Requirement/'
+export const GET_REQUEST_SUB = 'get-search-page'
+
 export const QLBILL_API = 'https://192.168.1.145/api/Order/'
 
 export const STATISTICAL_API = 'https://192.168.1.145/api/Statistics/'
@@ -38,7 +41,11 @@ export const REQUEST_REFUSE_CODE = 3
 
 export const TABLE_TYPE = 'Ban'
 
+export const CATEGORY_TYPE = 'Category'
 export const CATEGORY_TITLE = 'loại hàng'
-export const PRODUCT_TITLE = 'Ban'
+
+export const PRODUCT_TYPE = 'Food'
+export const PRODUCT_TITLE = 'món ăn'
+
 export const TABLE_TITLE = 'Ban'
 export const EMPLOYEE_TITLE = 'Ban'

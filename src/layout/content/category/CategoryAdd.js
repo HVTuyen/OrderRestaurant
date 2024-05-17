@@ -4,69 +4,17 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-import { CATEGORY_API,  CATEGORY_TITLE} from '../../constants'
-import { storage } from '../../../firebaseConfig';
-import { createCategory } from '../../../CallApi/CategoryApi/createCategory';
-import { renewToken } from '../../../CallApi/renewToken'
+import { CATEGORY_API,  CATEGORY_TITLE, CATEGORY_TYPE} from '../../constants'
 import { useAuth } from '../../../component/Context/AuthProvider';
 
 import Create from '../../../component/crud/Create';
 
 function CategoryAdd( ) {
-
-    const navigate = useNavigate();
-
-    const { account, token, refreshToken, reNewToken } = useAuth();
-
-
-    const handleDataFromCreate = async ( formData ) => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        };
-        const oldtoken = {
-            accessToken: token,
-            refreshToken: refreshToken
-        };
-        const data = {
-            categoryName: formData.name,
-            description: formData.description,
-        }
-        const response = await createCategory(config, data);
-        if (response && response.data) {
-            navigate('/Ql/Category/')
-        } else {
-            if (response && response.error === 'Unauthorized') {
-                try {
-                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    reNewToken(accessToken, refreshToken);
-                    const newconfig = {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    };
-                    const newDataResponse = await createCategory(newconfig, data);
-                    if (newDataResponse && newDataResponse.data) {
-                        navigate('/Ql/Category/')
-                    } else {
-                        console.error('Error create category after token renewal');
-                    }
-                } catch (error) {
-                    console.error('Error renewing token:', error);
-                }
-            } else {
-                console.error('Error create category');
-            }
-        }
-    };
-
     return (
         <div className="col-10">
 
             <Create
+                type={CATEGORY_TYPE}
                 url='/Ql/Category'
                 title={CATEGORY_TITLE}
                 item={
@@ -83,7 +31,6 @@ function CategoryAdd( ) {
                         }
                     ]
                 }
-                sendData={handleDataFromCreate} 
             />
         </div>
     )

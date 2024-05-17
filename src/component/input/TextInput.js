@@ -5,6 +5,9 @@ const TextInput = (props) => {
 
     useEffect(() => {
         setData(props.value);
+        if (props.sendData) {
+            props.sendData(props.name, props.value);
+        }
     }, [props.value]);
 
     const handleChange = (e) => {

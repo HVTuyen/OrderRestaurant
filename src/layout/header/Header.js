@@ -5,7 +5,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { faBell } from '@fortawesome/free-regular-svg-icons'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react';
-import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, addDoc, deleteDoc } from "firebase/firestore";
 
 import { useAuth } from '../../component/Context/AuthProvider';
 import { renewToken } from '../../CallApi/renewToken';
@@ -14,10 +14,16 @@ import Notification from '../../component/Notify/Notification';
 import { NOTIFICATION_API, GET_NOTIFICATION_COUNT_SUB } from '../constants';
 import { getNotificationCount } from '../../CallApi/NotificationApi/GetNotificationCount';
 import { db } from '../../firebaseConfig';
+import { Howl, Howler } from 'howler';
+import soundnotification from './sound-notification.mp3'
 
 function Header() {
 
     const navigate = useNavigate();
+
+    const sound = new Howl({
+        src: soundnotification,
+    });
 
     const { account, token, refreshToken, reNewToken, logout } = useAuth();
     const [isShow, setIsShow] = useState(false)
@@ -136,6 +142,14 @@ function Header() {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     console.log("orders: ", change.doc.data());
+                    sound.play()
+                    deleteDoc(doc(db, "orders", change.doc.id))
+                    .then(() => {
+                        console.log("Document successfully deleted!");
+                    })
+                    .catch((error) => {
+                        console.error("Error removing document: ", error);
+                    });
                 }
             });
             setRender(prevCount => prevCount + 1);

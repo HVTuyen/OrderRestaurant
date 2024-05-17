@@ -17,6 +17,8 @@ function QlorderDetail( ) {
     const {id} = useParams()
     console.log(id)
 
+    const searchOrder = sessionStorage.getItem('searchOrder')
+
     const [order,setOrder] = useState([])
     const [status,setStatus] = useState([])
     const [total,setTotal] = useState()
@@ -193,7 +195,7 @@ function QlorderDetail( ) {
                     <button 
                         className='btn btn-outline-danger'
                         onClick={() => {
-                            navigate('/Ql/Action/Order')
+                            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}`)
                         }}
                     >
                         Trở về

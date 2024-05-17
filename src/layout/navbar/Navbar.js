@@ -97,13 +97,13 @@ function Navbar() {
             </Link>
             <ul className={classNavbarUl}>
               <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
-                <Link className={classNavbarA} to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder')}`}>
+                <Link className={classNavbarA} to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder') || ''}`}>
                   <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                   Đơn hàng
                 </Link>
               </li>
               <li className={activeMenu === 'request' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('request')}>
-                <Link className={classNavbarA} to="/Ql/Action/Request">
+                <Link className={classNavbarA} to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}`}>
                   <FontAwesomeIcon icon={activeMenu === 'request' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                   Yêu cầu
                 </Link>
@@ -170,7 +170,7 @@ function Navbar() {
                       </Link>
                     </li>
                     <li className={activeMenu === 'request' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('request')}>
-                      <Link className={classNavbarA} to="/Ql/Action/Request">
+                      <Link className={classNavbarA} to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}`}>
                         <FontAwesomeIcon icon={activeMenu === 'request' ? faCircleDot : faCircle} className={classNavbarIconLI}/>
                         Yêu cầu
                       </Link>

@@ -1,9 +1,17 @@
 import { useState } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { editCategory } from '../../CallApi/CategoryApi/editCategory';
+import { renewToken } from '../../CallApi/renewToken'
+import { useAuth } from '../Context/AuthProvider';
 
 import TextInput from "../input/TextInput"
 
 const Update =(props) => {
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
 
     const [formData, setFormData] = useState({});
 
@@ -14,11 +22,57 @@ const Update =(props) => {
         }));
     };
 
-    const handleUpdate = () => {
-        props.sendData(formData)
-    };
+    console.log(props.id)
 
-    console.log(props.item)
+    const handleUpdateType = async (config) => {
+        if(props.type === 'Category') {
+            const data = {
+                categoryName: formData.name,
+                description: formData.description,
+            }
+            return editCategory(config, props.id, data)
+        }
+    }
+
+    const handleUpdate = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleUpdateType(config);
+        if (response && response.data) {
+            navigate(props.url)
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleUpdateType(config);
+                    if (newDataResponse && newDataResponse.data) {
+                        navigate(props.url)
+                    } else {
+                        console.error(`Error edit ${props.type} after token renewal`);
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error(`Error edit ${props.type}`);
+            }
+        }
+    };
 
     return (
         <>

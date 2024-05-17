@@ -20,6 +20,9 @@ const Notification = (props) => {
 
   const navigate = useNavigate();
 
+  const searchOrder = sessionStorage.getItem('searchOrder');
+  const searchRequest = sessionStorage.getItem('searchRequest');
+
   const notificationContainer = clsx(style.notificationContainer)
   const notification = clsx(style.notification)
   const notificationSeen = clsx(style.notificationSeen, 'd-flex j-center')
@@ -89,11 +92,10 @@ const Notification = (props) => {
     if (response && response.data) {
       handleClickToHeader(isCheck)
       if (type === 'Order') {
-        sessionStorage.setItem('searchOrder','')
-        navigate('/Ql/Action/Order?page=1&search=')
+        navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}`)
       }
       if (type === 'Requirements') {
-        navigate('/Ql/Action/Request')
+        navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}`)
       }
     } else if (response && response.error === 'Unauthorized') {
       try {
@@ -110,8 +112,12 @@ const Notification = (props) => {
         if (newDataResponse && newDataResponse.data) {
           handleClickToHeader()
           if (type === 'Order') {
-            sessionStorage.setItem('searchOrder','')
-            navigate('/Ql/Action/Order?page=1')
+            sessionStorage.setItem('searchOrder', '')
+            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}`)
+          }
+          if (type === 'Requirements') {
+            sessionStorage.setItem('searchRequest', '')
+        navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}`)
           }
         } else {
           console.error('Error seen notifications after token renewal');
