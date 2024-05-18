@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { CATEGORY_API, CATEGORY_TITLE } from '../../constants'
+import { CATEGORY_TITLE } from '../../constants'
 import { getCategory } from '../../../CallApi/CategoryApi/getCategory'
 import { deleteCategory } from '../../../CallApi/CategoryApi/deleteCategory'
 import { renewToken } from '../../../CallApi/renewToken'

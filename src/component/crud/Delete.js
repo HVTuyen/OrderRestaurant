@@ -20,7 +20,13 @@ const Delete =(props) => {
                     {props.item.map((item, index) => (
                         <div key={index} className="mb-3 row" style={{ margin: '24px' }}>
                             <label className="col-sm-3 col-form-label">{item.title}</label>
-                            <label className="col-sm-9 col-form-label">{item.value}</label>
+                            {
+                                item.type === 'Image' ? (
+                                    <img src={item.value} style={{maxWidth:'30%', height:'100%', border:'1px solid #f0e8e8'}}/>
+                                ) : (
+                                    <label className="col-sm-9 col-form-label">{item.value}</label>
+                                )
+                            }
                         </div>
                     ))}
 

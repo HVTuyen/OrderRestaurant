@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { PRODUCT_API } from '../../layout/constants';
+import { EMPLOYEE_API } from '../../layout/constants';
 
-export const editProduct = async (config, id, data) => {
+export const createEmployee = async (config, data) => {
     try {
-        const response = await axios.put(`${PRODUCT_API}${id}`, data, config);
+        const response = await axios.post(`${EMPLOYEE_API}postEmployee`, data, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 401) {

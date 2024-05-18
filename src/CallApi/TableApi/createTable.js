@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { PRODUCT_API } from '../../layout/constants';
+import { TABLE_API } from '../../layout/constants';
 
-export const editProduct = async (config, id, data) => {
+export const createTable = async (config, data) => {
     try {
-        const response = await axios.put(`${PRODUCT_API}${id}`, data, config);
+        const response = await axios.post(TABLE_API, data, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 401) {
