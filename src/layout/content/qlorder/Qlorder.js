@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
 
@@ -12,12 +12,18 @@ import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_C
 import { formatDateTimeSQL } from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import { useAuth } from '../../../component/Context/AuthProvider';
+import { renewToken } from '../../../CallApi/renewToken'
 import { decodeJWT } from '../../../Functions/decodeJWT'
 import Pagination from '../../../component/Pagination/Pagination'
 import { getOrder } from '../../../CallApi/OrderApi/GetOrder';
+import { deleteOrder } from '../../../CallApi/OrderApi/deleteOrder';
 
 function Qlorder({ activeMenu }) {
     console.log('re-render-qlorder')
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
 
     useEffect(() => {
         sessionStorage.setItem('activeMenu', 'order');
@@ -33,8 +39,7 @@ function Qlorder({ activeMenu }) {
         sessionStorage.setItem('searchOrder', e.target.value)
         setQlOrder(e.target.value)
     }
-
-    const { token } = useAuth();
+    
     const [qlOrdersSearch, setQlOrderSearch] = useState([])
     const [qlOrder, setQlOrder] = useState(search || '')
     const [status, setStatus] = useState([])
@@ -128,7 +133,7 @@ function Qlorder({ activeMenu }) {
             });
     }
 
-    const handleDeleteOrder = (id) => {
+    const handleDeleteOrder = async (id) => {
         axios.delete(`${QLORDER_API}${id}`)
             .then(res => {
                 fetchData()
@@ -136,6 +141,45 @@ function Qlorder({ activeMenu }) {
             .catch(error => {
                 console.error('Error accept:', error);
             });
+
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await deleteOrder(config, id);
+        if (response) {
+            fetchData()
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await deleteOrder(newconfig, id);
+                    if (newDataResponse) {
+                        fetchData()
+                    } else {
+                        console.error('Error delete order after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error delete order');
+            }
+        }
     }
 
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')

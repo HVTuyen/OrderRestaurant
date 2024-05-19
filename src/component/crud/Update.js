@@ -22,6 +22,7 @@ const Update = (props) => {
 
     const [formData, setFormData] = useState({});
     const [urlImage, setUrlImage] = useState('')
+    const [errors, setErrors] = useState([])
 
     const handleDataFromInput = (name, value) => {
         setFormData(prevState => ({
@@ -194,52 +195,105 @@ const Update = (props) => {
 
     const handleUpdateType = async (config) => {
         if (props.type === 'Category') {
-            const data = {
-                categoryName: formData.name,
-                description: formData.description,
+            if (formData.name && formData.description) {
+                const data = {
+                    categoryName: formData.name,
+                    description: formData.description,
+                }
+                return editCategory(config, props.id, data)
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.description) {
+                    setErrors(prevErrors => [...prevErrors, 'description'])
+                }
             }
-            return editCategory(config, props.id, data)
         }
         if (props.type === 'Food') {
-            if (typeof formData.image === 'object') {
-                handleUpload()
-            }
-            else {
-                const data = {
-                    nameFood: formData.name,
-                    unitPrice: formData.price,
-                    categoryId: formData.categoryId,
-                    image: formData.image,
+
+
+            if (formData.name && formData.price && formData.categoryId && formData.image) {
+                if (typeof formData.image === 'object') {
+                    handleUpload()
                 }
-                return editProduct(config, props.id, data)
+                else {
+                    const data = {
+                        nameFood: formData.name,
+                        unitPrice: formData.price,
+                        categoryId: formData.categoryId,
+                        image: formData.image,
+                    }
+                    return editProduct(config, props.id, data)
+                }
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.description) {
+                    setErrors(prevErrors => [...prevErrors, 'price'])
+                }
+                if (!formData.categoryId) {
+                    setErrors(prevErrors => [...prevErrors, 'categoryId'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
             }
         }
         if (props.type === 'Ban') {
-            if (typeof formData.image === 'object') {
-                handleUpload()
-            }
-            else {
-                const data = {
-                    tableName: formData.name,
-                    note: formData.note,
-                    qR_id: formData.image,
+            if (formData.name && formData.image) {
+                if (typeof formData.image === 'object') {
+                    handleUpload()
                 }
-                return editTable(config, props.id, data)
+                else {
+                    const data = {
+                        tableName: formData.name,
+                        note: formData.note,
+                        qR_id: formData.image,
+                    }
+                    return editTable(config, props.id, data)
+                }
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
             }
         }
         if (props.type === 'Employee') {
-            if (typeof formData.image === 'object') {
-                handleUpload()
-            }
-            else {
-                const data = {
-                    employeeName: formData.name,
-                    phone: formData.phone,
-                    email: formData.email,
-                    password: formData.password,
-                    image: formData.image,
+            if (formData.name && formData.phone && formData.email && formData.password && formData.image) {
+                if (typeof formData.image === 'object') {
+                    handleUpload()
                 }
-                return editEmployee(config, props.id, data)
+                else {
+                    const data = {
+                        employeeName: formData.name,
+                        phone: formData.phone,
+                        email: formData.email,
+                        password: formData.password,
+                        image: formData.image,
+                    }
+                    return editEmployee(config, props.id, data)
+                }
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.phone) {
+                    setErrors(prevErrors => [...prevErrors, 'phone'])
+                }
+                if (!formData.email) {
+                    setErrors(prevErrors => [...prevErrors, 'email'])
+                }
+                if (!formData.password) {
+                    setErrors(prevErrors => [...prevErrors, 'password'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
             }
         }
     }
@@ -294,32 +348,62 @@ const Update = (props) => {
                     {props.item.map((item, index) => (
                         <div key={index} className="mb-3 row" style={{ margin: '24px' }}>
                             {item.type === 'Text' && (
-                                <TextInput
-                                    title={item.title}
-                                    name={item.name}
-                                    value={item.value}
-                                    type={item.type}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <TextInput
+                                        title={item.title}
+                                        name={item.name}
+                                        value={item.value}
+                                        type={item.type}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Không được để trống trường [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                             {item.type === 'Select' && (
-                                <SelectInput
-                                    title={item.title}
-                                    name={item.name}
-                                    value={item.value}
-                                    type={item.type}
-                                    options={item.options}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <SelectInput
+                                        title={item.title}
+                                        name={item.name}
+                                        value={item.value}
+                                        type={item.type}
+                                        options={item.options}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Bắt buộc chọn [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                             {item.type === 'Image' && (
-                                <ImageInput
-                                    title={item.title}
-                                    name={item.name}
-                                    value={item.value}
-                                    type={item.type}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <ImageInput
+                                        title={item.title}
+                                        name={item.name}
+                                        value={item.value}
+                                        type={item.type}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Bắt buộc chọn [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                         </div>
                     ))}

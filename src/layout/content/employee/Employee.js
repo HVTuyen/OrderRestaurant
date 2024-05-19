@@ -63,7 +63,7 @@ function Employee() {
                     navigate('/Login')
                 }
                 } else {
-                    console.error('Error fetching table:', response.error || 'Unknown error');
+                    console.error('Error fetching employee');
                 }
             }
         };

@@ -4,7 +4,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 import { createCategory } from '../../CallApi/CategoryApi/createCategory';
 import { createProduct } from '../../CallApi/ProductApi/createProduct';
-import { createTable} from '../../CallApi/TableApi/createTable';
+import { createTable } from '../../CallApi/TableApi/createTable';
 import { createEmployee } from '../../CallApi/EmployeeApi/createEmployee'
 import { renewToken } from '../../CallApi/renewToken'
 import { useAuth } from '../Context/AuthProvider';
@@ -22,6 +22,7 @@ const Create = (props) => {
 
     const [formData, setFormData] = useState({});
     const [urlImage, setUrlImage] = useState('')
+    const [errors, setErrors] = useState([])
 
     const handleDataFromInput = (name, value) => {
         setFormData(prevState => ({
@@ -78,9 +79,9 @@ const Create = (props) => {
     }, [urlImage]);
 
     const handleCreateWithImage = async (config, oldtoken) => {
-        let data 
+        let data
         if (props.type === 'Food') {
-            
+
             data = {
                 nameFood: formData.name,
                 unitPrice: formData.price,
@@ -194,22 +195,75 @@ const Create = (props) => {
 
     const handleCreateType = async (config) => {
         if (props.type === 'Category') {
-            const data = {
-                categoryName: formData.name,
-                description: formData.description,
+            if (formData.name && formData.description) {
+                const data = {
+                    categoryName: formData.name,
+                    description: formData.description,
+                }
+                return createCategory(config, data)
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.description) {
+                    setErrors(prevErrors => [...prevErrors, 'description'])
+                }
             }
-            return createCategory(config, data)
         }
         if (props.type === 'Food') {
-            handleUpload()
+            if (formData.name && formData.price && formData.categoryId && formData.image) {
+                handleUpload()
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.description) {
+                    setErrors(prevErrors => [...prevErrors, 'price'])
+                }
+                if (!formData.categoryId) {
+                    setErrors(prevErrors => [...prevErrors, 'categoryId'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
+            }
         }
         if (props.type === 'Ban') {
-            handleUpload()
+            if (formData.name && formData.image) {
+                handleUpload()
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
+            }
         }
         if (props.type === 'Employee') {
-            handleUpload()
+            if (formData.name && formData.phone && formData.email && formData.password && formData.image) {
+                handleUpload()
+            } else {
+                if (!formData.name) {
+                    setErrors(prevErrors => [...prevErrors, 'name'])
+                }
+                if (!formData.phone) {
+                    setErrors(prevErrors => [...prevErrors, 'phone'])
+                }
+                if (!formData.email) {
+                    setErrors(prevErrors => [...prevErrors, 'email'])
+                }
+                if (!formData.password) {
+                    setErrors(prevErrors => [...prevErrors, 'password'])
+                }
+                if (!formData.image) {
+                    setErrors(prevErrors => [...prevErrors, 'image'])
+                }
+            }
         }
     }
+
+    console.log(errors)
 
     const handleCreate = async () => {
         const config = {
@@ -263,29 +317,59 @@ const Create = (props) => {
                     {props.item.map((item, index) => (
                         <div key={index} className="mb-3 row" style={{ margin: '24px' }}>
                             {item.type === 'Text' && (
-                                <TextInput
-                                    title={item.title}
-                                    name={item.name}
-                                    type={item.type}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <TextInput
+                                        title={item.title}
+                                        name={item.name}
+                                        type={item.type}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Không được để trống trường [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                             {item.type === 'Select' && (
-                                <SelectInput
-                                    title={item.title}
-                                    name={item.name}
-                                    type={item.type}
-                                    options={item.options}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <SelectInput
+                                        title={item.title}
+                                        name={item.name}
+                                        type={item.type}
+                                        options={item.options}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Bắt buộc chọn [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                             {item.type === 'Image' && (
-                                <ImageInput
-                                    title={item.title}
-                                    name={item.name}
-                                    type={item.type}
-                                    sendData={handleDataFromInput}
-                                />
+                                <>
+                                    <ImageInput
+                                        title={item.title}
+                                        name={item.name}
+                                        type={item.type}
+                                        sendData={handleDataFromInput}
+                                    />
+                                    {
+                                        errors.includes(item.name) && !formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Bắt buộc chọn [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                </>
                             )}
                         </div>
                     ))}
