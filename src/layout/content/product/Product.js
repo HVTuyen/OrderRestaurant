@@ -122,12 +122,14 @@ function Product() {
     }, []);
 
     useEffect(() => {
+
+        const searchProduct = product.toLowerCase();
         let filteredProducts = products;
     
-        if (product && categoryId) {
-            filteredProducts = products.filter(item => item.nameFood.includes(product) && item.categoryId == categoryId);
+        if (searchProduct && categoryId) {
+            filteredProducts = products.filter(item => item.nameFood.toLowerCase().includes(searchProduct) && item.categoryId == categoryId);
         } else if (product) {
-            filteredProducts = products.filter(item => item.nameFood.includes(product));
+            filteredProducts = products.filter(item => item.nameFood.toLowerCase().includes(searchProduct));
         } else if (categoryId) {
             filteredProducts = products.filter(item => item.categoryId == categoryId);
         }

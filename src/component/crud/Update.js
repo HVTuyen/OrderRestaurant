@@ -23,6 +23,7 @@ const Update = (props) => {
     const [formData, setFormData] = useState({});
     const [urlImage, setUrlImage] = useState('')
     const [errors, setErrors] = useState([])
+    const [errorsFormat, setErrorsFormat] = useState([])
 
     const handleDataFromInput = (name, value) => {
         setFormData(prevState => ({
@@ -160,7 +161,7 @@ const Update = (props) => {
                 phone: formData.phone,
                 email: formData.email,
                 password: formData.password,
-                image: formData.image,
+                image: urlImage,
             }
             const response = await editEmployee(config, props.id, data);
             if (response && response.data) {
@@ -214,24 +215,33 @@ const Update = (props) => {
 
 
             if (formData.name && formData.price && formData.categoryId && formData.image) {
-                if (typeof formData.image === 'object') {
-                    handleUpload()
-                }
-                else {
-                    const data = {
-                        nameFood: formData.name,
-                        unitPrice: formData.price,
-                        categoryId: formData.categoryId,
-                        image: formData.image,
+                if (!parseInt(formData.price)) {
+                    setErrorsFormat(prevErrors => [...prevErrors, 'price'])
+                } else {
+                    if (typeof formData.image === 'object') {
+                        handleUpload()
                     }
-                    return editProduct(config, props.id, data)
+                    else {
+                        const data = {
+                            nameFood: formData.name,
+                            unitPrice: formData.price,
+                            categoryId: formData.categoryId,
+                            image: formData.image,
+                        }
+                        return editProduct(config, props.id, data)
+                    }
                 }
             } else {
                 if (!formData.name) {
                     setErrors(prevErrors => [...prevErrors, 'name'])
                 }
-                if (!formData.description) {
+                if (!formData.price) {
                     setErrors(prevErrors => [...prevErrors, 'price'])
+                }
+                if (formData.price) {
+                    if (!parseInt(formData.price)) {
+                        setErrorsFormat(prevErrors => [...prevErrors, 'price'])
+                    }
                 }
                 if (!formData.categoryId) {
                     setErrors(prevErrors => [...prevErrors, 'categoryId'])
@@ -361,6 +371,14 @@ const Update = (props) => {
                                             <>
                                                 <div className="col-sm-3"></div>
                                                 <label className="col-sm-9 error">Không được để trống trường [{item.title}]!</label>
+                                            </>
+                                        )
+                                    }
+                                    {
+                                        errorsFormat.includes(item.name) && formData[item.name] && (
+                                            <>
+                                                <div className="col-sm-3"></div>
+                                                <label className="col-sm-9 error">Sai định dạng trường [{item.title}]!</label>
                                             </>
                                         )
                                     }

@@ -78,7 +78,10 @@ function Category() {
     }, []);
 
     useEffect(() => {
-        setCategoriesSearch(category ? categories.filter(item => item.categoryName.includes(category)) : categories);
+        const searchCategory = category.toLowerCase();
+        const filteredCategories = categories.filter(item => item.categoryName.toLowerCase().includes(searchCategory));
+        
+        setCategoriesSearch(filteredCategories);
     }, [category])
     
     console.log(category)

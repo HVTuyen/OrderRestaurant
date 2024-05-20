@@ -30,7 +30,10 @@ function Table() {
     }, [render])
 
     useEffect(() => {
-        setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
+        const searchTable = table.toLowerCase();
+        const filteredTables = tables.filter(item => item.tableName.toLowerCase().includes(searchTable));
+        
+        setTablesSearch(filteredTables);
     }, [table])
 
     const ordersRef = collection(db, "table");

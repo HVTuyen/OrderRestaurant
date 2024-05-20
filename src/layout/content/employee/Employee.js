@@ -72,7 +72,10 @@ function Employee() {
 
 
     useEffect(() => {
-        setEmployeesSearch(employee ? employees.filter(item => item.employeeName.includes(employee)) : employees);
+        const searchEmployee = employee.toLowerCase();
+        const filteredEmployees = employees.filter(item => item.employeeName.toLowerCase().includes(searchEmployee));
+        
+        setEmployeesSearch(filteredEmployees);
     }, [employee])
 
     console.log(employee)
