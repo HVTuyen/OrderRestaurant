@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import { doc, onSnapshot, collection } from "firebase/firestore";
+import { doc, onSnapshot, collection, deleteDoc } from "firebase/firestore";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
@@ -41,6 +41,7 @@ function Qltable() {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     console.log("table: ", change.doc.data());
+                    deleteDoc(doc(db, "table", change.doc.id))
                 }
             });
                 setRender(prevCount => prevCount + 1);

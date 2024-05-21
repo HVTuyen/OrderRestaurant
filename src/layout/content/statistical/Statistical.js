@@ -33,6 +33,17 @@ const Statistical = () => {
     const [showFood, setShowFood] = useState(false)
     const [showOrder, setShowOrder] = useState(false)
 
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if(account) {
+            setUser(account)
+            if(account.role !== 'admin') {
+                navigate('/Ql/AccessDenied')
+            }
+        }
+    },[])
+
     const handleGetSatistical = () => {
         const fetchData = async () => {
             const config = {
@@ -56,34 +67,42 @@ const Statistical = () => {
                 setDataFood(response.data.dayFood);
                 setTotalOrder(response.data.totalOrder);
                 setDataOrder(response.data.donHang)
-            } else if (response && response.error === 'Unauthorized') {
-                try {
-                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    reNewToken(accessToken, refreshToken);
-                    const newconfig = {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    };
-                    const newDataResponse = await getRevenue(newconfig, date);
-                    if (newDataResponse && newDataResponse.data) {
-                        setTotalRevenue(response.data.totalRevenue);
-                        setDataRevenue(response.data.doanhSo)
-                        setTotalFood(response.data.food.totalFood);
-                        setDataFood(response.data.dayFood);
-                        setTotalOrder(response.data.totalOrder);
-                        setDataOrder(response.data.donHang)
-                    } else {
-                        console.error('Error fetching revenue after token renewal');
-                    }
-                } catch (error) {
-                    console.error('Error renewing token:', error);
-                }
             } else {
-                if(response.error === 'Date') {
-                    alert('Ngày bắt đầu phải trước ngày kết thúc thống kê!')
+                if (response && response.error === 'Unauthorized') {
+                    try {
+                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                        localStorage.setItem('accessToken', accessToken);
+                        localStorage.setItem('refreshToken', refreshToken);
+                        reNewToken(accessToken, refreshToken);
+                        const newconfig = {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        };
+                        const newDataResponse = await getRevenue(newconfig, date);
+                        if (newDataResponse && newDataResponse.data) {
+                            setTotalRevenue(response.data.totalRevenue);
+                            setDataRevenue(response.data.doanhSo)
+                            setTotalFood(response.data.food.totalFood);
+                            setDataFood(response.data.dayFood);
+                            setTotalOrder(response.data.totalOrder);
+                            setDataOrder(response.data.donHang)
+                        }
+                        if (newDataResponse && newDataResponse.error === 'AccessDenied') {
+                            navigate('/Ql/AccessDenied')
+                        }
+                        else {
+                            console.error('Error fetching revenue after token renewal');
+                        }
+                    } catch (error) {
+                        console.error('Error renewing token:', error);
+                    }
+                }
+                if (response && response.error === 'AccessDenied') {
+                    navigate('/Ql/AccessDenied')
+                }
+                else {
+                    console.error('Error fetching revenue');
                 }
             }
         };
@@ -91,11 +110,13 @@ const Statistical = () => {
     }
 
     console.log(TotalRevenue)
-    console.log(startDate)
+    console.log(startDate, endDate)
 
     useEffect(() => {
-        handleGetSatistical();
-    }, [])
+        if(user && user.role === 'admin') {
+            handleGetSatistical()
+        }
+    }, [user])
 
     return (
         <div className="col-10">
@@ -113,13 +134,13 @@ const Statistical = () => {
                                         <div>
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>Date</h5>
-                                                <DatePicker className="form-control" selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy"/>
+                                                <DatePicker className="form-control" selected={startDate} onChange={(date) => setStartDate(formatDateTimeSearch(date))} dateFormat="dd/MM/yyyy"/>
                                             </div>
                                         </div>
                                         <div>
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>-</h5>
-                                                <DatePicker className="form-control" selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy"/>
+                                                <DatePicker className="form-control" selected={endDate} onChange={(date) => setStartDate(formatDateTimeSearch(date))} dateFormat="dd/MM/yyyy"/>
                                             </div>
                                         </div>
                                     </div>

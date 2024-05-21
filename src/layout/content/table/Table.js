@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import { doc, onSnapshot, collection, deleteDoc } from "firebase/firestore";
 
@@ -8,15 +8,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './table.module.scss'
+import { useAuth } from '../../../component/Context/AuthProvider';
 import { TABLE_API } from '../../constants'
 import { db } from '../../../firebaseConfig';
 
 function Table() {
     console.log('re-render-Table')
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
+
     const [tables,setTables] = useState([])
     const [tablesSearch,setTablesSearch] = useState([])
     const [table,setTable] = useState('')
     const [render, setRender] = useState(0)
+
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if(account) {
+            setUser(account)
+            if(account.role !== 'admin') {
+                navigate('/Ql/AccessDenied')
+            }
+        }
+    },[])
 
     useEffect(() => {
         axios.get(TABLE_API)

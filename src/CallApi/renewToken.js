@@ -10,6 +10,7 @@ export const renewToken = async (oldToken, navigate) => {
     } catch (error) {
         if(error.response && error.response.status === 401) {
             if (navigate) {
+                alert('Phiên đăng nhập hết hạn!')
                 navigate('/Login');
             }
         }

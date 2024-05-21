@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
@@ -17,6 +19,7 @@ import { decodeJWT } from '../../../Functions/decodeJWT'
 import Pagination from '../../../component/Pagination/Pagination'
 import { getOrder } from '../../../CallApi/OrderApi/GetOrder';
 import { deleteOrder } from '../../../CallApi/OrderApi/deleteOrder';
+import { formatDateTimeSearch } from "../../../Functions/formatDateTime";
 
 function Qlorder({ activeMenu }) {
     console.log('re-render-qlorder')
@@ -32,18 +35,38 @@ function Qlorder({ activeMenu }) {
 
     const [searchParams] = useSearchParams();
     const page = searchParams.get('page');
+    const searchStartDate = searchParams.get('fromTime');
+    const searchEndDate = searchParams.get('toTime');
+    const searchStatus = searchParams.get('code');
     const search = searchParams.get('search');
     console.log(page)
 
-    const handleChange = (e) => {
+    const handleChangeSearchEndDate = (date) => {
+        sessionStorage.setItem('searchEndDate', formatDateTimeSearch(date))
+        setEndDate(formatDateTimeSearch(date))
+    }
+
+    const handleChangeSearchStartDate = (date) => {
+        sessionStorage.setItem('searchStartDate', formatDateTimeSearch(date))
+        setStartDate(formatDateTimeSearch(date))
+    }
+
+    const handleChangeSearchStatus = (e) => {
+        sessionStorage.setItem('searchStatus', e.target.value)
+        setStatusSelect(e.target.value)
+    }
+
+    const handleChangeSearch = (e) => {
         sessionStorage.setItem('searchOrder', e.target.value)
         setQlOrder(e.target.value)
     }
-    
+
+    const [startDate, setStartDate] = useState(searchStartDate || formatDateTimeSearch(new Date()));
+    const [endDate, setEndDate] = useState(searchEndDate || formatDateTimeSearch(new Date()));
     const [qlOrdersSearch, setQlOrderSearch] = useState([])
     const [qlOrder, setQlOrder] = useState(search || '')
     const [status, setStatus] = useState([])
-    const [statusSelect, setStatusSelect] = useState('')
+    const [statusSelect, setStatusSelect] = useState(searchStatus || '')
     const [render, setRender] = useState(0)
     const [user, setUser] = useState(null);
     const [pageSize, setPageSize] = useState(10);
@@ -58,18 +81,23 @@ function Qlorder({ activeMenu }) {
     console.log(user)
 
     const fetchData = async () => {
-        let data
+        let data = {
+            fromTime: startDate,
+            toTime: endDate,
+            PageNumber: page,
+            PageSize: pageSize
+        }
         if (search?.length > 0) {
-            data = {
-                Search: search,
-                PageNumber: page,
-                PageSize: pageSize
-            }
-        } else {
-            data = {
-                PageNumber: page,
-                PageSize: pageSize
-            }
+            data.search = search;
+        }
+        if (searchStatus?.length > 0) {
+            data.Code = searchStatus;
+        }
+        if (searchStartDate?.length > 0) {
+            data.fromTime = searchStartDate;
+        }
+        if (searchEndDate?.length > 0) {
+            data.toTime = searchEndDate;
         }
         const response = await getOrder(data);
         if (response && response.data) {
@@ -84,7 +112,7 @@ function Qlorder({ activeMenu }) {
     useEffect(() => {
         console.log(search)
         fetchData();
-    }, [render, page, search])
+    }, [render, page, search, searchStatus, searchStartDate, searchEndDate])
 
     useEffect(() => {
         console.log('re-render 2')
@@ -183,6 +211,7 @@ function Qlorder({ activeMenu }) {
     }
 
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
+    const classQlorderDatePicker = clsx(style.qlorderDatePicker, 'form-control');
     const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
     const classQlorderIcon = clsx(style.qlorderIcon)
     const classQlorderTable = clsx(style.qlorderTable, 'table table-center')
@@ -201,51 +230,38 @@ function Qlorder({ activeMenu }) {
         <div className="col-10">
             <div className='title'>Danh sách đơn hàng</div>
             <div className={classQlorderSearch}>
+
+
+                <DatePicker
+                    className={classQlorderDatePicker}
+                    selected={startDate}
+                    onChange={(date) => handleChangeSearchStartDate(date)}
+                    dateFormat="dd/MM/yyyy"
+                />
+                <DatePicker
+                    className={classQlorderDatePicker}
+                    selected={endDate}
+                    onChange={(date) => handleChangeSearchEndDate(date)}
+                    dateFormat="dd/MM/yyyy"
+                />
                 <select
                     style={{ maxWidth: '180px' }}
                     className="form-select"
                     value={statusSelect}
-                    onChange={e => {
-                        setStatusSelect(e.target.value)
-                    }}
+                    onChange={e => handleChangeSearchStatus(e)}
                 >
                     <option value="">--Trạng thái đơn--</option>
                     {status.map(status => (
                         <option key={status.code} value={status.code}>{status.value}</option>
                     ))}
                 </select>
-                <select
-                    style={{ maxWidth: '180px' }}
-                    className="form-select"
-                    value={statusSelect}
-                    onChange={e => {
-                        setStatusSelect(e.target.value)
-                    }}
-                >
-                    <option value="">--Thời gian--</option>
-                    {status.map(status => (
-                        <option key={status.code} value={status.code}>{status.value}</option>
-                    ))}
-                </select>
-                <select
-                    style={{ maxWidth: '180px' }}
-                    className="form-select"
-                    value={statusSelect}
-                    onChange={e => {
-                        setStatusSelect(e.target.value)
-                    }}
-                >
-                    <option value="">--Tổng tiền--</option>
-                    {status.map(status => (
-                        <option key={status.code} value={status.code}>{status.value}</option>
-                    ))}
-                </select>
+
                 <input type="text" className="form-control" placeholder="Nhập tên bàn cần tìm..."
                     value={qlOrder}
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleChangeSearch(e)}
                 />
                 <Link className={classQlorderButton}
-                    to={`/Ql/Action/Order?page=1&search=${qlOrder}`}
+                    to={`/Ql/Action/Order?page=1&search=${qlOrder}&code=${statusSelect}&fromTime=${startDate}&toTime=${endDate}`}
                 >
                     <FontAwesomeIcon icon={faSearch} className={classQlorderIcon} style={{ width: '100%' }} />
                 </Link>

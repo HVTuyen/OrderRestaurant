@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { QLORDER_API } from '../../layout/constants';
+import { QLORDER_API, DELETE_ORDER_DETAIL_SUB } from '../../layout/constants';
 
-export const deleteOrder = async (config, id) => {
+export const deleteOrderDetail = async (config, orderId, foodId) => {
     try {
-        const response = await axios.delete(`${QLORDER_API}${id}`, config);
+        const response = await axios.delete(`${QLORDER_API}${DELETE_ORDER_DETAIL_SUB}/${orderId}/${foodId}`, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 404) {

@@ -7,11 +7,14 @@ export const createTable = async (config, data) => {
         const response = await axios.post(TABLE_API, data, config);
         return response;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 404) {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'Unauthorized' };
         }
-        // Nếu lỗi không phải là 401, trả về null
+        if (error.response && error.response.status === 401) {
+            // Nếu lỗi là 401, trả về lỗi để xử lý trong component
+            return { error: 'AccessDenied' };
+        }
         return null;
     }
 };

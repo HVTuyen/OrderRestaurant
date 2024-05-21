@@ -7,11 +7,14 @@ export const getTable = async (config, id) => {
         const response = await axios.get(`${TABLE_API}${id}`, config);
         return response;
     } catch (error) {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 404) {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'Unauthorized' };
         }
-        // Nếu lỗi không phải là 401, trả về null
+        if (error.response && error.response.status === 401) {
+            // Nếu lỗi là 401, trả về lỗi để xử lý trong component
+            return { error: 'AccessDenied' };
+        }
         return null;
     }
 };

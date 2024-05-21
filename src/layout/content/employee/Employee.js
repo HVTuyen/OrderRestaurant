@@ -22,53 +22,67 @@ function Employee() {
     const [employeesSearch, setEmployeesSearch] = useState([])
     const [employee, setEmployee] = useState('')
 
+    const [user, setUser] = useState(null);
+
     useEffect(() => {
-        const fetchData = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            };
-            const oldtoken = {
-                accessToken: token,
-                refreshToken: refreshToken
-            };
-            const response = await getEmployees(config);
-            if (response && response.data) {
-                setEmployees(response.data);
-                setEmployeesSearch(response.data);
-            } else {
-                if (response && response.error === 'Unauthorized') {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken);
-                        const newconfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        };
-                        const newDataResponse = await getEmployees(newconfig);
-                        if (newDataResponse && newDataResponse.data) {
-                            setEmployees(response.data);
-                            setEmployeesSearch(response.data);
-                        } else {
-                            navigate('/Login')
-                        }
-                    } catch (error) {
-                        console.error('Error renewing token:', error);
-                    }
-                if (response && response.error === 400) {
-                    navigate('/Login')
-                }
-                } else {
-                    console.error('Error fetching employee');
-                }
+        if(account) {
+            setUser(account)
+            if(account.role !== 'admin') {
+                navigate('/Ql/AccessDenied')
+            }
+        }
+    },[])
+
+    const fetchData = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         };
-        fetchData();
-    }, [])
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await getEmployees(config);
+        if (response && response.data) {
+            setEmployees(response.data);
+            setEmployeesSearch(response.data);
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getEmployees(newconfig);
+                    if (newDataResponse && newDataResponse.data) {
+                        setEmployees(newDataResponse.data);
+                        setEmployeesSearch(newDataResponse.data);
+                    } else {
+                        console.error('Error fetch employee after renewing token');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            }
+            if (response && response.error === 'AccessDenied') {
+                navigate('/Ql/AccessDenied');
+            } else {
+                console.error('Error fetching employee');
+            }
+        }
+    };
+
+    useEffect(() => {
+        if(user && user.role === 'admin') {
+            fetchData();
+        }
+    }, [user])
 
 
     useEffect(() => {

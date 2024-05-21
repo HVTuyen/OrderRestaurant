@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -10,18 +10,18 @@ import { renewToken } from '../../../CallApi/renewToken'
 import { useAuth } from '../../../component/Context/AuthProvider';
 import Delete from '../../../component/crud/Delete'
 
-function CategoryDelete( ) {
+function CategoryDelete() {
 
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
 
-    const {id} = useParams()
+    const { id } = useParams()
     console.log(id)
 
-    const [category,setCategory] = useState('')
-    const [name,setName] = useState('')
-    const [description,setDescription] = useState('')
+    const [category, setCategory] = useState('')
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,37 +39,40 @@ function CategoryDelete( ) {
                 setCategory(response.data);
                 setName(response.data.categoryName)
                 setDescription(response.data.description)
-            } else if (response && response.error === 'Unauthorized') {
-                try {
-                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    reNewToken(accessToken, refreshToken);
-                    const newconfig = {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    };
-                    const newDataResponse = await getCategory(newconfig, id);
-                    if (newDataResponse && newDataResponse.data) {
-                        setCategory(newDataResponse.data);
-                        setName(response.data.categoryName)
-                        setDescription(response.data.description)
-                    } else {
-                        console.error('Error fetching categories after token renewal');
-                    }
-                } catch (error) {
-                    console.error('Error renewing token:', error);
-                }
             } else {
-                console.error('Error fetching categories:', response.error || 'Unknown error');
+                if (response && response.error === 'Unauthorized') {
+                    try {
+                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                        localStorage.setItem('accessToken', accessToken);
+                        localStorage.setItem('refreshToken', refreshToken);
+                        reNewToken(accessToken, refreshToken);
+                        const newconfig = {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        };
+                        const newDataResponse = await getCategory(newconfig, id);
+                        if (newDataResponse && newDataResponse.data) {
+                            setCategory(newDataResponse.data);
+                            setName(response.data.categoryName)
+                            setDescription(response.data.description)
+                        } else {
+                            console.error('Error fetching categories after token renewal');
+                        }
+                    } catch (error) {
+                        console.error('Error renewing token:', error);
+                    }
+                }
+                else {
+                    console.error('Error delete categories');
+                }
             }
         };
         fetchData();
     }, []);
 
     const handleDataFromDelete = async (check) => {
-        if(check) {
+        if (check) {
             const config = {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -80,7 +83,7 @@ function CategoryDelete( ) {
                 refreshToken: refreshToken
             };
             const response = await deleteCategory(config, id);
-            if (response) {
+            if (response && !response.error) {
                 navigate('/Ql/Category/')
             } else {
                 if (response && response.error === 'Unauthorized') {
@@ -97,13 +100,21 @@ function CategoryDelete( ) {
                         const newDataResponse = await deleteCategory(newconfig, id);
                         if (newDataResponse) {
                             navigate('/Ql/Category/')
-                        } else {
+                        }
+                        if (response && response.error === 'AccessDenied') {
+                            navigate('/Ql/AccessDenied')
+                        }
+                        else {
                             console.error('Error delete category after token renewal');
                         }
                     } catch (error) {
                         console.error('Error renewing token:', error);
                     }
-                } else {
+                }
+                if (response && response.error === 'AccessDenied') {
+                    navigate('/Ql/AccessDenied')
+                }
+                else {
                     console.error('Error delete category');
                 }
             }
@@ -111,7 +122,7 @@ function CategoryDelete( ) {
     }
 
     console.log(category)
-    
+
     return (
         <div className="col-10">
             <Delete
@@ -133,7 +144,7 @@ function CategoryDelete( ) {
                         }
                     ]
                 }
-                sendData={handleDataFromDelete} 
+                sendData={handleDataFromDelete}
             />
         </div>
     )

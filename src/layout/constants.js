@@ -7,7 +7,9 @@ export const EMPLOYEE_API = 'https://192.168.1.145/api/Employee/'
 export const TABLE_API = 'https://192.168.1.145/api/Table/'
 
 export const QLORDER_API = 'https://192.168.1.145/api/Order/'
-export const GET_ORDER_SUB = 'get-search-page'
+export const GET_ORDER_SUB = 'get-search'
+export const UPDATE_ORDER_DETAIL_SUB = 'UpdateOrderDetail'
+export const DELETE_ORDER_DETAIL_SUB = 'DeleteOrderDetail'
 
 export const QLREQUEST_API = 'https://192.168.1.145/api/Requirement/'
 export const GET_REQUEST_SUB = 'get-search-page'

@@ -11,6 +11,7 @@ import { seenNotification } from '../../CallApi/NotificationApi/SeenNotification
 import { seenNotificationAll } from '../../CallApi/NotificationApi/SeenNotificationAll';
 import { useAuth } from '../Context/AuthProvider';
 import { renewToken } from '../../CallApi/renewToken';
+import { formatDateTimeSearch } from '../../Functions/formatDateTime';
 
 const Notification = (props) => {
 
@@ -21,7 +22,10 @@ const Notification = (props) => {
   const navigate = useNavigate();
 
   const searchOrder = sessionStorage.getItem('searchOrder');
+  const searchStatus = sessionStorage.getItem('searchStatus');
   const searchRequest = sessionStorage.getItem('searchRequest');
+  const startDate = sessionStorage.getItem('searchStartDate');
+  const endDate = sessionStorage.getItem('searchEndDate');
 
   const notificationContainer = clsx(style.notificationContainer)
   const notification = clsx(style.notification)
@@ -92,7 +96,7 @@ const Notification = (props) => {
     if (response && response.data) {
       handleClickToHeader(isCheck)
       if (type === 'Order') {
-        navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}`)
+        navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
       }
       if (type === 'Requirements') {
         navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}`)

@@ -29,7 +29,7 @@ function Category() {
         if(account) {
             setUser(account)
             if(account.role !== 'admin') {
-                navigate('/ql')
+                navigate('/Ql/AccessDenied')
             }
         }
     },[])

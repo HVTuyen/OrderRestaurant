@@ -7,14 +7,14 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { collection, addDoc } from "firebase/firestore";
 
 import { db } from '../../../firebaseConfig';
-import { QLORDER_API } from '../../constants'
+import { QLORDER_API, QLREQUEST_API } from '../../constants'
 
 function HistoryOrder() {
 
     const { id } = useParams()
     console.log(id)
 
-    const [order,setOrder] = useState()
+    const [order, setOrder] = useState()
 
     useEffect(() => {
         axios.get(`${QLORDER_API}get_bill?tableId=${id}`)
@@ -25,6 +25,30 @@ function HistoryOrder() {
                 console.error('Error fetching order:', error);
             });
     }, [])
+
+    const handlePayment = () => {
+        const requestPayment = {
+            tableId: id,
+            title: 'Yêu cầu thanh toán',
+            requestNote: '',
+        }
+
+        axios.post(`${QLREQUEST_API}request`, requestPayment)
+            .then(async () => {
+                try {
+                    const docRef = await addDoc(collection(db, "orders"), {
+                        request: requestPayment
+                    });
+                    console.log("Document written with ID: ", docRef.id);
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+                alert('Gửi yêu cầu thành công')
+            })
+            .catch(error => {
+                console.error('Error creating order:', error);
+            });
+    }
 
     console.log(order)
 
@@ -39,9 +63,9 @@ function HistoryOrder() {
                                 <div className="mb-0" style={{ fontWeight: '700', fontSize: '48px', color: '#545bcd' }}>Lịch sử gọi món</div>
                             </div>
 
-                            {order==null ? (
+                            {order == null ? (
                                 <div className="card rounded-3 mb-4">
-                                    <div className="card-body p-4 t-center" style={{fontSize:'28px', fontWeight: '600'}}>
+                                    <div className="card-body p-4 t-center" style={{ fontSize: '28px', fontWeight: '600' }}>
                                         Lịch sử trống
                                     </div>
                                 </div>
@@ -64,7 +88,7 @@ function HistoryOrder() {
                                                                 <p className="lead fw-normal mb-2">{item.nameFood}</p>
                                                                 {/* <p>{item.category.categoryName}</p> */}
                                                             </div>
-                                                                <div className="t-center col-md-3 col-lg-2 col-xl-2 d-flex border" style={{padding:'6px',justifyContent: 'center' }}>
+                                                            <div className="t-center col-md-3 col-lg-2 col-xl-2 d-flex border" style={{ padding: '6px', justifyContent: 'center' }}>
                                                                 <label
                                                                     style={{ maxWidth: '100px', textAlign: 'center' }}
                                                                 >
@@ -93,18 +117,22 @@ function HistoryOrder() {
             </section>
             <div className="card pinToBottom">
                 <div className="card-body d-flex" style={{ justifyContent: 'center' }}>
-                    <div style={{ padding: '0 4px'}}>
-                        <Link to={`/Home/${id}`} style={{textDecoration:'none', minWidth:'90px'}} className="btn btn-outline-danger">Trở về</Link>
+                    <div style={{ padding: '0 4px' }}>
+                        <Link to={`/Home/${id}`} style={{ textDecoration: 'none', minWidth: '90px' }} className="btn btn-outline-danger">Trở về</Link>
                     </div>
-                    <div style={{ padding: '0 4px'}}>
-                        <Link
-                            style={{minWidth:'90px', paddingLeft:'0px', paddingRight:'0px'}}
-                            className="btn btn-outline-success"
-                            // onClick={createOrder}
-                        >
-                            Thanh toán
-                        </Link>
-                    </div>
+                    {
+                        order && (
+                            <div style={{ padding: '0 4px' }}>
+                                <Link
+                                    style={{ minWidth: '90px', paddingLeft: '0px', paddingRight: '0px' }}
+                                    className="btn btn-outline-success"
+                                    onClick={handlePayment}
+                                >
+                                    Thanh toán
+                                </Link>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </div>

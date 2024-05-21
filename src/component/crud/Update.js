@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
+import { CATEGORY_TYPE, PRODUCT_TYPE, TABLE_TYPE, EMPLOYEE_TYPE } from "../../layout/constants";
 import { editCategory } from '../../CallApi/CategoryApi/editCategory';
 import { editProduct } from '../../CallApi/ProductApi/editProduct'
 import { editTable } from '../../CallApi/TableApi/editTable'
@@ -66,136 +67,12 @@ const Update = (props) => {
 
     useEffect(() => {
         if (urlImage) {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            };
-            const oldtoken = {
-                accessToken: token,
-                refreshToken: refreshToken
-            };
-            handleUpdateWithImage(config, oldtoken)
+            handleUpdate()
         }
     }, [urlImage]);
 
-    const handleUpdateWithImage = async (config, oldtoken) => {
-        let data
-        if (props.type === 'Food') {
-
-            data = {
-                nameFood: formData.name,
-                unitPrice: formData.price,
-                categoryId: formData.categoryId,
-                image: urlImage,
-            }
-            const response = await editProduct(config, props.id, data);
-            if (response && response.data) {
-                navigate(props.url)
-            } else {
-                if (response && response.error === 'Unauthorized') {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken);
-                        const newconfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        };
-                        const newDataResponse = await editProduct(newconfig, props.id, data);
-                        if (newDataResponse && newDataResponse.data) {
-                            navigate(props.url)
-                        } else {
-                            console.error(`Error create ${props.type} after token renewal`);
-                        }
-                    } catch (error) {
-                        console.error('Error renewing token:', error);
-                    }
-                } else {
-                    console.error(`Error create ${props.type}`);
-                }
-            }
-        }
-        if (props.type === 'Ban') {
-
-            data = {
-                tableName: formData.name,
-                note: formData.note,
-                qR_id: urlImage,
-            }
-            const response = await editTable(config, props.id, data);
-            if (response && response.data) {
-                navigate(props.url)
-            } else {
-                if (response && response.error === 'Unauthorized') {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken);
-                        const newconfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        };
-                        const newDataResponse = await editTable(newconfig, props.id, data);
-                        if (newDataResponse && newDataResponse.data) {
-                            navigate(props.url)
-                        } else {
-                            console.error(`Error update ${props.type} after token renewal`);
-                        }
-                    } catch (error) {
-                        console.error('Error renewing token:', error);
-                    }
-                } else {
-                    console.error(`Error update ${props.type}`);
-                }
-            }
-        }
-        if (props.type === 'Employee') {
-
-            data = {
-                employeeName: formData.name,
-                phone: formData.phone,
-                email: formData.email,
-                password: formData.password,
-                image: urlImage,
-            }
-            const response = await editEmployee(config, props.id, data);
-            if (response && response.data) {
-                navigate(props.url)
-            } else {
-                if (response && response.error === 'Unauthorized') {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken);
-                        const newconfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        };
-                        const newDataResponse = await editEmployee(newconfig, props.id, data);
-                        if (newDataResponse && newDataResponse.data) {
-                            navigate(props.url)
-                        } else {
-                            console.error(`Error update ${props.type} after token renewal`);
-                        }
-                    } catch (error) {
-                        console.error('Error renewing token:', error);
-                    }
-                } else {
-                    console.error(`Error update ${props.type}`);
-                }
-            }
-        }
-    }
-
     const handleUpdateType = async (config) => {
-        if (props.type === 'Category') {
+        if (props.type === CATEGORY_TYPE) {
             if (formData.name && formData.description) {
                 const data = {
                     categoryName: formData.name,
@@ -211,15 +88,23 @@ const Update = (props) => {
                 }
             }
         }
-        if (props.type === 'Food') {
-
-
+        if (props.type === PRODUCT_TYPE) {
             if (formData.name && formData.price && formData.categoryId && formData.image) {
                 if (!parseInt(formData.price)) {
                     setErrorsFormat(prevErrors => [...prevErrors, 'price'])
                 } else {
                     if (typeof formData.image === 'object') {
-                        handleUpload()
+                        if(!urlImage) {
+                            handleUpload()
+                        } else {
+                            const data = {
+                                nameFood: formData.name,
+                                unitPrice: formData.price,
+                                categoryId: formData.categoryId,
+                                image: urlImage,
+                            }
+                            return editProduct(config, props.id, data)
+                        }
                     }
                     else {
                         const data = {
@@ -251,10 +136,19 @@ const Update = (props) => {
                 }
             }
         }
-        if (props.type === 'Ban') {
+        if (props.type === TABLE_TYPE) {
             if (formData.name && formData.image) {
                 if (typeof formData.image === 'object') {
-                    handleUpload()
+                    if(!urlImage) {
+                        handleUpload()
+                    } else {
+                        const data = {
+                            tableName: formData.name,
+                            note: formData.note,
+                            qR_id: urlImage,
+                        }
+                        return editTable(config, props.id, data)
+                    }
                 }
                 else {
                     const data = {
@@ -273,10 +167,21 @@ const Update = (props) => {
                 }
             }
         }
-        if (props.type === 'Employee') {
+        if (props.type === EMPLOYEE_TYPE) {
             if (formData.name && formData.phone && formData.email && formData.password && formData.image) {
                 if (typeof formData.image === 'object') {
-                    handleUpload()
+                    if(!urlImage) {
+                        handleUpload()
+                    } else {
+                        const data = {
+                            employeeName: formData.name,
+                            phone: formData.phone,
+                            email: formData.email,
+                            password:  formData.password,
+                            image: urlImage,
+                        }
+                        return editEmployee(config, props.id, data)
+                    }
                 }
                 else {
                     const data = {
@@ -336,7 +241,11 @@ const Update = (props) => {
                     const newDataResponse = await handleUpdateType(newconfig);
                     if (newDataResponse && newDataResponse.data) {
                         navigate(props.url)
-                    } else {
+                    }
+                    if (newDataResponse && newDataResponse.error === 'AccessDenied') {
+                        navigate('/Ql/AccessDenied')
+                    }
+                    else {
                         console.error(`Error edit ${props.type} after token renewal`);
                     }
                 } catch (error) {
