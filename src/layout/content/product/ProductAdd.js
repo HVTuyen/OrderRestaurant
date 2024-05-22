@@ -195,6 +195,9 @@ function ProductAdd() {
 
     const navigate = useNavigate();
 
+    const searchFood = sessionStorage.getItem('searchFood');
+    const categoryId = sessionStorage.getItem('categoryId');
+
     const [categories, setCategories] = useState([])
 
     useEffect(() => {
@@ -246,7 +249,7 @@ function ProductAdd() {
                 categories.length > 0 ? (
                     <Create
                         type={PRODUCT_TYPE}
-                        url='/Ql/Product'
+                        url={`/Ql/Product?page=1&search=${searchFood}&id=${categoryId}`}
                         title={PRODUCT_TITLE}
                         item={
                             [
@@ -264,7 +267,7 @@ function ProductAdd() {
                                     title: 'Loại món',
                                     name: 'categoryId',
                                     type: 'Select',
-                                    options: [...categories] 
+                                    options: [...categories]
                                 },
                                 {
                                     title: 'Ảnh',

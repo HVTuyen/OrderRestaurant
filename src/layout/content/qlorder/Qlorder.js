@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './qlorder.module.scss'
-import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE, ORDER_APPROVE_SUB, ORDER_REFUSE_SUB } from '../../constants'
+import { QLORDER_API, CONFIG_API, ORDER_TYPE, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE } from '../../constants'
 import { formatDateTimeSQL } from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import { useAuth } from '../../../component/Context/AuthProvider';
@@ -20,6 +20,9 @@ import Pagination from '../../../component/Pagination/Pagination'
 import { getOrder } from '../../../CallApi/OrderApi/GetOrder';
 import { deleteOrder } from '../../../CallApi/OrderApi/deleteOrder';
 import { formatDateTimeSearch } from "../../../Functions/formatDateTime";
+import ModalDelete from '../../../component/Modal/ModalDelete';
+import { approveOrder } from '../../../CallApi/OrderApi/approveOrder'
+import { refuseOrder } from '../../../CallApi/OrderApi/refuseOrder'
 
 function Qlorder({ activeMenu }) {
     console.log('re-render-qlorder')
@@ -71,6 +74,8 @@ function Qlorder({ activeMenu }) {
     const [user, setUser] = useState(null);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [id, setId] = useState('');
+    const [isShowModal, setIsShowModal] = useState(false)
 
     useEffect(() => {
         if (token) {
@@ -148,29 +153,62 @@ function Qlorder({ activeMenu }) {
         return status.find(statusinfo => statusinfo.code === code);
     }
 
-    const handleOrder = (id, tableId, CODE, SUB) => {
-        axios.post(`${QLORDER_API}${SUB}/${id}/${user.EmployeeId}`)
-            .then(res => {
-                const docRef = addDoc(collection(db, "table"), {
-                    tableId: tableId,
-                });
-                fetchData()
-            })
-            .catch(error => {
-                console.error('Error accept:', error);
-            });
+    const handleOrderType = async (config, id, CODE) => {
+        if (CODE === 2) {
+            return approveOrder(config, id, user.EmployeeId)
+        }
+        if (CODE === 4) {
+            return refuseOrder(config, id, user.EmployeeId)
+        }
     }
 
-    const handleDeleteOrder = async (id) => {
-        axios.delete(`${QLORDER_API}${id}`)
-            .then(res => {
-                fetchData()
-            })
-            .catch(error => {
-                console.error('Error accept:', error);
+    const handleOrder = async (id, tableId, CODE) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleOrderType(config, id, CODE);
+        if (response && !response.error) {
+            const docRef = addDoc(collection(db, "table"), {
+                tableId: tableId,
             });
+            fetchData()
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleOrderType(newconfig, id, CODE);
+                    if (newDataResponse) {
+                        const docRef = addDoc(collection(db, "table"), {
+                            tableId: tableId,
+                        });
+                        fetchData()
+                    } else {
+                        console.error('Error refuse request after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse request');
+            }
+        }
+    }
 
-
+    const acceptDeleteOrder = async (id) => {
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -181,7 +219,7 @@ function Qlorder({ activeMenu }) {
             refreshToken: refreshToken
         };
         const response = await deleteOrder(config, id);
-        if (response) {
+        if (response && !response.error) {
             fetchData()
         } else {
             if (response && response.error === 'Unauthorized') {
@@ -210,6 +248,21 @@ function Qlorder({ activeMenu }) {
         }
     }
 
+    const handleDeleteOrder = async (id) => {
+        setId(id)
+        setIsShowModal(true)
+    }
+
+    const handleModal = (action) => {
+        if(!action) {
+            setIsShowModal(false)
+        }
+        else {
+            acceptDeleteOrder(id)
+            setIsShowModal(false)
+        }
+    }
+
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
     const classQlorderDatePicker = clsx(style.qlorderDatePicker, 'form-control');
     const classQlorderButton = clsx(style.qlorderButton, 'btn btn-outline-primary')
@@ -230,18 +283,24 @@ function Qlorder({ activeMenu }) {
         <div className="col-10">
             <div className='title'>Danh sách đơn hàng</div>
             <div className={classQlorderSearch}>
-
-
                 <DatePicker
                     className={classQlorderDatePicker}
                     selected={startDate}
-                    onChange={(date) => handleChangeSearchStartDate(date)}
+                    onChange={(date) => {
+                        if (date) {
+                            handleChangeSearchStartDate(date)
+                        }
+                    }}
                     dateFormat="dd/MM/yyyy"
                 />
                 <DatePicker
                     className={classQlorderDatePicker}
                     selected={endDate}
-                    onChange={(date) => handleChangeSearchEndDate(date)}
+                    onChange={(date) => {
+                        if (date) {
+                            handleChangeSearchEndDate(date)
+                        }
+                    }}
                     dateFormat="dd/MM/yyyy"
                 />
                 <select
@@ -268,7 +327,7 @@ function Qlorder({ activeMenu }) {
             </div>
 
             {
-                qlOrdersSearch ? (
+                qlOrdersSearch?.length > 0 ? (
                     <>
                         <table className={classQlorderTable}>
                             <thead className="table-secondary">
@@ -302,7 +361,7 @@ function Qlorder({ activeMenu }) {
                                                                     type="button"
                                                                     className="btn btn-outline-primary padding-6"
                                                                     style={{ marginRight: '1px', width: '50%' }}
-                                                                    onClick={() => handleOrder(item.orderId, item.tableId, ORDER_APPROVE_CODE, ORDER_APPROVE_SUB)}
+                                                                    onClick={() => handleOrder(item.orderId, item.tableId, ORDER_APPROVE_CODE)}
                                                                 >
                                                                     Duyệt
                                                                 </button>
@@ -310,7 +369,7 @@ function Qlorder({ activeMenu }) {
                                                                     type="button"
                                                                     className="btn btn-outline-danger padding-6"
                                                                     style={{ width: '50%' }}
-                                                                    onClick={() => handleOrder(item.orderId, item.tableId, ORDER_REFUSE_CODE, ORDER_REFUSE_SUB)}
+                                                                    onClick={() => handleOrder(item.orderId, item.tableId, ORDER_REFUSE_CODE)}
                                                                 >
                                                                     Từ chối
                                                                 </button>
@@ -340,7 +399,7 @@ function Qlorder({ activeMenu }) {
                             </tbody>
                         </table>
                         <Pagination
-                            url='Order'
+                            url='Action/Order'
                             totalPages={totalPages}
                             currentPage={page}
                             search={search}
@@ -350,6 +409,15 @@ function Qlorder({ activeMenu }) {
                     <div className='d-flex j-center' style={{ fontSize: '24px', margin: '12px' }}>
                         Không tìm thấy kết quả!
                     </div>
+                )
+            }
+
+            {
+                isShowModal && (
+                    <ModalDelete
+                        handleModal={handleModal}
+                        title='đơn hàng'
+                    />
                 )
             }
         </div>

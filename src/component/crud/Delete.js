@@ -2,17 +2,30 @@ import { useState } from "react"
 import { Link } from "react-router-dom";
 
 import TextInput from "../input/TextInput"
+import ModalDelete from "../Modal/ModalDelete";
 
-const Delete =(props) => {
+const Delete = (props) => {
     const handleDelete = () => {
-        props.sendData(true)
+        // props.sendData(true)
+        setIsShowModal(true)
     };
 
+    const handleModal = (action) => {
+        if(!action) {
+            setIsShowModal(action)
+        } else {
+            props.sendData(true)
+        }
+    }
+
+    const [isShowModal, setIsShowModal] = useState(false)
+
     console.log(props.item)
+    console.log(isShowModal)
 
     return (
         <>
-            <div className='title'>Sửa {props.title}</div>
+            <div className='title'>Xóa {props.title}</div>
             <div className='row'>
                 <div className='col-2'></div>
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
@@ -46,6 +59,14 @@ const Delete =(props) => {
                 </div>
                 <div className='col-2'></div>
             </div>
+            {
+                isShowModal && (
+                    <ModalDelete 
+                        handleModal={handleModal}
+                        title={props.title}
+                    />
+                )
+            }
         </>
     )
 }

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import style from './qlbill.module.scss'
-import { QLBILL_API } from '../../constants'
+import { QLORDER_API } from '../../constants'
 
 function Qlbill({isrender}) {
     console.log('re-render-qlbill')
@@ -16,7 +16,7 @@ function Qlbill({isrender}) {
     const [qlBill,setQlBill] = useState('')
 
     useEffect(() => {
-        axios.get(QLBILL_API)
+        axios.get(QLORDER_API)
             .then(res => {
                 setQlBills(res.data);
                 setQlBillSearch(res.data);

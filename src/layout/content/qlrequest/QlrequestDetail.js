@@ -6,20 +6,34 @@ import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMinus, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
-import { QLREQUEST_API, REQUEST_TYPE, CONFIG_API, REQUEST_COMPLETE_SUB, REQUEST_REFUSE_SUB} from '../../constants'
+import { QLREQUEST_API, REQUEST_TYPE, CONFIG_API, REQUEST_COMPLETE_CODE, REQUEST_REFUSE_CODE} from '../../constants'
 import style from './qlrequest.module.scss'
 import {formatDateTimeSQL} from '../../../Functions/formatDateTime'
+import { useAuth } from '../../../component/Context/AuthProvider';
+import { renewToken } from '../../../CallApi/renewToken'
+import { refuseRequest } from '../../../CallApi/RequestApi/refuseRequest'
+import { deleteRequest } from '../../../CallApi/RequestApi/deleteRequest';
+import { completeRequest } from '../../../CallApi/RequestApi/completeRequest'
+import ModalDelete from '../../../component/Modal/ModalDelete'
 
 function QlrequestDetail( ) {
 
     const navigate = useNavigate();
 
+    const { account, token, refreshToken, reNewToken } = useAuth();
+
     const {id} = useParams()
     console.log(id)
+
+    const searchRequest = sessionStorage.getItem('searchRequest')
+    const searchStatus = sessionStorage.getItem('searchStatusRequest')
+    const startDate = sessionStorage.getItem('searchStartDateRequest');
+    const endDate = sessionStorage.getItem('searchEndDateRequest');
 
     const [request,setRequest] = useState([])
     const [status,setStatus] = useState([])
     const [render,setRender] = useState()
+    const [isShowModal, setIsShowModal] = useState(false)
 
     useEffect(() => {
         axios.get(`${QLREQUEST_API}${id}`)
@@ -42,38 +56,107 @@ function QlrequestDetail( ) {
         return status.find(statusinfo => statusinfo.code === code);
     }
 
-    const handleRequest = (id, SUB) => {
-        axios.post(`${QLREQUEST_API}${SUB}/${id}`)
-        .then(res => {
-            axios.get(`${QLREQUEST_API}get-request-all`)
-            .then(res => {
-                setRequest(res.data);
-                setRender(Math.random())
-            })
-            .catch(error => {
-                console.error('Error fetching qlRequest:', error);
-            });
-        })
-        .catch(error => {
-            console.error('Error accept:', error);
-        });
+    const handleRequestType = async (config, id, CODE) => {
+        if (CODE === 3) {
+            return refuseRequest(config, id)
+        }
+        if (CODE === 2) {
+            return completeRequest(config, id)
+        }
     }
 
-    const handleDeleteRequest = (id) => {
-        axios.delete(`${QLREQUEST_API}${id}`)
-        .then(res => {
-            axios.get(`${QLREQUEST_API}get-request-all`)
-            .then(res => {
-                alert('Xóa yêu cầu thành công')
-                navigate('/Ql/Action/Request');
-            })
-            .catch(error => {
-                console.error('Error fetching qlRequest:', error);
-            });
-        })
-        .catch(error => {
-            console.error('Error accept:', error);
-        });
+    const handleRequest = async (id, CODE) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleRequestType(config, id, CODE);
+        if (response && !response.error) {
+            setRender(Math.random())
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleRequestType(newconfig, id, CODE);
+                    if (newDataResponse) {
+                        setRender(Math.random())
+                    } else {
+                        console.error('Error refuse request after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse request');
+            }
+        }
+    }
+
+    const handleDeleteRequest = async (id) => {
+        setIsShowModal(true)
+    }
+
+    const handleModal = (action) => {
+        if (!action) {
+            setIsShowModal(false)
+        }
+        else {
+            acceptDeleteRequest(id)
+            setIsShowModal(false)
+        }
+    }
+
+    const acceptDeleteRequest = async (id) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await deleteRequest(config, id);
+        if (response && !response.error) {
+            navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await deleteRequest(newconfig, id);
+                    if (newDataResponse) {
+                        navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
+                    } else {
+                        console.error('Error refuse request after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse request');
+            }
+        }
     }
 
     const classQlorderButton = clsx(style.qlrequestButton, 'btn btn-outline-primary')
@@ -104,14 +187,14 @@ function QlrequestDetail( ) {
                                     <button 
                                         className="btn btn-outline-primary padding-6 col-6"
                                         style={{marginRight:'1px'}}
-                                        onClick={() => handleRequest(id, REQUEST_COMPLETE_SUB)}
+                                        onClick={() => handleRequest(id, REQUEST_COMPLETE_CODE)}
                                     >
                                         Đã hoàn thành
                                     </button>
                                     <button 
                                         className="btn btn-outline-danger padding-6 col-6"
                                         style={{marginRight:'1px'}}
-                                        onClick={() => handleRequest(id, REQUEST_REFUSE_SUB)}
+                                        onClick={() => handleRequest(id, REQUEST_REFUSE_CODE)}
                                     >
                                         Từ chối
                                     </button>
@@ -144,13 +227,21 @@ function QlrequestDetail( ) {
                     <button 
                         className='btn btn-outline-danger'
                         onClick={() => {
-                            navigate('/Ql/Action/Request')
+                            navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
                         }}
                     >
                         Trở về
                     </button>
                 </div>
             </div>
+            {
+                isShowModal && (
+                    <ModalDelete
+                        handleModal={handleModal}
+                        title='yêu cầu'
+                    />
+                )
+            }
         </div>
     )
 }

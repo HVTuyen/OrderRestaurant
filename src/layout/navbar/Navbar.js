@@ -101,16 +101,17 @@ function Navbar() {
           <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
             <Link
               className={classNavbarA}
-              to={
-                `/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder') || ''}&code=${sessionStorage.getItem('searchStatus') || ''}&fromTime=${sessionStorage.getItem('searchStartDate') || ''}&toTime=${sessionStorage.getItem('searchEndDate') || ''}`
-              }
+              to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder') || ''}&code=${sessionStorage.getItem('searchStatus') || ''}&fromTime=${sessionStorage.getItem('searchStartDate') || ''}&toTime=${sessionStorage.getItem('searchEndDate') || ''}`}
             >
               <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI} />
               Đơn hàng
             </Link>
           </li>
           <li className={activeMenu === 'request' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('request')}>
-            <Link className={classNavbarA} to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}`}>
+            <Link 
+              className={classNavbarA} 
+              to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}&code=${sessionStorage.getItem('searchStatusRequest') || ''}&fromTime=${sessionStorage.getItem('searchStartDateRequest') || ''}&toTime=${sessionStorage.getItem('searchEndDateRequest') || ''}`}
+            >
               <FontAwesomeIcon icon={activeMenu === 'request' ? faCircleDot : faCircle} className={classNavbarIconLI} />
               Yêu cầu
             </Link>
@@ -135,7 +136,10 @@ function Navbar() {
             </Link>
           </li>
           <li className={activeMenu === 'product' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('product')}>
-            <Link className={classNavbarA} to="/Ql/Product">
+            <Link 
+              className={classNavbarA} 
+              to={`/Ql/Product?page=1&search=${sessionStorage.getItem('searchFood') || ''}&id=${sessionStorage.getItem('categoryId') || ''}`}
+            >
               <FontAwesomeIcon icon={activeMenu === 'product' ? faCircleDot : faCircle} className={classNavbarIconLI} />
               Món ăn
             </Link>
@@ -173,22 +177,17 @@ function Navbar() {
                 <li className={activeMenu === 'order' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('order')}>
                   <Link
                     className={classNavbarA}
-                    to={
-                      `
-                            /Ql/Action/Order?page=1
-                            &search=${sessionStorage.getItem('searchOrder') || ''}
-                            &code=${sessionStorage.getItem('searchStatus') || ''}
-                            &fromTime=${sessionStorage.getItem('searchStartDate') || ''}
-                            &toTime=${sessionStorage.getItem('searchEndDate') || ''}
-                          `
-                    }
+                    to={`/Ql/Action/Order?page=1&search=${sessionStorage.getItem('searchOrder') || ''}&code=${sessionStorage.getItem('searchStatus') || ''}&fromTime=${sessionStorage.getItem('searchStartDate') || ''}&toTime=${sessionStorage.getItem('searchEndDate') || ''}`}
                   >
                     <FontAwesomeIcon icon={activeMenu === 'order' ? faCircleDot : faCircle} className={classNavbarIconLI} />
                     Đơn hàng
                   </Link>
                 </li>
                 <li className={activeMenu === 'request' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('request')}>
-                  <Link className={classNavbarA} to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}`}>
+                  <Link 
+                    className={classNavbarA} 
+                    to={`/Ql/Action/Request?page=1&search=${sessionStorage.getItem('searchRequest') || ''}&code=${sessionStorage.getItem('searchStatusRequest') || ''}&fromTime=${sessionStorage.getItem('searchStartDateRequest') || ''}&toTime=${sessionStorage.getItem('searchEndDateRequest') || ''}`}
+                  >
                     <FontAwesomeIcon icon={activeMenu === 'request' ? faCircleDot : faCircle} className={classNavbarIconLI} />
                     Yêu cầu
                   </Link>
@@ -213,7 +212,10 @@ function Navbar() {
                   </Link>
                 </li>
                 <li className={activeMenu === 'product' ? classNavbarLiActive : classNavbarLi} onClick={() => handleMenuClick('product')}>
-                  <Link className={classNavbarA} to="/Ql/Product">
+                  <Link 
+                    className={classNavbarA} 
+                    to={`/Ql/Product?page=1&search=${sessionStorage.getItem('searchFood') || ''}&id=${sessionStorage.getItem('categoryId') || ''}`}
+                  >
                     <FontAwesomeIcon icon={activeMenu === 'product' ? faCircleDot : faCircle} className={classNavbarIconLI} />
                     Món ăn
                   </Link>

@@ -117,7 +117,7 @@ const Notification = (props) => {
           handleClickToHeader()
           if (type === 'Order') {
             sessionStorage.setItem('searchOrder', '')
-            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}`)
+            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
           }
           if (type === 'Requirements') {
             sessionStorage.setItem('searchRequest', '')

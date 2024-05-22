@@ -4,13 +4,20 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
 
 import style from './qltable.module.scss'
-import { QLORDER_API, TABLE_API, ORDER_PAYMENT_SUB, CONFIG_API, TABLE_TYPE } from '../../constants'
+import { QLORDER_API, TABLE_API, CONFIG_API, TABLE_TYPE } from '../../constants'
 import { storage } from '../../../firebaseConfig';
 import { update } from 'firebase/database';
 import {formatDateTime, formatDateTimeSQL} from '../../../Functions/formatDateTime'
 import { MyDocument } from '../../../component/exportPDF/MyDocument';
+import { db } from '../../../firebaseConfig';
+import { useAuth } from '../../../component/Context/AuthProvider';
+import { renewToken } from '../../../CallApi/renewToken'
+import { decodeJWT } from '../../../Functions/decodeJWT'
+import { paymentOrder } from '../../../CallApi/OrderApi/paymentOrder'
+import { getBill } from '../../../CallApi/OrderApi/getBill'
 
 function Bill( ) {
 
@@ -19,21 +26,69 @@ function Bill( ) {
     const {id} = useParams()
     console.log(id)
 
+    const { account, token, refreshToken, reNewToken } = useAuth();
+
     const [order,setOrder] = useState()
     const [table, setTable] = useState()
     const [status,setStatus] = useState()
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if (token) {
+            setUser(decodeJWT(token))
+        }
+    }, [])
 
     const [showExportFile, setShowExportFile] = useState(true)
 
+    const fetchData = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await getBill(config, id);
+        if (response && response.data) {
+            setOrder(response.data)
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getBill(config, id);
+                    if (newDataResponse && newDataResponse.data) {
+                        setOrder(response.data)
+                    } else {
+                        console.error('Error fetch order after renewing token');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            }
+            if (response && response.error === 'AccessDenied') {
+                navigate('/Ql/AccessDenied');
+            } else {
+                console.error('Error fetching order');
+            }
+        }
+    };
+
     useEffect(() => {
-        axios.get(`${QLORDER_API}get_bill?tableId=${id}`)
-            .then(res => {
-                setOrder(res.data)
-            })
-            .catch(error => {
-                console.error('Error fetching order:', error);
-            });
-    }, [])
+        if(user) {
+            fetchData();
+        }
+    }, [user])
 
     useEffect(() => {
         axios.get(`${TABLE_API}${id}`)
@@ -45,15 +100,50 @@ function Bill( ) {
             });
     }, [])
 
-    const handleOrder = (id, SUB) => {
-        axios.post(`${QLORDER_API}${SUB}/${id}/1`)
-        .then(res => {
-            alert('Thanh toán thành công')
+    const handleOrder = async (id, tableId) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await paymentOrder(config, id, user.EmployeeId);
+        if (response && !response.error) {
+            const docRef = addDoc(collection(db, "table"), {
+                tableId: tableId,
+            });
             navigate('/Ql/Action/Table');
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-        });
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await paymentOrder(config, id, user.EmployeeId);
+                    if (newDataResponse) {
+                        const docRef = addDoc(collection(db, "table"), {
+                            tableId: tableId,
+                        });
+                        navigate('/Ql/Action/Table');
+                    } else {
+                        console.error('Error refuse order after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse order');
+            }
+        }
     }
 
     useEffect(() => {
@@ -66,10 +156,6 @@ function Bill( ) {
                 console.error('Error fetching status:', error);
             });
     }, [])
-
-    function getStatusByCode(code) {
-        return status?.find(statusinfo => statusinfo.code == code);
-    }
 
     console.log(order, status)
 
@@ -145,7 +231,7 @@ function Bill( ) {
                                     </PDFDownloadLink>
                                     <button 
                                         className='btn btn-outline-primary'
-                                        onClick={() => handleOrder(id, ORDER_PAYMENT_SUB)}
+                                        onClick={() => handleOrder(id, order.orders.tableId)}
                                     >
                                         Thanh toán
                                     </button>

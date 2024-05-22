@@ -134,13 +134,21 @@ const Statistical = () => {
                                         <div>
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>Date</h5>
-                                                <DatePicker className="form-control" selected={startDate} onChange={(date) => setStartDate(formatDateTimeSearch(date))} dateFormat="dd/MM/yyyy"/>
+                                                <DatePicker className="form-control" selected={startDate} onChange={(date) => {
+                                                    if(date) {
+                                                        setStartDate(formatDateTimeSearch(date))
+                                                    }
+                                                }} dateFormat="dd/MM/yyyy"/>
                                             </div>
                                         </div>
                                         <div>
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>-</h5>
-                                                <DatePicker className="form-control" selected={endDate} onChange={(date) => setStartDate(formatDateTimeSearch(date))} dateFormat="dd/MM/yyyy"/>
+                                                <DatePicker className="form-control" selected={endDate} onChange={(date) => {
+                                                    if(date) {
+                                                        setEndDate(formatDateTimeSearch(date))
+                                                    }
+                                                }} dateFormat="dd/MM/yyyy"/>
                                             </div>
                                         </div>
                                     </div>

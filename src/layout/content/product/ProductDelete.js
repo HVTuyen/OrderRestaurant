@@ -16,6 +16,9 @@ function ProductDelete( ) {
 
     const { account, token, refreshToken, reNewToken } = useAuth();
 
+    const searchFood = sessionStorage.getItem('searchFood');
+    const categoryId = sessionStorage.getItem('categoryId');
+
     const {id} = useParams()
     console.log(id)
 
@@ -75,7 +78,7 @@ function ProductDelete( ) {
             };
             const response = await deleteProduct(config, id);
             if (response && !response.error) {
-                navigate('/Ql/Product/')
+                navigate(`/Ql/Product?page=1&search=${searchFood}&id=${categoryId}`)
             } else {
                 if (response && response.error === 'Unauthorized') {
                     try {
@@ -90,7 +93,7 @@ function ProductDelete( ) {
                         };
                         const newDataResponse = await deleteProduct(newconfig, id);
                         if (newDataResponse) {
-                            navigate('/Ql/Product/')
+                            navigate(`/Ql/Product?page=1&search=${searchFood}&id=${categoryId}`)
                         }
                         if (response && response.error === 'AccessDenied') {
                             navigate('/Ql/AccessDenied')
@@ -117,7 +120,7 @@ function ProductDelete( ) {
     return (
         <div className="col-10">
             <Delete
-                url='/Ql/Product'
+                url={`/Ql/Product?page=1&search=${searchFood}&id=${categoryId}`}
                 title={PRODUCT_TITLE}
                 item={
                     [

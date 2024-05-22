@@ -216,6 +216,9 @@ function ProductEdit() {
 
     const navigate = useNavigate();
 
+    const searchFood = sessionStorage.getItem('searchFood');
+    const categoryId = sessionStorage.getItem('categoryId');
+
     const [categories, setCategories] = useState([])
     const [product, setProduct] = useState({})
 
@@ -310,7 +313,7 @@ function ProductEdit() {
                     <Update
                         id={id}
                         type={PRODUCT_TYPE}
-                        url='/Ql/Product'
+                        url={`/Ql/Product?page=1&search=${searchFood}&id=${categoryId}`}
                         title={PRODUCT_TITLE}
                         item={
                             [

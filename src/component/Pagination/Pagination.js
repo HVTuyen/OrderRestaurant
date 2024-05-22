@@ -10,7 +10,7 @@ const Pagination = (props) => {
     for (let i = 1; i <= props.totalPages; i++) {
         pages.push(
         <li key={i} class={currentPage == i ? 'page-item active' : 'page-item'}>
-            <Link to={`/Ql/Action/${url}?page=${i}&search=${search}`} className="page-link">
+            <Link to={`/Ql/${url}?page=${i}&search=${search}`} className="page-link">
                 {i}
             </Link>
         </li>

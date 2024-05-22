@@ -1,8 +1,10 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { doc, onSnapshot, collection } from "firebase/firestore";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
@@ -12,12 +14,22 @@ import { QLREQUEST_API, CONFIG_API, REQUEST_TYPE, REQUEST_COMPLETE_CODE, REQUEST
 import { formatDateTimeSQL } from '../../../Functions/formatDateTime'
 import { db } from '../../../firebaseConfig';
 import { useAuth } from '../../../component/Context/AuthProvider';
+import { renewToken } from '../../../CallApi/renewToken'
 import { decodeJWT } from '../../../Functions/decodeJWT'
 import Pagination from '../../../component/Pagination/Pagination'
 import { getRequest } from '../../../CallApi/RequestApi/GetRequest';
+import { formatDateTimeSearch } from '../../../Functions/formatDateTime';
+import { refuseRequest } from '../../../CallApi/RequestApi/refuseRequest'
+import { deleteRequest } from '../../../CallApi/RequestApi/deleteRequest';
+import { completeRequest } from '../../../CallApi/RequestApi/completeRequest'
+import ModalDelete from '../../../component/Modal/ModalDelete';
 
 function Qlrequest({ activeMenu }) {
     console.log('re-render-qlorder')
+
+    const navigate = useNavigate();
+
+    const { account, token, refreshToken, reNewToken } = useAuth();
 
     useEffect(() => {
         sessionStorage.setItem('activeMenu', 'request');
@@ -26,22 +38,43 @@ function Qlrequest({ activeMenu }) {
 
     const [searchParams] = useSearchParams();
     const page = searchParams.get('page');
-    const search = searchParams.get('search');
+    const searchStartDateRequest = searchParams.get('fromTime');
+    const searchEndDateRequest = searchParams.get('toTime');
+    const searchStatusRequest = searchParams.get('code');
+    const searchRequest = searchParams.get('search');
 
-    const handleChange = (e) => {
+    const handleChangeSearchEndDate = (date) => {
+        sessionStorage.setItem('searchEndDateRequest', formatDateTimeSearch(date))
+        setEndDate(formatDateTimeSearch(date))
+    }
+
+    const handleChangeSearchStartDate = (date) => {
+        sessionStorage.setItem('searchStartDateRequest', formatDateTimeSearch(date))
+        setStartDate(formatDateTimeSearch(date))
+    }
+
+    const handleChangeSearchStatus = (e) => {
+        sessionStorage.setItem('searchStatusRequest', e.target.value)
+        setStatusSelect(e.target.value)
+    }
+
+    const handleChangeSearch = (e) => {
         sessionStorage.setItem('searchRequest', e.target.value)
         setQlRequest(e.target.value)
     }
 
-    const { token } = useAuth();
+    const [startDate, setStartDate] = useState(searchStartDateRequest || formatDateTimeSearch(new Date()));
+    const [endDate, setEndDate] = useState(searchEndDateRequest || formatDateTimeSearch(new Date()));
     const [qlRequestsSearch, setQlRequestSearch] = useState([])
-    const [qlRequest, setQlRequest] = useState(search || '')
+    const [qlRequest, setQlRequest] = useState(searchRequest || '')
     const [status, setStatus] = useState([])
-    const [statusSelect, setStatusSelect] = useState('')
+    const [statusSelect, setStatusSelect] = useState(searchStatusRequest || '')
     const [render, setRender] = useState(0)
     const [user, setUser] = useState(null);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [id, setId] = useState('');
+    const [isShowModal, setIsShowModal] = useState(false)
 
     useEffect(() => {
         if (token) {
@@ -50,23 +83,28 @@ function Qlrequest({ activeMenu }) {
     }, [])
 
     const fetchData = async () => {
-        let data
-        if (search?.length > 0) {
-            data = {
-                Search: search,
-                PageNumber: page,
-                PageSize: pageSize
-            }
-        } else {
-            data = {
-                PageNumber: page,
-                PageSize: pageSize
-            }
+        let data = {
+            fromTime: startDate,
+            toTime: endDate,
+            PageNumber: page,
+            PageSize: pageSize
+        }
+        if (searchRequest?.length > 0) {
+            data.search = searchRequest;
+        }
+        if (searchStatusRequest?.length > 0) {
+            data.Code = searchStatusRequest;
+        }
+        if (searchStartDateRequest?.length > 0) {
+            data.fromTime = searchStartDateRequest;
+        }
+        if (searchEndDateRequest?.length > 0) {
+            data.toTime = searchEndDateRequest;
         }
         const response = await getRequest(data);
         if (response && response.data) {
             setQlRequestSearch(response.data.request);
-            setTotalPages(response.data.totalPages);
+            setTotalPages(response.data.totalPages)
         } else {
             setQlRequestSearch([])
             setTotalPages(0)
@@ -74,9 +112,9 @@ function Qlrequest({ activeMenu }) {
     }
 
     useEffect(() => {
-        console.log(search)
+        console.log(searchRequest)
         fetchData();
-    }, [render, page, search])
+    }, [render, page, searchRequest, searchStatusRequest, searchStartDateRequest, searchEndDateRequest])
 
     useEffect(() => {
         console.log('re-render 2')
@@ -112,26 +150,111 @@ function Qlrequest({ activeMenu }) {
         return status.find(statusinfo => statusinfo.code === code);
     }
 
-    const handleRequest = (id, CODE, SUB) => {
-        axios.post(`${QLREQUEST_API}${SUB}/${id}`)
-            .then(res => {
-                fetchData()
-            })
-            .catch(error => {
-                console.error('Error accept:', error);
-            });
+    const handleRequestType = async (config, id, CODE) => {
+        if (CODE === 3) {
+            return refuseRequest(config, id)
+        }
+        if (CODE === 2) {
+            return completeRequest(config, id)
+        }
     }
 
-    const handleDeleteRequest = (id) => {
-        axios.delete(`${QLREQUEST_API}${id}`)
-            .then(res => {
-                fetchData()
-            })
-            .catch(error => {
-                console.error('Error delete:', error);
-            });
+    const handleRequest = async (id, CODE, SUB) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleRequestType(config, id, CODE);
+        if (response && !response.error) {
+            fetchData()
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleRequestType(newconfig, id, CODE);
+                    if (newDataResponse) {
+                        fetchData()
+                    } else {
+                        console.error('Error refuse request after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse request');
+            }
+        }
     }
 
+    const handleDeleteRequest = async (id) => {
+        setId(id)
+        setIsShowModal(true)
+    }
+
+    const handleModal = (action) => {
+        if (!action) {
+            setIsShowModal(false)
+        }
+        else {
+            acceptDeleteRequest(id)
+            setIsShowModal(false)
+        }
+    }
+
+    const acceptDeleteRequest = async (id) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await deleteRequest(config, id);
+        if (response && !response.error) {
+            fetchData()
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await deleteRequest(newconfig, id);
+                    if (newDataResponse) {
+                        fetchData()
+                    } else {
+                        console.error('Error refuse request after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse request');
+            }
+        }
+    }
+
+    const classQlRequestDatePicker = clsx(style.qlRequestDatePicker, 'form-control');
     const classQlrequestSearch = clsx(style.qlrequestSearch, 'input-group')
     const classQlrequestButton = clsx(style.qlrequestButton, 'btn btn-outline-primary')
     const classQlrequestIcon = clsx(style.qlrequestIcon)
@@ -152,13 +275,31 @@ function Qlrequest({ activeMenu }) {
         <div className="col-10">
             <div className='title'>Danh sách yêu cầu</div>
             <div className={classQlrequestSearch}>
+                <DatePicker
+                    className={classQlRequestDatePicker}
+                    selected={startDate}
+                    onChange={(date) => {
+                        if (date) {
+                            handleChangeSearchStartDate(date)
+                        }
+                    }}
+                    dateFormat="dd/MM/yyyy"
+                />
+                <DatePicker
+                    className={classQlRequestDatePicker}
+                    selected={endDate}
+                    onChange={(date) => {
+                        if (date) {
+                            handleChangeSearchEndDate(date)
+                        }
+                    }}
+                    dateFormat="dd/MM/yyyy"
+                />
                 <select
                     style={{ maxWidth: '210px' }}
                     className="form-select"
                     value={statusSelect}
-                    onChange={e => {
-                        setStatusSelect(e.target.value)
-                    }}
+                    onChange={e => handleChangeSearchStatus(e)}
                 >
                     <option value="">--Trạng thái yêu cầu--</option>
                     {status.map(status => (
@@ -167,17 +308,17 @@ function Qlrequest({ activeMenu }) {
                 </select>
                 <input type="text" className="form-control" placeholder="Nhập tên bàn cần tìm..."
                     value={qlRequest}
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleChangeSearch(e)}
                 />
                 <Link className={classQlrequestButton}
-                    to={`/Ql/Action/Request?page=1&search=${qlRequest}`}
+                    to={`/Ql/Action/Request?page=1&search=${qlRequest}&code=${statusSelect}&fromTime=${startDate}&toTime=${endDate}`}
                 >
                     <FontAwesomeIcon icon={faSearch} className={classQlrequestIcon} style={{ width: '100%' }} />
                 </Link>
             </div>
 
             {
-                qlRequestsSearch ? (
+                qlRequestsSearch?.length > 0 ? (
                     <>
                         <table className={classQlrequestTable}>
                             <thead className="table-secondary">
@@ -247,16 +388,25 @@ function Qlrequest({ activeMenu }) {
                             </tbody>
                         </table>
                         <Pagination
-                            url='Request'
+                            url='Action/Request'
                             totalPages={totalPages}
                             currentPage={page}
-                            search={search}
+                            search={searchRequest}
                         />
                     </>
                 ) : (
                     <div className='d-flex j-center' style={{ fontSize: '24px', margin: '12px' }}>
                         Không tìm thấy kết quả!
                     </div>
+                )
+            }
+
+            {
+                isShowModal && (
+                    <ModalDelete
+                        handleModal={handleModal}
+                        title='yêu cầu'
+                    />
                 )
             }
         </div>

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -8,9 +8,10 @@ import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-i
 
 import style from './product.module.scss'
 import { useAuth } from '../../../component/Context/AuthProvider';
-import { renewToken} from '../../../CallApi/renewToken'
+import { renewToken } from '../../../CallApi/renewToken'
 import { getCategories } from '../../../CallApi/CategoryApi/getCategories'
 import { getProducts } from '../../../CallApi/ProductApi/getProducts'
+import Pagination from '../../../component/Pagination/Pagination'
 
 function Product() {
     console.log('re-render-product')
@@ -19,23 +20,39 @@ function Product() {
 
     const { account, token, refreshToken, reNewToken } = useAuth();
 
-    const [products,setProducts] = useState([])
-    const [productsSearch,setProductsSearch] = useState([])
-    const [product,setProduct] = useState('')
+    const [searchParams] = useSearchParams();
+    const page = searchParams.get('page');
+    const searchId = searchParams.get('id');
+    const search = searchParams.get('search');
 
-    const [categories,setCategories] = useState([])
-    const [categoryId,setCategoryId] = useState('')
+    const handleChangeSearchId = (e) => {
+        sessionStorage.setItem('categoryId', e.target.value)
+        setCategoryId(e.target.value)
+    }
+
+    const handleChangeSearch = (e) => {
+        sessionStorage.setItem('searchFood', e.target.value)
+        setProduct(e.target.value)
+    }
+
+    const [products, setProducts] = useState([])
+    const [productsSearch, setProductsSearch] = useState([])
+    const [product, setProduct] = useState(search || '')
+    const [categories, setCategories] = useState([])
+    const [categoryId, setCategoryId] = useState(searchId || '')
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
 
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        if(account) {
+        if (account) {
             setUser(account)
-            if(account.role !== 'admin') {
+            if (account.role !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -78,65 +95,60 @@ function Product() {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        const fetchDataProducts = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            };
-            const oldtoken = {
-                accessToken: token,
-                refreshToken: refreshToken
-            };
-            const response = await getProducts(config);
-            if (response && response.data) {
-                setProducts(response.data);
-                setProductsSearch(response.data);
-            } else if (response && response.error === 'Unauthorized') {
-                try {
-                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-                    reNewToken(accessToken, refreshToken);
-                    const newconfig = {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    };
-                    const newDataResponse = await getProducts(newconfig);
-                    if (newDataResponse && newDataResponse.data) {
-                        setProducts(newDataResponse.data);
-                        setProductsSearch(newDataResponse.data);
-                    } else {
-                        console.error('Error fetching products after token renewal');
-                    }
-                } catch (error) {
-                    console.error('Error renewing token:', error);
-                }
-            } else {
-                console.error('Error fetching products:');
+    const fetchDataProducts = async () => {
+        let data = {
+            PageNumber: page,
+            PageSize: pageSize
+        }
+        if (search?.length > 0) {
+            data.search = search;
+        }
+        if (searchId?.length > 0) {
+            data.categoryId = searchId;
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         };
-        fetchDataProducts();
-    }, []);
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await getProducts(config, data);
+        if (response && response.data) {
+            setProductsSearch(response.data.foods);
+            setTotalPages(response.data.totalPages)
+        } else if (response && response.error === 'Unauthorized') {
+            try {
+                const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+                reNewToken(accessToken, refreshToken);
+                const newconfig = {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                };
+                const newDataResponse = await getProducts(newconfig);
+                if (newDataResponse && newDataResponse.data) {
+                    setProducts(newDataResponse.data);
+                    setProductsSearch(newDataResponse.data);
+                } else {
+                    console.error('Error fetching products after token renewal');
+                }
+            } catch (error) {
+                console.error('Error renewing token:', error);
+            }
+        } else {
+            console.error('Error fetching products:');
+        }
+    };
 
     useEffect(() => {
+        fetchDataProducts();
+    }, [page, search, searchId]);
 
-        const searchProduct = product.toLowerCase();
-        let filteredProducts = products;
-    
-        if (searchProduct && categoryId) {
-            filteredProducts = products.filter(item => item.nameFood.toLowerCase().includes(searchProduct) && item.categoryId == categoryId);
-        } else if (product) {
-            filteredProducts = products.filter(item => item.nameFood.toLowerCase().includes(searchProduct));
-        } else if (categoryId) {
-            filteredProducts = products.filter(item => item.categoryId == categoryId);
-        }
-        setProductsSearch(filteredProducts);
-    }, [product, categoryId]);
-    
-    
     console.log(product)
     console.log(products)
     console.log(productsSearch)
@@ -161,12 +173,10 @@ function Product() {
             <div className={classProductSearch}>
 
                 <select
-                    style={{maxWidth: '180px'}}
+                    style={{ maxWidth: '180px' }}
                     className="form-select"
                     value={categoryId}
-                    onChange={e => {
-                        setCategoryId(e.target.value)
-                    }}
+                    onChange={e => handleChangeSearchId(e)}
                 >
                     <option value="">Chọn loại món ăn</option>
                     {categories.map(category => (
@@ -174,17 +184,17 @@ function Product() {
                     ))}
                 </select>
 
-                <input type="text" className="form-control" placeholder="Nhập tên món ăn cần tìm..." 
+                <input type="text" className="form-control" placeholder="Nhập tên món ăn cần tìm..."
                     value={product}
-                    onChange={e => {
-                        setProduct(e.target.value)
-                    }}
+                    onChange={(e) => handleChangeSearch(e)}
                 />
-                <button className={classProductButton} type="button">
-                    <FontAwesomeIcon icon={faSearch} className={classProductIcon} style={{width: '100%'}}/>
-                </button>
+                <Link className={classProductButton}
+                    to={`/Ql/Product?page=1&search=${product}&id=${categoryId}`}
+                >
+                    <FontAwesomeIcon icon={faSearch} className={classProductIcon} style={{ width: '100%' }} />
+                </Link>
                 <Link className={classProductButton} to='/Ql/Product/Add'>
-                    <FontAwesomeIcon icon={faPlus} className={classProductIcon}/>
+                    <FontAwesomeIcon icon={faPlus} className={classProductIcon} />
                     Thêm
                 </Link>
             </div>
@@ -207,17 +217,17 @@ function Product() {
                                 <tr key={item.foodId}>
                                     <th className={classProductColId}>{index + 1}</th>
                                     <th className={classProductColImg}>
-                                        <img loading='lazy' src={item.urlImage} alt={item.nameFood} width="80" height="80"/>
+                                        <img loading='lazy' src={item.urlImage} alt={item.nameFood} width="80" height="80" />
                                     </th>
                                     <td className={classProductColName}>{item.nameFood}</td>
                                     <td className={classProductColPrice}>{item.unitPrice}</td>
                                     <td className={classProductColCategory}>{item.category.categoryName}</td>
                                     <th className={classProductColAction}>
                                         <Link to={`/Ql/Product/Edit/${item.foodId}`}>
-                                            <FontAwesomeIcon icon={faEdit} className={classProductTableIcon} style={{color:'#5c94ff'}}/>
+                                            <FontAwesomeIcon icon={faEdit} className={classProductTableIcon} style={{ color: '#5c94ff' }} />
                                         </Link>
                                         <Link to={`/Ql/Product/Delete/${item.foodId}`}>
-                                            <FontAwesomeIcon icon={faTrash} className={classProductTableIcon} style={{color:'#ff5252'}}/>
+                                            <FontAwesomeIcon icon={faTrash} className={classProductTableIcon} style={{ color: '#ff5252' }} />
                                         </Link>
                                     </th>
                                 </tr>
@@ -226,6 +236,12 @@ function Product() {
                     }
                 </tbody>
             </table>
+            <Pagination
+                url='Product'
+                totalPages={totalPages}
+                currentPage={page}
+                search={search}
+            />
         </div>
     )
 }

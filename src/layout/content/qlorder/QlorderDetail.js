@@ -1,18 +1,25 @@
 import clsx from 'clsx'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { doc, onSnapshot, collection, addDoc } from "firebase/firestore";
 import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMinus, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'
 
-import { QLORDER_API, ORDER_TYPE, CONFIG_API, ORDER_APPROVE_SUB, ORDER_PAYMENT_SUB, ORDER_REFUSE_SUB } from '../../constants'
+import { QLORDER_API, ORDER_TYPE, CONFIG_API, ORDER_APPROVE_CODE, ORDER_REFUSE_CODE} from '../../constants'
 import style from './qlorder.module.scss'
+import { db } from '../../../firebaseConfig';
 import { renewToken } from '../../../CallApi/renewToken'
 import { useAuth } from '../../../component/Context/AuthProvider';
+import { decodeJWT } from '../../../Functions/decodeJWT'
 import { formatDateTimeSQL } from '../../../Functions/formatDateTime'
 import { UpdateOrderDetail } from '../../../CallApi/OrderApi/UpdateOrderDetail'
 import { deleteOrderDetail } from '../../../CallApi/OrderApi/deleteOrderDetail'
+import { deleteOrder } from '../../../CallApi/OrderApi/deleteOrder';
+import ModalDelete from '../../../component/Modal/ModalDelete';
+import { approveOrder } from '../../../CallApi/OrderApi/approveOrder'
+import { refuseOrder } from '../../../CallApi/OrderApi/refuseOrder'
 
 function QlorderDetail() {
 
@@ -23,14 +30,24 @@ function QlorderDetail() {
     const { id } = useParams()
     console.log(id)
 
+    useEffect(() => {
+        if (token) {
+            setUser(decodeJWT(token))
+        }
+    }, [])
+
     const searchOrder = sessionStorage.getItem('searchOrder')
     const searchStatus = sessionStorage.getItem('searchStatus')
+    const startDate = sessionStorage.getItem('searchStartDate');
+    const endDate = sessionStorage.getItem('searchEndDate');
 
+    const [user, setUser] = useState(null);
     const [order, setOrder] = useState([])
     const [status, setStatus] = useState([])
     const [total, setTotal] = useState()
     const [quantity, setQuantity] = useState({})
     const [render, setRender] = useState()
+    const [isShowModal, setIsShowModal] = useState(false)
 
     useEffect(() => {
         axios.get(`${QLORDER_API}get-order-details/${id}`)
@@ -168,38 +185,113 @@ function QlorderDetail() {
         }
     }
 
-    const handleOrder = (id, SUB) => {
-        axios.post(`${QLORDER_API}${SUB}/${id}/1`)
-            .then(res => {
-                axios.get(`${QLORDER_API}get-order-details/${id}`)
-                    .then(res => {
-                        setOrder(res.data);
-                        setRender(Math.random())
-                    })
-                    .catch(error => {
-                        console.error('Error fetching qlorder:', error);
-                    });
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-            });
+    const handleOrderType = async (config, id, CODE) => {
+        if (CODE === 2) {
+            return approveOrder(config, id, user.EmployeeId)
+        }
+        if (CODE === 4) {
+            return refuseOrder(config, id, user.EmployeeId)
+        }
     }
 
-    const handleDeleteOrder = (id) => {
-        axios.delete(`${QLORDER_API}${id}`)
-            .then(res => {
-                axios.get(`${QLORDER_API}get-order-all`)
-                    .then(res => {
-                        alert('Xóa đơn hàng thành công')
-                        navigate('/Ql/Action/Order');
-                    })
-                    .catch(error => {
-                        console.error('Error fetching qlorder:', error);
-                    });
-            })
-            .catch(error => {
-                console.error('Error accept:', error);
+    const handleOrder = async (id, tableId, CODE) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await handleOrderType(config, id, CODE);
+        if (response && !response.error) {
+            const docRef = addDoc(collection(db, "table"), {
+                tableId: tableId,
             });
+            setRender(Math.random())
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await handleOrderType(newconfig, id, CODE);
+                    if (newDataResponse) {
+                        const docRef = addDoc(collection(db, "table"), {
+                            tableId: tableId,
+                        });
+                        setRender(Math.random())
+                    } else {
+                        console.error('Error refuse order after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error refuse order');
+            }
+        }
+    }
+
+    const acceptDeleteOrder = async (id) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const response = await deleteOrder(config, id);
+        if (response && !response.error) {
+            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await deleteOrder(newconfig, id);
+                    if (newDataResponse) {
+                        navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
+                    } else {
+                        console.error('Error delete order after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            } else {
+                console.error('Error delete order');
+            }
+        }
+    }
+
+    const handleDeleteOrder = async (id) => {
+        setIsShowModal(true)
+    }
+
+    const handleModal = (action) => {
+        if(!action) {
+            setIsShowModal(false)
+        }
+        else {
+            acceptDeleteOrder(id)
+            setIsShowModal(false)
+        }
     }
 
     const classQlorderSearch = clsx(style.qlorderSearch, 'input-group')
@@ -238,7 +330,7 @@ function QlorderDetail() {
                                         type="button"
                                         className="btn btn-outline-primary padding-6 col-6"
                                         style={{ marginRight: '1px' }}
-                                        onClick={() => handleOrder(id, ORDER_APPROVE_SUB)}
+                                        onClick={() => handleOrder(id, order[0].orders.tableId, ORDER_APPROVE_CODE)}
                                     >
                                         Duyệt
                                     </button>
@@ -246,7 +338,7 @@ function QlorderDetail() {
                                         type="button"
                                         className="btn btn-outline-danger padding-6 col-6"
                                         style={{ marginRight: '1px' }}
-                                        onClick={() => handleOrder(id, ORDER_REFUSE_SUB)}
+                                        onClick={() => handleOrder(id, order[0].orders.tableId, ORDER_REFUSE_CODE)}
                                     >
                                         Từ chối
                                     </button>
@@ -276,7 +368,7 @@ function QlorderDetail() {
                     <button
                         className='btn btn-outline-danger'
                         onClick={() => {
-                            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}`)
+                            navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
                         }}
                     >
                         Trở về
@@ -348,7 +440,7 @@ function QlorderDetail() {
                                     <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalAmount)}</td>
                                     <td className={classQlorderCol_1 + ' t-center'}>
                                         {
-                                            item.orders.code == 1 ? (
+                                            item.orders.code == 1 && order.length > 1 ? (
                                                 <FontAwesomeIcon
                                                     icon={faTrash}
                                                     style={{ color: '#ff5252', fontSize: '28px', cursor: 'pointer' }}
@@ -369,6 +461,14 @@ function QlorderDetail() {
                     </tr>
                 </tbody>
             </table>
+            {
+                isShowModal && (
+                    <ModalDelete
+                        handleModal={handleModal}
+                        title='đơn hàng'
+                    />
+                )
+            }
         </div>
     )
 }

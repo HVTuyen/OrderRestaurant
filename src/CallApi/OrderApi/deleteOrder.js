@@ -15,5 +15,6 @@ export const deleteOrder = async (config, id) => {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'AccessDenied' };
         }
+        return null;
     }
 };

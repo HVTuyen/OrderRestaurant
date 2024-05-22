@@ -1,12 +1,10 @@
 import axios from 'axios';
 
-import { PRODUCT_API, PRODUCT_SUB } from '../../layout/constants';
+import { QLORDER_API, REFUSE_ORDER_SUB } from '../../layout/constants';
 
-export const getProducts = async (config, data) => {
+export const refuseOrder = async (config, orderId, employeeId) => {
     try {
-        const response = await axios.get(`${PRODUCT_API}${PRODUCT_SUB}`, {
-            params: data
-        }, config);
+        const response = await axios.post(`${QLORDER_API}${REFUSE_ORDER_SUB}/${orderId}/${employeeId}`, null, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -17,5 +15,7 @@ export const getProducts = async (config, data) => {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'AccessDenied' };
         }
+        // Nếu lỗi không phải là 401, trả về null
+        return null;
     }
 };
