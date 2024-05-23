@@ -66,7 +66,7 @@ function Bill( ) {
                             Authorization: `Bearer ${accessToken}`
                         }
                     };
-                    const newDataResponse = await getBill(config, id);
+                    const newDataResponse = await getBill(newconfig, id);
                     if (newDataResponse && newDataResponse.data) {
                         setOrder(response.data)
                     } else {
@@ -128,7 +128,7 @@ function Bill( ) {
                             Authorization: `Bearer ${accessToken}`
                         }
                     };
-                    const newDataResponse = await paymentOrder(config, id, user.EmployeeId);
+                    const newDataResponse = await paymentOrder(newconfig, id, user.EmployeeId);
                     if (newDataResponse) {
                         const docRef = addDoc(collection(db, "table"), {
                             tableId: tableId,
@@ -231,7 +231,7 @@ function Bill( ) {
                                     </PDFDownloadLink>
                                     <button 
                                         className='btn btn-outline-primary'
-                                        onClick={() => handleOrder(id, order.orders.tableId)}
+                                        onClick={() => handleOrder(id, order.tableId)}
                                     >
                                         Thanh toán
                                     </button>

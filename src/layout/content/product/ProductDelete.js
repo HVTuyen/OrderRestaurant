@@ -16,8 +16,8 @@ function ProductDelete( ) {
 
     const { account, token, refreshToken, reNewToken } = useAuth();
 
-    const searchFood = sessionStorage.getItem('searchFood');
-    const categoryId = sessionStorage.getItem('categoryId');
+    const searchFood = sessionStorage.getItem('searchFood') || '';
+    const categoryId = sessionStorage.getItem('categoryId') || '';
 
     const {id} = useParams()
     console.log(id)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,7 @@ import { formatDateTimeSearch } from "../../../Functions/formatDateTime";
 import MoneyReport from './MoneyReport'
 import { useAuth } from '../../../component/Context/AuthProvider';
 import { decodeJWT } from '../../../Functions/decodeJWT'
-import { renewToken} from '../../../CallApi/renewToken'
+import { renewToken } from '../../../CallApi/renewToken'
 import { getRevenue } from '../../../CallApi/StatisticalApi/getRevenue'
 
 const Statistical = () => {
@@ -28,84 +28,100 @@ const Statistical = () => {
     const [dataFood, setDataFood] = useState({})
     const [totalOrder, setTotalOrder] = useState(0)
     const [dataOrder, setDataOrder] = useState({})
-    
+    const [leastFood, setLeastFood] = useState({})
+    const [popularFood, setPopularFood] = useState({})
+
     const [showRevenue, setShowRevenue] = useState(false)
     const [showFood, setShowFood] = useState(false)
     const [showOrder, setShowOrder] = useState(false)
+    const [render, setRender] = useState('')
 
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        if(account) {
+        if (account) {
             setUser(account)
-            if(account.role !== 'admin') {
+            if (account.role !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
+            else {
+                fetchData();
+            }
         }
-    },[])
+    }, [account, render])
 
-    const handleGetSatistical = () => {
-        const fetchData = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            };
-            const oldtoken = {
-                accessToken: token,
-                refreshToken: refreshToken
-            };
-            const date = {
-                startDate: startDate,
-                endDate: endDate
-            };
-            const response = await getRevenue(config, date);
-            if (response && response.data) {
-                setTotalRevenue(response.data.totalRevenue);
-                setDataRevenue(response.data.doanhSo)
-                setTotalFood(response.data.food.totalFood);
-                setDataFood(response.data.dayFood);
-                setTotalOrder(response.data.totalOrder);
-                setDataOrder(response.data.donHang)
-            } else {
-                if (response && response.error === 'Unauthorized') {
-                    try {
-                        const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        reNewToken(accessToken, refreshToken);
-                        const newconfig = {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            }
-                        };
-                        const newDataResponse = await getRevenue(newconfig, date);
-                        if (newDataResponse && newDataResponse.data) {
-                            setTotalRevenue(response.data.totalRevenue);
-                            setDataRevenue(response.data.doanhSo)
-                            setTotalFood(response.data.food.totalFood);
-                            setDataFood(response.data.dayFood);
-                            setTotalOrder(response.data.totalOrder);
-                            setDataOrder(response.data.donHang)
-                        }
-                        if (newDataResponse && newDataResponse.error === 'AccessDenied') {
-                            navigate('/Ql/AccessDenied')
-                        }
-                        else {
-                            console.error('Error fetching revenue after token renewal');
-                        }
-                    } catch (error) {
-                        console.error('Error renewing token:', error);
-                    }
-                }
-                if (response && response.error === 'AccessDenied') {
-                    navigate('/Ql/AccessDenied')
-                }
-                else {
-                    console.error('Error fetching revenue');
-                }
+    const fetchData = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         };
+        const oldtoken = {
+            accessToken: token,
+            refreshToken: refreshToken
+        };
+        const date = {
+            startDate: startDate,
+            endDate: endDate
+        };
+        const response = await getRevenue(config, date);
+        if (response && response.data) {
+            setTotalRevenue(response.data.totalRevenue);
+            setDataRevenue(response.data.doanhSo)
+            setTotalFood(response.data.food.totalFood);
+            setDataFood(response.data.dayFood);
+            setTotalOrder(response.data.totalOrder);
+            setDataOrder(response.data.donHang)
+            setLeastFood(response.data.leastUsedFood)
+            setPopularFood(response.data.popularUsedFood)
+            setRender(Math.random())
+        } else {
+            if (response && response.error === 'Unauthorized') {
+                try {
+                    const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    reNewToken(accessToken, refreshToken);
+                    const newconfig = {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    };
+                    const newDataResponse = await getRevenue(newconfig, date);
+                    if (newDataResponse && newDataResponse.data) {
+                        setTotalRevenue(response.data.totalRevenue);
+                        setDataRevenue(response.data.doanhSo)
+                        setTotalFood(response.data.food.totalFood);
+                        setDataFood(response.data.dayFood);
+                        setTotalOrder(response.data.totalOrder);
+                        setDataOrder(response.data.donHang)
+                        setLeastFood(response.data.leastUsedFood)
+                        setPopularFood(response.data.popularUsedFood)
+                        setRender(Math.random())
+                    }
+                    if (newDataResponse && newDataResponse.error === 'AccessDenied') {
+                        navigate('/Ql/AccessDenied')
+                    }
+                    else {
+                        console.error('Error fetching revenue after token renewal');
+                    }
+                } catch (error) {
+                    console.error('Error renewing token:', error);
+                }
+            }
+            if (response && response.error === 'AccessDenied') {
+                navigate('/Ql/AccessDenied')
+            }
+            if (response && response.error === 'Date') {
+                alert('Ngày bắt đầu phải trước ngày kết thúc')
+            }
+            else {
+                console.error('Error fetching revenue');
+            }
+        }
+    };
+
+    const handleGetSatistical = () => {
         fetchData();
     }
 
@@ -113,10 +129,12 @@ const Statistical = () => {
     console.log(startDate, endDate)
 
     useEffect(() => {
-        if(user && user.role === 'admin') {
+        if (user && user.role === 'admin') {
             handleGetSatistical()
         }
     }, [user])
+
+    console.log(popularFood)
 
     return (
         <div className="col-10">
@@ -127,7 +145,7 @@ const Statistical = () => {
             <div className="row j-center">
                 <div className="col-9">
                     <div className="card">
-                        <div className="card-body" style={{padding:'0'}}>
+                        <div className="card-body" style={{ padding: '0' }}>
                             <div className="d-flex justify-content-between p-md-1">
                                 <div className="d-flex flex-row">
                                     <div className="d-flex align-self-center text-center">
@@ -135,27 +153,27 @@ const Statistical = () => {
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>Date</h5>
                                                 <DatePicker className="form-control" selected={startDate} onChange={(date) => {
-                                                    if(date) {
+                                                    if (date) {
                                                         setStartDate(formatDateTimeSearch(date))
                                                     }
-                                                }} dateFormat="dd/MM/yyyy"/>
+                                                }} dateFormat="dd/MM/yyyy" />
                                             </div>
                                         </div>
                                         <div>
                                             <div className="d-flex align-items-center">
                                                 <h5 style={{ margin: "10px" }}>-</h5>
                                                 <DatePicker className="form-control" selected={endDate} onChange={(date) => {
-                                                    if(date) {
+                                                    if (date) {
                                                         setEndDate(formatDateTimeSearch(date))
                                                     }
-                                                }} dateFormat="dd/MM/yyyy"/>
+                                                }} dateFormat="dd/MM/yyyy" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         class="btn btn-outline-primary"
                                         onClick={(handleGetSatistical)}
                                     >
@@ -171,17 +189,17 @@ const Statistical = () => {
             <div className="row" style={{ marginTop: "4vh" }}>
                 <div className="col-xl-4 col-md-12 mb-2">
                     <div className="card">
-                        <div className="card-body" style={{padding:'6px'}}>
+                        <div className="card-body" style={{ padding: '6px' }}>
                             <div className="d-flex justify-content-between p-md-1">
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng doanh thu</h4>
                                         <h3 className="h1 mb-0">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(TotalRevenue)}</h3>
-                                        
+
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button 
+                                    <button
                                         className="btn btn-outline-primary"
                                         onClick={() => setShowRevenue(!showRevenue)}
                                     >
@@ -196,17 +214,17 @@ const Statistical = () => {
                 </div>
                 <div className="col-xl-4 col-md-12 mb-2">
                     <div className="card">
-                        <div className="card-body" style={{padding:'6px'}}>
+                        <div className="card-body" style={{ padding: '6px' }}>
                             <div className="d-flex justify-content-between p-md-1">
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng số món ăn đã bán</h4>
                                         <h3 className="h1 mb-0">{totalFood}</h3>
-                                        
+
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button 
+                                    <button
                                         className="btn btn-outline-primary"
                                         onClick={() => setShowFood(!showFood)}
                                     >
@@ -221,17 +239,17 @@ const Statistical = () => {
                 </div>
                 <div className="col-xl-4 col-md-12 mb-2">
                     <div className="card">
-                        <div className="card-body" style={{padding:'6px'}}>
+                        <div className="card-body" style={{ padding: '6px' }}>
                             <div className="d-flex justify-content-between p-md-1">
                                 <div className="d-flex flex-row">
                                     <div>
                                         <h4>Tổng số đơn</h4>
                                         <h3 className="h1 mb-0">{totalOrder}</h3>
-                                        
+
                                     </div>
                                 </div>
                                 <div className="align-self-center">
-                                    <button 
+                                    <button
                                         className="btn btn-outline-primary"
                                         onClick={() => setShowOrder(!showOrder)}
                                     >
@@ -248,7 +266,7 @@ const Statistical = () => {
 
             {
                 showRevenue ? (
-                    <MoneyReport 
+                    <MoneyReport
                         type='money'
                         data={dataRevenue}
                     />
@@ -256,15 +274,23 @@ const Statistical = () => {
             }
             {
                 showFood ? (
-                    <MoneyReport 
-                        type='food'
-                        data={dataFood}
-                    />
+                    <div className="row">
+                        <MoneyReport
+                            type='food'
+                            data={dataFood}
+                        />
+                        <div className="col-xl-2 col-md-2 mb-4 mx-auto">
+                            <div style={{border:'1px solid #ccc', height:'100%', borderRadius:'6px'}}>
+                                <div>Món ăn được đặt nhiều nhất: {popularFood?.foods?.nameFood}</div>
+                                <div>Món ăn được đặt ít nhất: {leastFood?.foods?.nameFood}</div>
+                            </div>
+                        </div>
+                    </div>
                 ) : null
             }
             {
                 showOrder ? (
-                    <MoneyReport 
+                    <MoneyReport
                         type='order'
                         data={dataOrder}
                     />

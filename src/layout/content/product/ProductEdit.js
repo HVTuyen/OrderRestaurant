@@ -216,8 +216,8 @@ function ProductEdit() {
 
     const navigate = useNavigate();
 
-    const searchFood = sessionStorage.getItem('searchFood');
-    const categoryId = sessionStorage.getItem('categoryId');
+    const searchFood = sessionStorage.getItem('searchFood') || '';
+    const categoryId = sessionStorage.getItem('categoryId') || '';
 
     const [categories, setCategories] = useState([])
     const [product, setProduct] = useState({})

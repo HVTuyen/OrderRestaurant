@@ -11,19 +11,19 @@ import { MDBCardTitle, MDBCardBody, MDBCardImage, MDBBtn } from 'mdb-react-ui-ki
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faHistory, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, addDoc } from "firebase/firestore";
 
 import { db } from '../../../firebaseConfig';
 import style from './Home.module.scss'
-import {QLREQUEST_API, TABLE_API} from '../../constants'
+import { QLREQUEST_API, TABLE_API } from '../../constants'
 
 function Home() {
 
-    const {id} = useParams()
+    const { id } = useParams()
     console.log(id)
     const [isShowRequest, setIsShowRequest] = useState(false)
     const [title, setTitle] = useState('')
-    const  [requestNote, setRequestNote] = useState('')
+    const [requestNote, setRequestNote] = useState('')
     const [table, setTable] = useState()
 
     const handleRequest = () => {
@@ -53,10 +53,10 @@ function Home() {
         }
 
         axios.post(`${QLREQUEST_API}request`, newRequest)
-            .then( async () => {
+            .then(async () => {
                 try {
                     const docRef = await addDoc(collection(db, "orders"), {
-                      request: newRequest
+                        request: newRequest
                     });
                     console.log("Document written with ID: ", docRef.id);
                 } catch (e) {
@@ -76,32 +76,32 @@ function Home() {
     console.log(title, requestNote)
 
     return (
-        <div style={{height:'100vh'}}>
+        <div style={{ height: '100vh' }}>
             <div>
                 <Carousel>
                     <Carousel.Item>
                         <img style={{ height: '40vh' }}
                             className="d-block w-100"
-                            src={"https://thachan.vn/wp-content/uploads/2023/09/do-an-vat-min-1.jpg"}
+                            src={"https://firebasestorage.googleapis.com/v0/b/orderrestaurant-3dcf5.appspot.com/o/images%2F1.jpg?alt=media&token=61dbf5a2-ce78-4885-847d-5a7d81b5b248"}
                             alt="First slide"
                         />
                     </Carousel.Item>
                     <Carousel.Item>
                         <img style={{ height: '40vh' }}
-                            className="d-block w-100"
-                            src={"https://cdn.tgdd.vn/Files/2020/12/16/1314124/thuc-an-nhanh-la-gi-an-thuc-an-nhanh-co-tot-hay-khong-202201201405201587.jpg"}
+className="d-block w-100"
+                            src={"https://firebasestorage.googleapis.com/v0/b/orderrestaurant-3dcf5.appspot.com/o/images%2F2.jpg?alt=media&token=00cf90af-97c1-4195-ba0d-203e596b563c"}
                             alt="Second slide"
                         />
                     </Carousel.Item>
                     <Carousel.Item>
                         <img style={{ height: '40vh' }}
                             className="d-block w-100"
-                            src={"https://cdn.nhathuoclongchau.com.vn/unsafe/800x0/filters:quality(95)/https://cms-prod.s3-sgn09.fptcloud.com/tac_hai_cua_thuc_an_nhanh_khon_luong_hon_ban_nghi_day1_73d0dba74e.jpeg"}
+                            src={"https://firebasestorage.googleapis.com/v0/b/orderrestaurant-3dcf5.appspot.com/o/images%2F3.jpg?alt=media&token=d62e6880-b5de-4ee2-98c4-6ac54c40ad3f"}
                             alt="Third slide"
                         />
                     </Carousel.Item>
                 </Carousel>
-                <MDBCardBody className="p-4" style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: '#fff', borderRadius:'8px', border:'1px solid #333' }}>
+                <MDBCardBody className="CardBody p-3" style={{ position: 'absolute', top: '12px', left: '12px', background: 'linear-gradient(to bottom right, #ffffff 60%, #add8e6)', borderRadius: '8px', border: '1px solid #333' }}>
                     <div className="d-flex text-black">
                         <div className={Hide + ' flex-shrink-0'}>
                             <MDBCardImage
@@ -111,62 +111,59 @@ function Home() {
                                 fluid />
                         </div>
                         <div className="flex-grow-1">
-                            <MDBCardTitle style={{ margin: "12px 0" }}>Nguyễn Văn A</MDBCardTitle>
-                            <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                style={{ backgroundColor: '#efefef' }}>
+                            <MDBCardTitle style={{ margin: "12px 0" }}>Order Restaurant</MDBCardTitle>
+                            <div className="d-flex j-center rounded-3 p-2 mb-2"
+                                style={{ backgroundColor: '#efefef', border:'1px solid #ccc' }}>
                                 <div>
                                     <p className="mb-1">{table?.tableName}</p>
                                 </div>
-                            </div>
-                            <div className="d-flex pt-1">
-                                <button className="btn btn-outline-primary">Sửa tên </button>
                             </div>
                         </div>
                     </div>
                 </MDBCardBody>
             </div>
 
-            <div style={{ height: "60vh", border: "1px solid black", backgroundImage: 'url("https://vuainnhanh.com/wp-content/uploads/2023/02/sticker-cute-food-26.jpg")', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ height: "60vh", border: "1px solid black", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'linear-gradient(to bottom right, #add8e6, #ffffff)' }}>
                 <div className="mb-2" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <Link to='' className='col-6' style={{paddingRight:'8px'}}>
-                        <Button 
-                            variant="primary" 
-                            size="lg" 
-                            style={{ padding: '8px 12px', margin: '5px', height:'100px', width:'100%' }}
+                    <Link to='' className='col-6' style={{ paddingRight: '8px' }}>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            style={{ padding: '8px 12px', margin: '5px', height: '100px', width: '100%' }}
                             onClick={handleRequest}
                         >
                             <FontAwesomeIcon icon={faBell} /> Yêu cầu
                         </Button>
                     </Link>
-                    <Link to={`/HistoryOrder/${id}`} className='col-6' style={{paddingRight:'8px'}}>
-                        <Button variant="secondary" size="lg" style={{ padding: '8px 12px', margin: '5px', height:'100px', width:'100%'}}>
+<Link to={`/HistoryOrder/${id}`} className='col-6' style={{ paddingRight: '8px' }}>
+                        <Button variant="secondary" size="lg" style={{ padding: '8px 12px', margin: '5px', height: '100px', width: '100%' }}>
                             <FontAwesomeIcon icon={faHistory} /> Lịch sử gọi món
                         </Button>
                     </Link>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Link to={`/Order/${id}`}>
-                        <Button variant="success" size="lg" style={{ padding: '8px 12px', margin: '5px', height:'100px' }}>
+                        <Button variant="success" size="lg" style={{ padding: '8px 12px', margin: '5px', height: '100px' }}>
                             <FontAwesomeIcon icon={faUtensils} /> Thực đơn, gọi món
                         </Button>
                     </Link>
                 </div>
             </div>
-            
+
             {
                 isShowRequest && (
                     <div className={modal}>
                         <div className={containerRequest}>
-                            <div style={{padding:'24px'}}>
+                            <div style={{ padding: '24px' }}>
                                 <div className="modal-header">
                                     <h2>Gửi yêu cầu</h2>
                                 </div>
                                 <div className="modal-body">
                                     <div className="mb-3">
                                         <label className="form-label">Tiêu đề</label>
-                                        <input 
-                                            type="text" 
-                                            className="form-control" 
+                                        <input
+                                            type="text"
+                                            className="form-control"
                                             placeholder="Nhập tiêu đề..."
                                             value={title}
                                             onChange={e => {
@@ -176,7 +173,7 @@ function Home() {
                                     </div>
                                     <div className="mb-3">
                                         <label className="form-label">Nội dung (không bắt buộc)</label>
-                                        <textarea 
+                                        <textarea
                                             className="form-control"
                                             rows="3"
                                             value={requestNote}
@@ -188,16 +185,16 @@ function Home() {
                                     </div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-outline-primary"
-                                        style={{marginRight: '8px'}}
+                                    <button
+                                        type="button"
+className="btn btn-outline-primary"
+                                        style={{ marginRight: '8px' }}
                                         onClick={handleSendRequest}
                                     >
                                         Gửi
                                     </button>
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         className="btn btn-outline-danger"
                                         onClick={() => setIsShowRequest(false)}
                                     >

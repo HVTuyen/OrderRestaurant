@@ -347,7 +347,7 @@ function Qlorder({ activeMenu }) {
                                     qlOrdersSearch?.map((item, index) => {
                                         return (
                                             <tr key={item.orderId}>
-                                                <th className={classQlorderCol_0_5}>{index + 1}</th>
+                                                <th className={classQlorderCol_0_5}>{(page - 1) * pageSize + index + 1}</th>
                                                 <td className={classQlorderCol_1}>{item.tables.tableName}</td>
                                                 <td className={classQlorderCol_2}>{formatDateTimeSQL(item.creationTime)}</td>
                                                 <td className={classQlorderCol_1_5}>{getStatusByCode(item.code)?.value}</td>

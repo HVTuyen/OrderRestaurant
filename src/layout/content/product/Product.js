@@ -40,7 +40,7 @@ function Product() {
     const [product, setProduct] = useState(search || '')
     const [categories, setCategories] = useState([])
     const [categoryId, setCategoryId] = useState(searchId || '')
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
 
     const [user, setUser] = useState(null);
@@ -119,27 +119,9 @@ function Product() {
         if (response && response.data) {
             setProductsSearch(response.data.foods);
             setTotalPages(response.data.totalPages)
-        } else if (response && response.error === 'Unauthorized') {
-            try {
-                const { accessToken, refreshToken } = await renewToken(oldtoken, navigate);
-                localStorage.setItem('accessToken', accessToken);
-                localStorage.setItem('refreshToken', refreshToken);
-                reNewToken(accessToken, refreshToken);
-                const newconfig = {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`
-                    }
-                };
-                const newDataResponse = await getProducts(newconfig);
-                if (newDataResponse && newDataResponse.data) {
-                    setProducts(newDataResponse.data);
-                    setProductsSearch(newDataResponse.data);
-                } else {
-                    console.error('Error fetching products after token renewal');
-                }
-            } catch (error) {
-                console.error('Error renewing token:', error);
-            }
+        } else if (response && response.error === 'Data') {
+            setProductsSearch([]);
+            setTotalPages(0)
         } else {
             console.error('Error fetching products:');
         }
@@ -215,7 +197,7 @@ function Product() {
                         productsSearch?.map((item, index) => {
                             return (
                                 <tr key={item.foodId}>
-                                    <th className={classProductColId}>{index + 1}</th>
+                                    <th className={classProductColId}>{(page - 1) * pageSize + index + 1}</th>
                                     <th className={classProductColImg}>
                                         <img loading='lazy' src={item.urlImage} alt={item.nameFood} width="80" height="80" />
                                     </th>

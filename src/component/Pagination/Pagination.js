@@ -23,19 +23,19 @@ const Pagination = (props) => {
                 <ul class="pagination">
                     <li class={currentPage == 1 ? 'page-item disabled' : 'page-item'}>
                         <Link 
-                            to={`/Ql/Action/${url}?page=${parseInt(currentPage) - 1}&search=${search}`}
+                            to={`/Ql/${url}?page=${parseInt(currentPage) - 1}&search=${search}`}
                             className="page-link"
                         >
-                            &laquo;
+                            &lt;
                         </Link>
                     </li>
                     {pages}
                     <li class={currentPage == lastPage ? 'page-item disabled' : 'page-item'}>
                         <Link 
-                            to={`/Ql/Action/${url}?page=${parseInt(currentPage) + 1}&search=${search}`}
+                            to={`/Ql/${url}?page=${parseInt(currentPage) + 1}&search=${search}`}
                             className="page-link"
                         >
-                            &raquo;
+                            &gt;
                         </Link>
                     </li>
                 </ul>

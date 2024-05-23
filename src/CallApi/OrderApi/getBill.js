@@ -4,7 +4,7 @@ import { QLORDER_API, BILL_ORDER_SUB } from '../../layout/constants';
 
 export const getBill = async (config, id) => {
     try {
-        const response = await axios.get(`${QLORDER_API}${BILL_ORDER_SUB}/${id}`, config);
+        const response = await axios.get(`${QLORDER_API}${BILL_ORDER_SUB}?tableId=${id}`, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 404) {

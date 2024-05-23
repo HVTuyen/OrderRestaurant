@@ -15,6 +15,10 @@ export const getRevenue = async (config, date) => {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'AccessDenied' };
         }
+        if (error.response && error.response.status === 400) {
+            // Nếu lỗi là 401, trả về lỗi để xử lý trong component
+            return { error: 'Date' };
+        }
         return null;
     }
 };

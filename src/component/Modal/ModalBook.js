@@ -46,6 +46,7 @@ const ModalBook = (props) => {
                             label="Chọn ngày và giờ"
                             value={time}
                             onChange={(newValue) => setTime(newValue)}
+                            format="DD/MM/YYYY HH:mm"
                         />
                     </LocalizationProvider>
                     {

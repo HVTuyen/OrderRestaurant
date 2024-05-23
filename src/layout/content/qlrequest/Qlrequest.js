@@ -337,7 +337,7 @@ function Qlrequest({ activeMenu }) {
                                     qlRequestsSearch?.map((item, index) => {
                                         return (
                                             <tr key={item.requestId}>
-                                                <th className={classQlrequestCol_1}>{index + 1}</th>
+                                                <th className={classQlrequestCol_1}>{(page - 1) * pageSize + index + 1}</th>
                                                 <td className={classQlrequestCol_1}>{item.tables.tableName}</td>
                                                 <td className={classQlrequestCol_2}>{formatDateTimeSQL(item.requestTime)}</td>
                                                 <td className={classQlrequestCol_2}>{getStatusByCode(item.code)?.value}</td>
