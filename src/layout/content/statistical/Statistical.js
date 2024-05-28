@@ -48,7 +48,7 @@ const Statistical = () => {
                 fetchData();
             }
         }
-    }, [account, render])
+    }, [render])
 
     const fetchData = async () => {
         const config = {
@@ -74,7 +74,6 @@ const Statistical = () => {
             setDataOrder(response.data.donHang)
             setLeastFood(response.data.leastUsedFood)
             setPopularFood(response.data.popularUsedFood)
-            setRender(Math.random())
         } else {
             if (response && response.error === 'Unauthorized') {
                 try {
@@ -87,24 +86,25 @@ const Statistical = () => {
                             Authorization: `Bearer ${accessToken}`
                         }
                     };
-                    const newDataResponse = await getRevenue(newconfig, date);
-                    if (newDataResponse && newDataResponse.data) {
-                        setTotalRevenue(response.data.totalRevenue);
-                        setDataRevenue(response.data.doanhSo)
-                        setTotalFood(response.data.food.totalFood);
-                        setDataFood(response.data.dayFood);
-                        setTotalOrder(response.data.totalOrder);
-                        setDataOrder(response.data.donHang)
-                        setLeastFood(response.data.leastUsedFood)
-                        setPopularFood(response.data.popularUsedFood)
-                        setRender(Math.random())
-                    }
-                    if (newDataResponse && newDataResponse.error === 'AccessDenied') {
-                        navigate('/Ql/AccessDenied')
-                    }
-                    else {
-                        console.error('Error fetching revenue after token renewal');
-                    }
+                    setRender(Math.random())
+                    // const newDataResponse = await getRevenue(newconfig, date);
+                    // if (newDataResponse && newDataResponse.data) {
+                    //     setTotalRevenue(response.data.totalRevenue);
+                    //     setDataRevenue(response.data.doanhSo)
+                    //     setTotalFood(response.data.food.totalFood);
+                    //     setDataFood(response.data.dayFood);
+                    //     setTotalOrder(response.data.totalOrder);
+                    //     setDataOrder(response.data.donHang)
+                    //     setLeastFood(response.data.leastUsedFood)
+                    //     setPopularFood(response.data.popularUsedFood)
+                    //     setRender(Math.random())
+                    // }
+                    // if (newDataResponse && newDataResponse.error === 'AccessDenied') {
+                    //     navigate('/Ql/AccessDenied')
+                    // }
+                    // else {
+                    //     console.error('Error fetching revenue after token renewal');
+                    // }
                 } catch (error) {
                     console.error('Error renewing token:', error);
                 }
@@ -280,9 +280,26 @@ const Statistical = () => {
                             data={dataFood}
                         />
                         <div className="col-xl-2 col-md-2 mb-4 mx-auto">
-                            <div style={{border:'1px solid #ccc', height:'100%', borderRadius:'6px'}}>
-                                <div>Món ăn được đặt nhiều nhất: {popularFood?.foods?.nameFood}</div>
-                                <div>Món ăn được đặt ít nhất: {leastFood?.foods?.nameFood}</div>
+                            <div style={{ border: '1px solid #ccc', height: '100%', borderRadius: '6px' }}>
+                                <div style={{padding:'12px', textAlign:'center'}}>
+                                    <h2 style={{fontSize:'32px'}}>
+                                        Chi tiết
+                                    </h2>
+                                </div>
+                                <div
+                                    style={{ padding: '12px'}}
+                                >
+                                    <div>Món ăn được đặt nhiều nhất:</div>
+                                    <b>Tên: {popularFood?.foods?.nameFood}</b> <br/>
+                                    <b>Số lượng: {popularFood?.usageCount}</b>
+                                </div>
+                                <div
+                                    style={{ padding: '12px'}}
+                                >
+                                    <div>Món ăn được đặt ít nhất:</div>
+                                    <b>Tên: {leastFood?.foods?.nameFood}</b> <br/>
+                                    <b>Số lượng: {leastFood?.usageCount}</b>
+                                </div>
                             </div>
                         </div>
                     </div>

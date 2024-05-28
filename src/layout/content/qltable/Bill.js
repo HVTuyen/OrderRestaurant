@@ -115,6 +115,7 @@ function Bill( ) {
             const docRef = addDoc(collection(db, "table"), {
                 tableId: tableId,
             });
+            alert('Thanh toán thành công!')
             navigate('/Ql/Action/Table');
         } else {
             if (response && response.error === 'Unauthorized') {
@@ -133,6 +134,7 @@ function Bill( ) {
                         const docRef = addDoc(collection(db, "table"), {
                             tableId: tableId,
                         });
+                        alert('Thanh toán thành công!')
                         navigate('/Ql/Action/Table');
                     } else {
                         console.error('Error refuse order after token renewal');
