@@ -41,7 +41,7 @@ const Statistical = () => {
     useEffect(() => {
         if (account) {
             setUser(account)
-            if (account.role !== 'admin') {
+            if (account.RoleName !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
             else {
@@ -67,13 +67,11 @@ const Statistical = () => {
         const response = await getRevenue(config, date);
         if (response && response.data) {
             setTotalRevenue(response.data.totalRevenue);
-            setDataRevenue(response.data.doanhSo)
-            setTotalFood(response.data.food.totalFood);
-            setDataFood(response.data.dayFood);
+            setDataRevenue(response.data.revenue)
+            setTotalFood(response.data.totalFood);
+            setDataFood(response.data.foods);
             setTotalOrder(response.data.totalOrder);
-            setDataOrder(response.data.donHang)
-            setLeastFood(response.data.leastUsedFood)
-            setPopularFood(response.data.popularUsedFood)
+            setDataOrder(response.data.orders)
         } else {
             if (response && response.error === 'Unauthorized') {
                 try {
@@ -129,7 +127,7 @@ const Statistical = () => {
     console.log(startDate, endDate)
 
     useEffect(() => {
-        if (user && user.role === 'admin') {
+        if (user && user.RoleName === 'admin') {
             handleGetSatistical()
         }
     }, [user])
@@ -274,35 +272,10 @@ const Statistical = () => {
             }
             {
                 showFood ? (
-                    <div className="row">
-                        <MoneyReport
-                            type='food'
-                            data={dataFood}
-                        />
-                        <div className="col-xl-2 col-md-2 mb-4 mx-auto">
-                            <div style={{ border: '1px solid #ccc', height: '100%', borderRadius: '6px' }}>
-                                <div style={{padding:'12px', textAlign:'center'}}>
-                                    <h2 style={{fontSize:'32px'}}>
-                                        Chi tiết
-                                    </h2>
-                                </div>
-                                <div
-                                    style={{ padding: '12px'}}
-                                >
-                                    <div>Món ăn được đặt nhiều nhất:</div>
-                                    <b>Tên: {popularFood?.foods?.nameFood}</b> <br/>
-                                    <b>Số lượng: {popularFood?.usageCount}</b>
-                                </div>
-                                <div
-                                    style={{ padding: '12px'}}
-                                >
-                                    <div>Món ăn được đặt ít nhất:</div>
-                                    <b>Tên: {leastFood?.foods?.nameFood}</b> <br/>
-                                    <b>Số lượng: {leastFood?.usageCount}</b>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <MoneyReport
+                        type='food'
+                        data={dataFood}
+                    />
                 ) : null
             }
             {

@@ -75,7 +75,7 @@ const Create = (props) => {
         if (props.type === CATEGORY_TYPE) {
             if (formData.name && formData.description) {
                 const data = {
-                    categoryName: formData.name,
+                    name: formData.name,
                     description: formData.description,
                 }
                 return createCategory(config, data)
@@ -97,10 +97,10 @@ const Create = (props) => {
                         handleUpload()
                     } else {
                         const data = {
-                            nameFood: formData.name,
+                            name: formData.name,
                             unitPrice: formData.price,
                             categoryId: formData.categoryId,
-                            image: urlImage,
+                            urlImage: urlImage,
                         }
                         return createProduct(config, data)
                     }
@@ -132,8 +132,8 @@ const Create = (props) => {
                     handleUpload()
                 } else {
                     const data = {
-                        tableName: formData.name,
-                        qR_id: urlImage,
+                        name: formData.name,
+                        urlImage: urlImage,
                     }
                     return createTable(config, data)
                 }
@@ -147,16 +147,15 @@ const Create = (props) => {
             }
         }
         if (props.type === EMPLOYEE_TYPE) {
-            if (formData.name && formData.phone && formData.email && formData.password && formData.image) {
+            if (formData.name && formData.email && formData.password && formData.image) {
                 if(!urlImage) {
                     handleUpload()
                 } else {
                     const data = {
-                        employeeName: formData.name,
-                        phone: formData.phone,
+                        name: formData.name,
                         email: formData.email,
                         password:  formData.password,
-                        image: urlImage,
+                        urlImage: urlImage,
                     }
                     return createEmployee(config, data)
                 }

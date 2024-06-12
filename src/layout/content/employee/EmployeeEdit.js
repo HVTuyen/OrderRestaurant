@@ -265,13 +265,7 @@ function EmployeeEdit() {
                         {
                             title: 'Tên nhân viên',
                             name: 'name',
-                            value: employee.employeeName,
-                            type: 'Text',
-                        },
-                        {
-                            title: 'Số điện thoại',
-                            name: 'phone',
-                            value: employee.phone,
+                            value: employee.name,
                             type: 'Text',
                         },
                         {
@@ -289,7 +283,7 @@ function EmployeeEdit() {
                         {
                             title: 'Ảnh',
                             name: 'image',
-                            value: employee.image,
+                            value: employee.urlImage,
                             type: 'Image',
                         }
                     ]

@@ -72,10 +72,10 @@ function Qltable() {
 
     const handleBook = (data) => {
         const bookData = {
-            tableid: id,
+            id: id,
             note: data
         }
-        axios.post(`${TABLE_API}${TABLE_BOOK_SUB}`, bookData)
+        axios.put(`${TABLE_API}${TABLE_BOOK_SUB}/${id}?note=${data}`)
             .then(res => {
                 setRender(prevCount => prevCount + 1);
             })
@@ -85,7 +85,7 @@ function Qltable() {
     }
 
     const handleCancelBook = (id) => {
-        axios.post(`${TABLE_API}${TABLE_CANCEL_BOOK_SUB}/${id}`)
+        axios.put(`${TABLE_API}${TABLE_CANCEL_BOOK_SUB}/${id}`)
             .then(res => {
                 alert('Hủy bàn đặt thành công!')
                 setRender(prevCount => prevCount + 1);
@@ -159,10 +159,10 @@ function Qltable() {
                                         <div key={item.tableId} className={classTable}>
                                             <div className={classTableItem + classStatus}>
                                                 <div className='col-3 d-flex a-center' style={{ padding: '0 4px' }}>
-                                                    <img loading='lazy' src={item.qR_id} alt={item.title} style={{ width: '100%', borderRadius: '8px' }} />
+                                                    <img loading='lazy' src={item.urlImage} alt={item.name} style={{ width: '100%', borderRadius: '8px' }} />
                                                 </div>
                                                 <div className='col-6 d-flex a-center flex-column j-center' style={{ padding: '0 4px' }}>
-                                                    <div>{item.tableName}</div>
+                                                    <div>{item.name}</div>
                                                     {
                                                         item.code === 3 ? (
                                                             <>
@@ -210,7 +210,7 @@ function Qltable() {
                             }
                         </div>
                     </div>
-                    <div className='col-2' style={{ border: '1px solid #333', borderRadius: '6px', height: '276px' }}>
+                    <div className='col-2' style={{ border: '1px solid #333', borderRadius: '6px', height: '280px' }}>
                         <div className={classStatusTableItem}>
                             <div className='d-flex a-center' style={{ margin: '12px 6px 6px 12px' }}>
                                 <div className={classStatusTableIcon}></div>

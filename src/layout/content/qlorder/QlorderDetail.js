@@ -50,18 +50,16 @@ function QlorderDetail() {
     const [isShowModal, setIsShowModal] = useState(false)
 
     useEffect(() => {
-        axios.get(`${QLORDER_API}get-order-details/${id}`)
+        axios.get(`${QLORDER_API}${id}`)
             .then(res => {
-                setTotal(res.data.reduce((total, index) => {
-                    return total + index.totalAmount
-                }, 0))
+                setTotal(res.data.totalAmount)
                 const initialQuantities = {}
-                res.data.forEach(item => {
-                    initialQuantities[item.foods.foodId] = item.quantity
+                res.data.orderDetails.forEach(item => {
+                    initialQuantities[item.foodId] = item.quantity
                 })
                 setQuantity(initialQuantities);
                 setOrder(res.data);
-                axios.get(`${CONFIG_API}search?type=${ORDER_TYPE}`)
+                axios.get(`${CONFIG_API}type?type=${ORDER_TYPE}`)
                     .then(res => {
                         setStatus(res.data);
                     })
@@ -99,7 +97,10 @@ function QlorderDetail() {
             accessToken: token,
             refreshToken: refreshToken
         };
-        const response = await UpdateOrderDetail(config, id, foodId, { quantity: quantity[foodId] });
+        const response = await UpdateOrderDetail(config, id, {
+            foodId: foodId,
+            quantity: quantity[foodId]
+        });
         if (response && response.data) {
             alert('Cập nhật số lượng thành công!')
             setRender(Math.random())
@@ -187,10 +188,10 @@ function QlorderDetail() {
 
     const handleOrderType = async (config, id, CODE) => {
         if (CODE === 2) {
-            return approveOrder(config, id, user.EmployeeId)
+            return approveOrder(config, id, user.id)
         }
         if (CODE === 4) {
-            return refuseOrder(config, id, user.EmployeeId)
+            return refuseOrder(config, id, user.id)
         }
     }
 
@@ -314,23 +315,23 @@ function QlorderDetail() {
                 <div className='col-8' style={{ borderRadius: '3px', border: '1px solid #333' }}>
                     <div className="mb-3 row" style={{ margin: '24px' }}>
                         <label className="col-sm-3 col-form-label">Bàn Order</label>
-                        <label className="col-sm-9 col-form-label">{order[0]?.orders?.tables?.tableName}</label>
+                        <label className="col-sm-9 col-form-label">{order?.table?.name}</label>
                     </div>
                     <div className="mb-3 row" style={{ margin: '24px' }}>
                         <label className="col-sm-3 col-form-label">Thời gian Order</label>
-                        <label className="col-sm-9 col-form-label">{formatDateTimeSQL(order[0]?.orders?.creationTime)}</label>
+                        <label className="col-sm-9 col-form-label">{formatDateTimeSQL(order?.createTime)}</label>
                     </div>
                     <div className="mb-3 row" style={{ margin: '24px' }}>
                         <label className="col-sm-3 col-form-label">Tình trạng</label>
-                        <label className="col-sm-5 col-form-label">{getStatusByCode(order[0]?.orders?.code)?.value}</label>
+                        <label className="col-sm-5 col-form-label">{getStatusByCode(order?.code)?.value}</label>
                         <div className="col-sm-4 col-form-label d-flex">
-                            {order[0]?.orders?.code === 1 && (
+                            {order?.code === 1 && (
                                 <>
                                     <button
                                         type="button"
                                         className="btn btn-outline-primary padding-6 col-6"
                                         style={{ marginRight: '1px' }}
-                                        onClick={() => handleOrder(id, order[0].orders.tableId, ORDER_APPROVE_CODE)}
+                                        onClick={() => handleOrder(id, order.orderId, ORDER_APPROVE_CODE)}
                                     >
                                         Duyệt
                                     </button>
@@ -338,14 +339,14 @@ function QlorderDetail() {
                                         type="button"
                                         className="btn btn-outline-danger padding-6 col-6"
                                         style={{ marginRight: '1px' }}
-                                        onClick={() => handleOrder(id, order[0].orders.tableId, ORDER_REFUSE_CODE)}
+                                        onClick={() => handleOrder(id, order.orderId, ORDER_REFUSE_CODE)}
                                     >
                                         Từ chối
                                     </button>
                                 </>
                             )}
 
-                            {order[0]?.orders?.code === 4 && (
+                            {order?.code === 4 && (
                                 <button
                                     type="button"
                                     className="btn btn-outline-danger padding-6 col-12"
@@ -359,7 +360,7 @@ function QlorderDetail() {
                     </div>
                     <div className="mb-3 row" style={{ margin: '24px' }}>
                         <label className="col-sm-3 col-form-label">Nhân viên phụ trách</label>
-                        <label className="col-sm-9 col-form-label">{order[0]?.orders.employees?.employeeName}</label>
+                        <label className="col-sm-9 col-form-label">{order?.user?.name}</label>
                     </div>
                 </div>
                 <div className='col-2 d-flex j-flex-end' style={{ height: '40px', paddingRight: '24px' }}>
@@ -390,17 +391,17 @@ function QlorderDetail() {
                 </thead>
                 <tbody>
                     {
-                        order?.map((item, index) => {
+                        order?.orderDetails?.map((item, index) => {
                             return (
                                 <tr key={index}>
                                     <th className={classQlorderCol_1}>{index + 1}</th>
                                     <td className={classQlorderCol_2}>
-                                        <img src={item.foods.urlImage} style={{ width: '100%', height: '100px' }} />
+                                        <img src={item.food.urlImage} style={{ width: '100%', height: '100px' }} />
                                     </td>
-                                    <td className={classQlorderCol_2}>{item.foods.nameFood}</td>
+                                    <td className={classQlorderCol_2}>{item.food.name}</td>
                                     <td className={classQlorderCol_2}>
                                         {
-                                            item.orders.code == 1 ? (
+                                            order.code == 1 ? (
                                                 <div className='d-flex width-full'>
                                                     <button
                                                         className="btn btn-link px-2"
@@ -413,7 +414,7 @@ function QlorderDetail() {
                                                         type="number"
                                                         min='1'
                                                         className="form-control form-control-sm t-center"
-                                                        value={quantity[item.foods.foodId]}
+                                                        value={quantity[item.foodId]}
                                                         onChange={() => { }}
                                                     />
                                                     <button
@@ -427,7 +428,7 @@ function QlorderDetail() {
                                                     <div style={{ padding: '0 6px' }}>
                                                         <button
                                                             className='btn btn-outline-primary width-full'
-                                                            onClick={() => handleUpdateQuantity(id, item.foods.foodId)}
+                                                            onClick={() => handleUpdateQuantity(id, item.foodId)}
                                                         >
                                                             Lưu
                                                         </button>
@@ -436,15 +437,15 @@ function QlorderDetail() {
                                             ) : item.quantity
                                         }
                                     </td>
-                                    <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.foods.unitPrice)}</td>
-                                    <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalAmount)}</td>
+                                    <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</td>
+                                    <td className={classQlorderCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal)}</td>
                                     <td className={classQlorderCol_1 + ' t-center'}>
                                         {
-                                            item.orders.code == 1 && order.length > 1 ? (
+                                            order.code == 1 && order.orderDetails.length > 1 ? (
                                                 <FontAwesomeIcon
                                                     icon={faTrash}
                                                     style={{ color: '#ff5252', fontSize: '28px', cursor: 'pointer' }}
-                                                    onClick={() => handleDelete(id, item.foods.foodId)}
+                                                    onClick={() => handleDelete(id, item.foodId)}
                                                 />
                                             ) : ''
                                         }

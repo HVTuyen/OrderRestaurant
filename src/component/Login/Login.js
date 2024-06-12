@@ -38,7 +38,7 @@ const Login = () => {
         
         axios.post(LOGIN_API,account)
             .then(res => {
-                const { accessToken, refreshToken } = res.data.data;
+                const { accessToken, refreshToken } = res.data;
                 
                 // Lưu accessToken và refreshToken vào local storage
                 localStorage.setItem('accessToken', accessToken);

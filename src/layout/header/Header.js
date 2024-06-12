@@ -196,7 +196,7 @@ function Header() {
 
                         <div className='btn btn-outline-info d-flex' style={{ marginLeft: '24px' }} ref={infoButtonRef}>
                             <img />
-                            <div>{account?.unique_name}</div>
+                            <div>{account?.name}</div>
                         </div>
                         <button
                             className="btn btn-outline-warning"

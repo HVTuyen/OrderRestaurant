@@ -125,14 +125,14 @@ export const MyDocument = ({ Prop }) => (
         {Prop?.allFoods?.map((item, index) => (
           <View style={styles.tableRow} key={index}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{item.nameFood}</Text>
+              <Text style={styles.tableCell}>{item.foodName}</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell}>{item.quantity}</Text>
             </View><View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.unitPrice)}</Text>
+              <Text style={styles.tableCell}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</Text>
             </View><View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalPrice)}</Text>
+              <Text style={styles.tableCell}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal)}</Text>
             </View>
           </View>
         ))}

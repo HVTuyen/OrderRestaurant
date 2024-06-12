@@ -320,7 +320,7 @@ function ProductEdit() {
                                 {
                                     title: 'Tên món ăn',
                                     name: 'name',
-                                    value: product.nameFood,
+                                    value: product.name,
                                     type: 'Text',
                                 },
                                 {

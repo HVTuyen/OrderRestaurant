@@ -199,11 +199,6 @@ function EmployeeAdd() {
                             type: 'Text',
                         },
                         {
-                            title: 'Số điện thoại',
-                            name: 'phone',
-                            type: 'Text',
-                        },
-                        {
                             title: 'Email',
                             name: 'email',
                             type: 'Text',

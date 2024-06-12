@@ -52,7 +52,7 @@ function Home() {
             requestNote: requestNote,
         }
 
-        axios.post(`${QLREQUEST_API}request`, newRequest)
+        axios.post(`${QLREQUEST_API}`, newRequest)
             .then(async () => {
                 try {
                     const docRef = await addDoc(collection(db, "orders"), {
@@ -115,7 +115,7 @@ className="d-block w-100"
                             <div className="d-flex j-center rounded-3 p-2 mb-2"
                                 style={{ backgroundColor: '#efefef', border:'1px solid #ccc' }}>
                                 <div>
-                                    <p className="mb-1">{table?.tableName}</p>
+                                    <p className="mb-1">{table?.name}</p>
                                 </div>
                             </div>
                         </div>

@@ -84,10 +84,10 @@ function Qlrequest({ activeMenu }) {
 
     const fetchData = async () => {
         let data = {
-            fromTime: startDate,
-            toTime: endDate,
-            PageNumber: page,
-            PageSize: pageSize
+            startTime: startDate,
+            endTime: endDate,
+            page: page,
+            pageSize: pageSize
         }
         if (searchRequest?.length > 0) {
             data.search = searchRequest;
@@ -96,14 +96,14 @@ function Qlrequest({ activeMenu }) {
             data.Code = searchStatusRequest;
         }
         if (searchStartDateRequest?.length > 0) {
-            data.fromTime = searchStartDateRequest;
+            data.startTime = searchStartDateRequest;
         }
         if (searchEndDateRequest?.length > 0) {
-            data.toTime = searchEndDateRequest;
+            data.endTime = searchEndDateRequest;
         }
         const response = await getRequest(data);
         if (response && response.data) {
-            setQlRequestSearch(response.data.request);
+            setQlRequestSearch(response.data.data);
             setTotalPages(response.data.totalPages)
         } else {
             setQlRequestSearch([])
@@ -118,7 +118,7 @@ function Qlrequest({ activeMenu }) {
 
     useEffect(() => {
         console.log('re-render 2')
-        axios.get(`${CONFIG_API}search?type=${REQUEST_TYPE}`)
+        axios.get(`${CONFIG_API}type?type=${REQUEST_TYPE}`)
             .then(res => {
                 setStatus(res.data);
             })
@@ -338,10 +338,10 @@ function Qlrequest({ activeMenu }) {
                                         return (
                                             <tr key={item.requestId}>
                                                 <th className={classQlrequestCol_1}>{(page - 1) * pageSize + index + 1}</th>
-                                                <td className={classQlrequestCol_1}>{item.tables.tableName}</td>
-                                                <td className={classQlrequestCol_2}>{formatDateTimeSQL(item.requestTime)}</td>
-                                                <td className={classQlrequestCol_2}>{getStatusByCode(item.code)?.value}</td>
-                                                <td className={classQlrequestCol_2}>{item.title}</td>
+                                                <td className={classQlrequestCol_1}>{item?.table?.name}</td>
+                                                <td className={classQlrequestCol_2}>{formatDateTimeSQL(item?.createTime)}</td>
+                                                <td className={classQlrequestCol_2}>{getStatusByCode(item?.code)?.value}</td>
+                                                <td className={classQlrequestCol_2}>{item?.title}</td>
                                                 <td className={classQlrequestCol_3 + ' t-center'}>
                                                     <div className="btn-group" role="group" aria-label="Basic outlined example" style={{ width: '100%' }}>
                                                         {item.code === 1 && (

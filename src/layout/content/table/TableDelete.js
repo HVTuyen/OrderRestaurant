@@ -122,13 +122,13 @@ function TableDelete( ) {
                         {
                             title: 'Tên bàn',
                             name: 'name',
-                            value: table.tableName,
+                            value: table.name,
                             type: 'Text',
                         },
                         {
                             title: 'Ảnh QR',
                             name: 'image',
-                            value: table.qR_id,
+                            value: table.urlImage,
                             type: 'Image',
                         }
                     ]

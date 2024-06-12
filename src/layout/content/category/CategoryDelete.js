@@ -37,7 +37,7 @@ function CategoryDelete() {
             const response = await getCategory(config, id);
             if (response && response.data) {
                 setCategory(response.data);
-                setName(response.data.categoryName)
+                setName(response.data.name)
                 setDescription(response.data.description)
             } else {
                 if (response && response.error === 'Unauthorized') {

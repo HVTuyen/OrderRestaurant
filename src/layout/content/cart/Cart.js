@@ -135,25 +135,23 @@ function Cart() {
     
         // Tạo mảng items từ state products
         const items = products.map(item => ({
-            foods: { foodId: item.foodId }, // foodId từ state products
-            quantity: quantity[item.foodId] || 1 // Số lượng từ state quantity
+            foodId: item.foodId,
+            quantity: quantity[item.foodId] || 1
         }));
     
         // Tạo đối tượng newOrder với dữ liệu được yêu cầu
         const newOrder = {
             tableId: id, // Lấy từ useParams()
-            items: items, // Mảng items đã tạo
-            totalAmount: totalPrice // Lấy từ state totalPrice
+            foods: items,
         };
     
         // Gửi request POST đến API để tạo đơn hàng mới
-        axios.post(`${QLORDER_API}createOrder`, newOrder)
+        axios.post(`${QLORDER_API}`, newOrder)
             .then( async () => {
                 try {
                     const docRef = await addDoc(collection(db, "orders"), {
                       tableId: newOrder.tableId,
-                      items: newOrder.items,
-                      totalAmount: newOrder.totalAmount
+                      items: newOrder.foods,
                     });
                     console.log("Document written with ID: ", docRef.id);
                 } catch (e) {
@@ -211,8 +209,8 @@ function Cart() {
                                                                 />
                                                             </div>
                                                             <div className="t-center col-md-3 col-lg-3 col-xl-3" style={{paddingTop:'12px'}}>
-                                                                <p className="lead fw-normal mb-2">{item.nameFood}</p>
-                                                                <p>{item.category.categoryName}</p>
+                                                                <p className="lead fw-normal mb-2">{item.name}</p>
+                                                                <p>{item.category.name}</p>
                                                             </div>
                                                             <div className="t-center col-md-3 col-lg-2 col-xl-2 d-flex" style={{paddingRight:'0', paddingLeft:'0', justifyContent: 'center'}}>
                                                                 <button

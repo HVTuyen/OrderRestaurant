@@ -110,7 +110,7 @@ function Bill( ) {
             accessToken: token,
             refreshToken: refreshToken
         };
-        const response = await paymentOrder(config, id, user.EmployeeId);
+        const response = await paymentOrder(config, id);
         if (response && !response.error) {
             const docRef = addDoc(collection(db, "table"), {
                 tableId: tableId,
@@ -129,8 +129,8 @@ function Bill( ) {
                             Authorization: `Bearer ${accessToken}`
                         }
                     };
-                    const newDataResponse = await paymentOrder(newconfig, id, user.EmployeeId);
-                    if (newDataResponse) {
+                    const newDataResponse = await paymentOrder(newconfig, id);
+                    if (newDataResponse && !newDataResponse.error) {
                         const docRef = addDoc(collection(db, "table"), {
                             tableId: tableId,
                         });
@@ -159,8 +159,6 @@ function Bill( ) {
             });
     }, [])
 
-    console.log(order, status)
-
     const classQltableList = clsx(style.qltableList, 'table table-center')
     const classQltableCol_0_5 = clsx(style.qltableCol, 'col-0-5')
     const classQltableCol_1 = clsx(style.qltableCol, 'col-1')
@@ -176,16 +174,12 @@ function Bill( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-6 col-form-label">Bàn</label>
-                        <label className="col-sm-6 col-form-label">{table?.tableName}</label>
+                        <label className="col-sm-6 col-form-label">{order?.table?.name}</label>
                     </div>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
+                    {/* <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-6 col-form-label">Thời gian Order lần cuối</label>
                         <label className="col-sm-6 col-form-label">{formatDateTimeSQL(order?.orders[order?.orders.length - 1].creationTime)}</label>
-                    </div>
-                    <div className="mb-3 row" style={{margin: '24px'}}>
-                        <label className="col-sm-6 col-form-label">Nhân viên phụ trách</label>
-                        <label className="col-sm-6 col-form-label">{order?.orders[0].employees.employeeName}</label>
-                    </div>
+                    </div> */}
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-6 col-form-label" style={{fontSize:'24px', fontWeight:'700'}}>Tổng tiền</label>
                         <label className="col-sm-6 col-form-label" style={{fontSize:'24px', fontWeight:'700'}}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order?.totalAmount)}</label>
@@ -197,15 +191,15 @@ function Bill( ) {
                                     document={
                                         <MyDocument 
                                             Prop={{
-                                                tableName: table?.tableName,
+                                                tableName: order?.table?.name,
                                                 paymentTime: formatDateTime(new Date()),
-                                                employeeName: order?.orders[0].employees.employeeName,
+                                                employeeName: user?.name,
                                                 totalAmount: order?.totalAmount,
-                                                allFoods: order?.allFoods
+                                                allFoods: order?.mergedOrderDetails
                                             }}
                                         />
                                     } 
-                                    fileName={`Hoa_Don_Ban_${table?.tableName}.pdf`}
+                                    fileName={`Hoa_Don_Ban_${order?.table?.name}.pdf`}
                                     className='btn btn-outline-primary'
                                     onClick={() => setShowExportFile(false)}
                                 >
@@ -217,15 +211,15 @@ function Bill( ) {
                                         document={
                                             <MyDocument 
                                                 Prop={{
-                                                    tableName: table?.tableName,
+                                                    tableName: order?.table?.name,
                                                     paymentTime: formatDateTime(new Date()),
-                                                    employeeName: order?.orders[0].employees.employeeName,
+                                                    // employeeName: order?.orders[0].employees.employeeName,
                                                     totalAmount: order?.totalAmount,
-                                                    allFoods: order?.allFoods
+                                                    allFoods: order?.mergedOrderDetails
                                                 }}
                                             />
                                         } 
-                                        fileName={`Hoa_Don_Ban_${table?.tableName}_${formatDateTime(new Date())}.pdf`}
+                                        fileName={`Hoa_Don_Ban_${order?.table?.name}_${formatDateTime(new Date())}.pdf`}
                                         className='btn btn-outline-primary'
                                         onClick={() => setShowExportFile(false)}
                                     >
@@ -269,17 +263,17 @@ function Bill( ) {
                 </thead>
                 <tbody>
                     {
-                        order?.allFoods.map((item, index) => {
+                        order?.mergedOrderDetails.map((item, index) => {
                             return (
                                 <tr key={index}>
                                     <th className={classQltableCol_1}>{index + 1}</th>
                                     <td className={classQltableCol_2}>
-                                        <img src={item.urlImage} style={{width: '100%', height: '100px'}} />
+                                        <img src={item.foodImage} style={{width: '100%', height: '100px'}} />
                                     </td>
-                                    <td className={classQltableCol_2}>{item.nameFood}</td>
+                                    <td className={classQltableCol_2}>{item.foodName}</td>
                                     <td className={classQltableCol_2}>{item.quantity}</td>
-                                    <td className={classQltableCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.unitPrice)}</td>
-                                    <td className={classQltableCol_3}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalPrice)}</td>
+                                    <td className={classQltableCol_2}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</td>
+                                    <td className={classQltableCol_3}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal)}</td>
                                 </tr>
                             )
                         })

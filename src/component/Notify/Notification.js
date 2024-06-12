@@ -95,10 +95,10 @@ const Notification = (props) => {
     const response = await seenNotification(config, id);
     if (response && response.data) {
       handleClickToHeader(isCheck)
-      if (type === 'Order') {
+      if (type === 'DonHang') {
         navigate(`/Ql/Action/Order?page=1&search=${searchOrder || ''}&code=${searchStatus || ''}&fromTime=${startDate || ''}&toTime=${endDate || ''}`)
       }
-      if (type === 'Requirements') {
+      if (type === 'YeuCau') {
         navigate(`/Ql/Action/Request?page=1&search=${searchRequest || ''}`)
       }
     } else if (response && response.error === 'Unauthorized') {
@@ -189,17 +189,17 @@ const Notification = (props) => {
                 <li
                   style={{ listStyleType: 'none' }}
                   key={item.notificationId}
-                  onClick={() => handleNotificationClick(item.notificationId, item.type, item.isCheck)}
+                  onClick={() => handleNotificationClick(item.notification.notificationId, item.notification.type, item.notification.isCheck)}
                 >
-                  <div className={item.isCheck ? notificationItem : notificationItemCheck}>
+                  <div className={item.notification.isCheck ? notificationItem : notificationItemCheck}>
                     <div className={notificationTitle}>
-                      {item.title}
+                      {item.notification.title}
                     </div>
                     <div className={notificationContent}>
-                      {item.content}
+                      {item.notification.content}
                     </div>
                     <div className={notificationTime}>
-                      {item.timeSinceCreation}
+                      {item.timeSinceCreationString}
                     </div>
                   </div>
                 </li>

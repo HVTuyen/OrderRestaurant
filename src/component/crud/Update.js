@@ -75,7 +75,7 @@ const Update = (props) => {
         if (props.type === CATEGORY_TYPE) {
             if (formData.name && formData.description) {
                 const data = {
-                    categoryName: formData.name,
+                    name: formData.name,
                     description: formData.description,
                 }
                 return editCategory(config, props.id, data)
@@ -98,20 +98,20 @@ const Update = (props) => {
                             handleUpload()
                         } else {
                             const data = {
-                                nameFood: formData.name,
+                                name: formData.name,
                                 unitPrice: formData.price,
                                 categoryId: formData.categoryId,
-                                image: urlImage,
+                                urlImage: urlImage,
                             }
                             return editProduct(config, props.id, data)
                         }
                     }
                     else {
                         const data = {
-                            nameFood: formData.name,
+                            name: formData.name,
                             unitPrice: formData.price,
                             categoryId: formData.categoryId,
-                            image: formData.image,
+                            urlImage: formData.image,
                         }
                         return editProduct(config, props.id, data)
                     }
@@ -143,18 +143,16 @@ const Update = (props) => {
                         handleUpload()
                     } else {
                         const data = {
-                            tableName: formData.name,
-                            note: formData.note,
-                            qR_id: urlImage,
+                            name: formData.name,
+                            urlImage: urlImage,
                         }
                         return editTable(config, props.id, data)
                     }
                 }
                 else {
                     const data = {
-                        tableName: formData.name,
-                        note: formData.note,
-                        qR_id: formData.image,
+                        name: formData.name,
+                        urlImage: formData.image,
                     }
                     return editTable(config, props.id, data)
                 }
@@ -168,28 +166,26 @@ const Update = (props) => {
             }
         }
         if (props.type === EMPLOYEE_TYPE) {
-            if (formData.name && formData.phone && formData.email && formData.password && formData.image) {
+            if (formData.name && formData.email && formData.password && formData.image) {
                 if (typeof formData.image === 'object') {
                     if(!urlImage) {
                         handleUpload()
                     } else {
                         const data = {
-                            employeeName: formData.name,
-                            phone: formData.phone,
+                            name: formData.name,
                             email: formData.email,
                             password:  formData.password,
-                            image: urlImage,
+                            urlImage: urlImage,
                         }
                         return editEmployee(config, props.id, data)
                     }
                 }
                 else {
                     const data = {
-                        employeeName: formData.name,
-                        phone: formData.phone,
+                        name: formData.name,
                         email: formData.email,
                         password: formData.password,
-                        image: formData.image,
+                        urlImage: formData.image,
                     }
                     return editEmployee(config, props.id, data)
                 }

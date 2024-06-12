@@ -29,7 +29,7 @@ function Table() {
     useEffect(() => {
         if(account) {
             setUser(account)
-            if(account.role !== 'admin') {
+            if(account.RoleName !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
         }
@@ -48,7 +48,7 @@ function Table() {
 
     useEffect(() => {
         const searchTable = table.toLowerCase();
-        const filteredTables = tables.filter(item => item.tableName.toLowerCase().includes(searchTable));
+        const filteredTables = tables.filter(item => item.name.toLowerCase().includes(searchTable));
         
         setTablesSearch(filteredTables);
     }, [table])
@@ -136,11 +136,11 @@ function Table() {
                                 return (
                                     <div key={item.tableId} className={classTable}>
                                         <div className={classTableItem + classStatus}>
-                                            <div className='col-3' style={{padding:'0 4px'}}>
-                                                <img loading='lazy' src={item.qR_id} alt={item.title} style={{width:'100%', borderRadius:'8px'}}/>
+                                            <div className='col-3 d-flex a-center' style={{padding:'0 4px'}}>
+                                                <img loading='lazy' src={item.urlImage} alt={item.name} style={{width:'100%', borderRadius:'8px'}}/>
                                             </div>
                                             <div className='col-4 d-flex a-center' style={{padding:'0 4px'}}>
-                                                <div>{item.tableName}</div>
+                                                <div>{item.name}</div>
                                             </div>
                                             <div className='col-5 d-flex a-center j-flex-end' style={{padding:'0 4px'}}>
                                                 <Link to={`/Ql/Table/Edit/${item.tableId}`}>
@@ -157,7 +157,7 @@ function Table() {
                         }
                     </div>
                 </div>
-                <div className='col-2' style={{border:'1px solid #333', borderRadius:'6px', height:'276px'}}>
+                <div className='col-2' style={{border:'1px solid #333', borderRadius:'6px', height:'280px'}}>
                     <div className={classStatusTableItem}>
                         <div className='d-flex a-center' style={{margin: '12px 6px 6px 12px'}}>
                             <div className={classStatusTableIcon}></div>

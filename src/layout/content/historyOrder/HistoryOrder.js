@@ -17,7 +17,7 @@ function HistoryOrder() {
     const [order, setOrder] = useState()
 
     useEffect(() => {
-        axios.get(`${QLORDER_API}get_bill?tableId=${id}`)
+        axios.get(`${QLORDER_API}GetBill/${id}`)
             .then(res => {
                 setOrder(res.data)
             })
@@ -28,12 +28,11 @@ function HistoryOrder() {
 
     const handlePayment = () => {
         const requestPayment = {
-            tableId: id,
             title: 'Yêu cầu thanh toán',
             requestNote: '',
         }
 
-        axios.post(`${QLREQUEST_API}request`, requestPayment)
+        axios.post(`${QLREQUEST_API}`, requestPayment)
             .then(async () => {
                 try {
                     const docRef = await addDoc(collection(db, "orders"), {
@@ -57,10 +56,10 @@ function HistoryOrder() {
             <section className="h-100" style={{ backgroundColor: "#eee" }}>
                 <div className="container h-100 py-5">
                     <div className="row d-flex justify-content-center align-items-center h-100">
-                        <div className="col-10">
+                        <div className="col-12">
 
                             <div className="d-flex justify-content-between align-items-center mb-4">
-                                <div className="mb-0" style={{ fontWeight: '700', fontSize: '48px', color: '#545bcd' }}>Lịch sử gọi món</div>
+                                <div className="mb-0" style={{ fontWeight: '700', fontSize: '38px', color: '#545bcd' }}>Lịch sử gọi món</div>
                             </div>
 
                             {order == null ? (
@@ -72,31 +71,33 @@ function HistoryOrder() {
                             ) : (
                                 <>
                                     <div className="card rounded-3 mb-4">
-                                        <div className="card-body p-4">
+                                        <div className="card-body p-1">
                                             {
-                                                order?.allFoods?.map((item, index) => {
+                                                order?.mergedOrderDetails?.map((item, index) => {
                                                     return (
-                                                        <div key={item.foodId} className="row d-flex justify-content-between align-items-center" style={{ borderBottom: index === order.allFoods.length - 1 ? 'none' : '1px solid #ccc', paddingBottom: '4px', paddingTop: index === 0 ? '0' : '8px' }}>
-                                                            <div className="t-center col-md-2 col-lg-2 col-xl-2">
+                                                        <div key={item.foodId} className="row d-flex justify-content-between align-items-center" style={{ borderBottom: index === order.mergedOrderDetails.length - 1 ? 'none' : '1px solid #ccc', paddingBottom: '4px', paddingTop: index === 0 ? '0' : '8px' }}>
+                                                            <div className="t-center col-4 col-lg-2">
                                                                 <img
-                                                                    src={item.urlImage}
+                                                                    src={item.foodImage}
                                                                     className="img-fluid rounded-3" alt="Cotton T-shirt"
 
                                                                 />
                                                             </div>
-                                                            <div className="t-center col-md-3 col-lg-3 col-xl-3" style={{ paddingTop: '12px' }}>
-                                                                <p className="lead fw-normal mb-2">{item.nameFood}</p>
-                                                                {/* <p>{item.category.categoryName}</p> */}
-                                                            </div>
-                                                            <div className="t-center col-md-3 col-lg-2 col-xl-2 d-flex border" style={{ padding: '6px', justifyContent: 'center' }}>
-                                                                <label
-                                                                    style={{ maxWidth: '100px', textAlign: 'center' }}
-                                                                >
-                                                                    {item.quantity}
-                                                                </label>
-                                                            </div>
-                                                            <div className="t-center col-md-2 col-lg-2 col-xl-2 offset-lg-1" style={{ padding: '12px 0' }}>
-                                                                <h5 className="mb-0">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalPrice)}</h5>
+                                                            <div className="col-8 col-lg-8 row a-center">
+                                                                <div className="col-9 col-lg-6" style={{padding:0}}>
+                                                                    <p className="lead fw-normal ellipsisText" style={{fontSize:'24px', margin:0}}>{item.foodName}</p>
+                                                                </div>
+                                                                <div className="col-3 col-lg-2" style={{padding:0}}>
+                                                                    <label
+                                                                        style={{ maxWidth: '100px', textAlign: 'center' }}
+                                                                    >
+                                                                        x{item.quantity}
+                                                                    </label>
+                                                                </div>
+                                                            
+                                                                <div className="t-center col-12 col-lg-4" style={{ padding: '12px 0' }}>
+                                                                    <h5 className="mb-0">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal)}</h5>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )

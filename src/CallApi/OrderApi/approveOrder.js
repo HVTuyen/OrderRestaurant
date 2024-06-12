@@ -4,7 +4,7 @@ import { QLORDER_API, APPROVE_ORDER_SUB } from '../../layout/constants';
 
 export const approveOrder = async (config, orderId, employeeId) => {
     try {
-        const response = await axios.post(`${QLORDER_API}${APPROVE_ORDER_SUB}/${orderId}/${employeeId}`, null, config);
+        const response = await axios.put(`${QLORDER_API}${APPROVE_ORDER_SUB}/${orderId}/${employeeId}`, null, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 404) {

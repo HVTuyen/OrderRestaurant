@@ -39,7 +39,7 @@ function QlrequestDetail( ) {
         axios.get(`${QLREQUEST_API}${id}`)
             .then(res => {
                 setRequest(res.data);
-                axios.get(`${CONFIG_API}search?type=${REQUEST_TYPE}`)
+                axios.get(`${CONFIG_API}type?type=${REQUEST_TYPE}`)
                     .then(res => {
                         setStatus(res.data);
                     })
@@ -172,15 +172,15 @@ function QlrequestDetail( ) {
                 <div className='col-8' style={{borderRadius: '3px', border: '1px solid #333'}}>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Bàn gửi</label>
-                        <label className="col-sm-9 col-form-label">{request.tables?.tableName}</label>
+                        <label className="col-sm-9 col-form-label">{request?.table?.name}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Thời gian gửi</label>
-                        <label className="col-sm-9 col-form-label">{formatDateTimeSQL(request.requestTime)}</label>
+                        <label className="col-sm-9 col-form-label">{formatDateTimeSQL(request?.createTime)}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tình trạng</label>
-                        <label className="col-sm-4 col-form-label">{getStatusByCode(request.code)?.value}</label>
+                        <label className="col-sm-4 col-form-label">{getStatusByCode(request?.code)?.value}</label>
                         <div className="col-sm-5 col-form-label d-flex">
                             {request.code === 1 && (
                                 <>
@@ -216,11 +216,11 @@ function QlrequestDetail( ) {
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Tiêu đề</label>
-                        <label className="col-sm-9 col-form-label">{request.title}</label>
+                        <label className="col-sm-9 col-form-label">{request?.title}</label>
                     </div>
                     <div className="mb-3 row" style={{margin: '24px'}}>
                         <label className="col-sm-3 col-form-label">Nội dung</label>
-                        <label className="col-sm-9 col-form-label">{request.requestNote}</label>
+                        <label className="col-sm-9 col-form-label">{request?.content}</label>
                     </div>
                 </div>
                 <div className='col-2 d-flex j-flex-end' style={{height:'40px', paddingRight:'24px'}}>

@@ -34,7 +34,7 @@ const SelectInput = (props) => {
                 >
                     <option value=''>Chọn loại món ăn</option>
                     {options?.map(category => (
-                        <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                        <option key={category.categoryId} value={category.categoryId}>{category.name}</option>
                     ))}
                 </select>
             </div>

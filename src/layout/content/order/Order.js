@@ -139,7 +139,7 @@ function Order() {
                                         >
                                             <option value="">Chọn loại món ăn</option>
                                             {categories.map(category => (
-                                                <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                                                <option key={category.categoryId} value={category.categoryId}>{category.name}</option>
                                             ))}
                                         </select>
                                         <input

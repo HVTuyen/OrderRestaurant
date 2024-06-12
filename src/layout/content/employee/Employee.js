@@ -27,7 +27,7 @@ function Employee() {
     useEffect(() => {
         if(account) {
             setUser(account)
-            if(account.role !== 'admin') {
+            if(account.RoleName !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
         }
@@ -79,15 +79,14 @@ function Employee() {
     };
 
     useEffect(() => {
-        if(user && user.role === 'admin') {
+        if(user && user.RoleName === 'admin') {
             fetchData();
         }
     }, [user])
 
-
     useEffect(() => {
         const searchEmployee = employee.toLowerCase();
-        const filteredEmployees = employees.filter(item => item.employeeName.toLowerCase().includes(searchEmployee));
+        const filteredEmployees = employees.filter(item => item.name.toLowerCase().includes(searchEmployee));
         
         setEmployeesSearch(filteredEmployees);
     }, [employee])
@@ -132,25 +131,22 @@ function Employee() {
                                     <div key={item.employeeId} className='col-lg-6 col-xs-12' style={{ padding: '24px 12px 8px 12px' }}>
                                         <div className='border d-flex a-center' style={{}}>
                                             <div className='col-3' style={{ padding: '6px' }}>
-                                                <img loading='lazy' src={item.image} alt={item.title} style={{ width: '100%', height: '100%', maxHeight: '150px', borderRadius: '8px', border: '1px solid #ccc' }} />
+                                                <img loading='lazy' src={item.urlImage} alt={item.name} style={{ width: '100%', height: '100%', maxHeight: '150px', borderRadius: '8px', border: '1px solid #ccc' }} />
                                             </div>
                                             <div className='col-9'>
                                                 <div style={{ padding: '8px 8px 8px 0' }}>
                                                     <div className={classEmployeeText} >
-                                                        Tên: {item.employeeName}
-                                                    </div>
-                                                    <div className={classEmployeeText} >
-                                                        SĐT: {item.phone}
+                                                        Tên: {item.name}
                                                     </div>
                                                     <div className={classEmployeeText} >
                                                         Email: {item.email}
                                                     </div>
                                                 </div>
                                                 <div className='d-flex j-flex-end'>
-                                                    <Link to={`/Ql/Employee/Edit/${item.employeeId}`}>
+                                                    <Link to={`/Ql/Employee/Edit/${item.userId}`}>
                                                         <FontAwesomeIcon icon={faEdit} className={classEmployeeItemIcon} style={{ color: '#5c94ff' }} />
                                                     </Link>
-                                                    <Link to={`/Ql/Employee/Delete/${item.employeeId}`}>
+                                                    <Link to={`/Ql/Employee/Delete/${item.userId}`}>
                                                         <FontAwesomeIcon icon={faTrash} className={classEmployeeItemIcon} style={{ color: '#ff5252' }} />
                                                     </Link>
                                                 </div>

@@ -2,9 +2,9 @@ import axios from 'axios';
 
 import { QLORDER_API, UPDATE_ORDER_DETAIL_SUB } from '../../layout/constants';
 
-export const UpdateOrderDetail = async (config, orderId, foodId, data) => {
+export const UpdateOrderDetail = async (config, orderId, data) => {
     try {
-        const response = await axios.put(`${QLORDER_API}${UPDATE_ORDER_DETAIL_SUB}/${orderId}/${foodId}`, data, config);
+        const response = await axios.put(`${QLORDER_API}${UPDATE_ORDER_DETAIL_SUB}/${orderId}`, data, config);
         return response;
     } catch (error) {
         if (error.response && error.response.status === 404) {

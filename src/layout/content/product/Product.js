@@ -48,7 +48,7 @@ function Product() {
     useEffect(() => {
         if (account) {
             setUser(account)
-            if (account.role !== 'admin') {
+            if (account.RoleName !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
         }
@@ -117,7 +117,7 @@ function Product() {
         };
         const response = await getProducts(config, data);
         if (response && response.data) {
-            setProductsSearch(response.data.foods);
+            setProductsSearch(response.data.data);
             setTotalPages(response.data.totalPages)
         } else if (response && response.error === 'Data') {
             setProductsSearch([]);
@@ -162,7 +162,7 @@ function Product() {
                 >
                     <option value="">Chọn loại món ăn</option>
                     {categories.map(category => (
-                        <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                        <option key={category.categoryId} value={category.categoryId}>{category.name}</option>
                     ))}
                 </select>
 
@@ -199,11 +199,11 @@ function Product() {
                                 <tr key={item.foodId}>
                                     <th className={classProductColId}>{(page - 1) * pageSize + index + 1}</th>
                                     <th className={classProductColImg}>
-                                        <img loading='lazy' src={item.urlImage} alt={item.nameFood} width="80" height="80" />
+                                        <img loading='lazy' src={item.urlImage} alt={item.name} width="80" height="80" />
                                     </th>
-                                    <td className={classProductColName}>{item.nameFood}</td>
+                                    <td className={classProductColName}>{item.name}</td>
                                     <td className={classProductColPrice}>{item.unitPrice}</td>
-                                    <td className={classProductColCategory}>{item.category.categoryName}</td>
+                                    <td className={classProductColCategory}>{item.category.name}</td>
                                     <th className={classProductColAction}>
                                         <Link to={`/Ql/Product/Edit/${item.foodId}`}>
                                             <FontAwesomeIcon icon={faEdit} className={classProductTableIcon} style={{ color: '#5c94ff' }} />

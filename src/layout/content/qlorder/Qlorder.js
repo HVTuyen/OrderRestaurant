@@ -87,10 +87,10 @@ function Qlorder({ activeMenu }) {
 
     const fetchData = async () => {
         let data = {
-            fromTime: startDate,
-            toTime: endDate,
-            PageNumber: page,
-            PageSize: pageSize
+            startTime: startDate,
+            endTime: endDate,
+            page: page,
+            pageSize: pageSize
         }
         if (search?.length > 0) {
             data.search = search;
@@ -99,14 +99,14 @@ function Qlorder({ activeMenu }) {
             data.Code = searchStatus;
         }
         if (searchStartDate?.length > 0) {
-            data.fromTime = searchStartDate;
+            data.startTime = searchStartDate;
         }
         if (searchEndDate?.length > 0) {
-            data.toTime = searchEndDate;
+            data.endTime = searchEndDate;
         }
         const response = await getOrder(data);
         if (response && response.data) {
-            setQlOrderSearch(response.data.orders);
+            setQlOrderSearch(response.data.data);
             setTotalPages(response.data.totalPages)
         } else {
             setQlOrderSearch([])
@@ -121,7 +121,7 @@ function Qlorder({ activeMenu }) {
 
     useEffect(() => {
         console.log('re-render 2')
-        axios.get(`${CONFIG_API}search?type=${ORDER_TYPE}`)
+        axios.get(`${CONFIG_API}type?type=${ORDER_TYPE}`)
             .then(res => {
                 setStatus(res.data);
             })
@@ -155,10 +155,10 @@ function Qlorder({ activeMenu }) {
 
     const handleOrderType = async (config, id, CODE) => {
         if (CODE === 2) {
-            return approveOrder(config, id, user.EmployeeId)
+            return approveOrder(config, id, user.id)
         }
         if (CODE === 4) {
-            return refuseOrder(config, id, user.EmployeeId)
+            return refuseOrder(config, id, user.id)
         }
     }
 
@@ -348,8 +348,8 @@ function Qlorder({ activeMenu }) {
                                         return (
                                             <tr key={item.orderId}>
                                                 <th className={classQlorderCol_0_5}>{(page - 1) * pageSize + index + 1}</th>
-                                                <td className={classQlorderCol_1}>{item.tables.tableName}</td>
-                                                <td className={classQlorderCol_2}>{formatDateTimeSQL(item.creationTime)}</td>
+                                                <td className={classQlorderCol_1}>{item.table.name}</td>
+                                                <td className={classQlorderCol_2}>{formatDateTimeSQL(item.createTime)}</td>
                                                 <td className={classQlorderCol_1_5}>{getStatusByCode(item.code)?.value}</td>
                                                 <td className={classQlorderCol_2}>{item.paymentTime ? formatDateTimeSQL(item.paymentTime) : ''}</td>
                                                 <td className={classQlorderCol_2}>{item.employees?.employeeName}</td>

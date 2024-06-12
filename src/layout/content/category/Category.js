@@ -28,7 +28,7 @@ function Category() {
     useEffect(() => {
         if(account) {
             setUser(account)
-            if(account.role !== 'admin') {
+            if(account.RoleName !== 'admin') {
                 navigate('/Ql/AccessDenied')
             }
         }
@@ -79,7 +79,7 @@ function Category() {
 
     useEffect(() => {
         const searchCategory = category.toLowerCase();
-        const filteredCategories = categories.filter(item => item.categoryName.toLowerCase().includes(searchCategory));
+        const filteredCategories = categories.filter(item => item.name.toLowerCase().includes(searchCategory));
         
         setCategoriesSearch(filteredCategories);
     }, [category])
@@ -130,7 +130,7 @@ function Category() {
                             return (
                                 <tr key={item.categoryId}>
                                     <th className={classCategoryColId}>{index + 1}</th>
-                                    <td className={classCategoryColName}>{item.categoryName}</td>
+                                    <td className={classCategoryColName}>{item.name}</td>
                                     <td className={classCategoryColDes}>{item.description}</td>
                                     <th className={classCategoryColAction}>
                                         <Link to={`/Ql/Category/Edit/${item.categoryId}`}>

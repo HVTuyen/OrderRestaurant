@@ -4,14 +4,14 @@ import { QLREQUEST_API, REQUEST_COMPLETE_SUB } from '../../layout/constants';
 
 export const completeRequest = async (config, id) => {
     try {
-        const response = await axios.post(`${QLREQUEST_API}${REQUEST_COMPLETE_SUB}/${id}`, null, config);
+        const response = await axios.put(`${QLREQUEST_API}${REQUEST_COMPLETE_SUB}/${id}`, null, config);
         return response;
     } catch (error) {
-        if (error.response && error.response.status === 404) {
+        if (error.response && error.response.status === 401) {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'Unauthorized' };
         }
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 403) {
             // Nếu lỗi là 401, trả về lỗi để xử lý trong component
             return { error: 'AccessDenied' };
         }
