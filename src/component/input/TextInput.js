@@ -25,7 +25,7 @@ const TextInput = (props) => {
                 <input 
                     type={props.type} 
                     className="form-control"
-                    value={data}
+                    value={data || ''}
                     onChange={(e) => handleChange(e)}
                 />
             </div>

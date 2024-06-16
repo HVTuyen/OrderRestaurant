@@ -13,7 +13,6 @@ function App() {
   const navigate = useNavigate();
 
   const { account, token } = useAuth();
-  console.log(account);
 
   useEffect(() => {
     if (token == null) {

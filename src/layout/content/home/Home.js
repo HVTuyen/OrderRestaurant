@@ -108,7 +108,7 @@ className="d-block w-100"
                                 style={{ width: '180px', borderRadius: '10px' }}
                                 src='https://summundus.org/wp-content/uploads/2014/09/eatwell.jpg'
                                 alt='Generic placeholder image'
-                                fluid />
+                                />
                         </div>
                         <div className="flex-grow-1">
                             <MDBCardTitle style={{ margin: "12px 0" }}>Order Restaurant</MDBCardTitle>

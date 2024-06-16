@@ -123,16 +123,11 @@ const Statistical = () => {
         fetchData();
     }
 
-    console.log(TotalRevenue)
-    console.log(startDate, endDate)
-
     useEffect(() => {
         if (user && user.RoleName === 'admin') {
             handleGetSatistical()
         }
     }, [user])
-
-    console.log(popularFood)
 
     return (
         <div className="col-10">
@@ -172,7 +167,7 @@ const Statistical = () => {
                                 <div className="align-self-center">
                                     <button
                                         type="button"
-                                        class="btn btn-outline-primary"
+                                        className="btn btn-outline-primary"
                                         onClick={(handleGetSatistical)}
                                     >
                                         Xem

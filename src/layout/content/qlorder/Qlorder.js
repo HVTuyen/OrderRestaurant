@@ -25,8 +25,6 @@ import { approveOrder } from '../../../CallApi/OrderApi/approveOrder'
 import { refuseOrder } from '../../../CallApi/OrderApi/refuseOrder'
 
 function Qlorder({ activeMenu }) {
-    console.log('re-render-qlorder')
-
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
@@ -42,7 +40,6 @@ function Qlorder({ activeMenu }) {
     const searchEndDate = searchParams.get('toTime');
     const searchStatus = searchParams.get('code');
     const search = searchParams.get('search');
-    console.log(page)
 
     const handleChangeSearchEndDate = (date) => {
         sessionStorage.setItem('searchEndDate', formatDateTimeSearch(date))
@@ -83,8 +80,6 @@ function Qlorder({ activeMenu }) {
         }
     }, [])
 
-    console.log(user)
-
     const fetchData = async () => {
         let data = {
             startTime: startDate,
@@ -115,12 +110,10 @@ function Qlorder({ activeMenu }) {
     }
 
     useEffect(() => {
-        console.log(search)
         fetchData();
     }, [render, page, search, searchStatus, searchStartDate, searchEndDate])
 
     useEffect(() => {
-        console.log('re-render 2')
         axios.get(`${CONFIG_API}type?type=${ORDER_TYPE}`)
             .then(res => {
                 setStatus(res.data);
@@ -272,12 +265,6 @@ function Qlorder({ activeMenu }) {
     const classQlorderCol_1 = clsx(style.qlorderCol, 'col-1')
     const classQlorderCol_1_5 = clsx(style.qlorderCol, 'col-1-5')
     const classQlorderCol_2 = clsx(style.qlorderCol, 'col-2')
-
-
-    console.table(render)
-    console.table(qlOrdersSearch)
-    console.log(status)
-    console.log(qlOrder)
 
     return (
         <div className="col-10">

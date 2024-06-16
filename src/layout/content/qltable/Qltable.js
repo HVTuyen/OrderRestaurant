@@ -14,7 +14,6 @@ import { db } from '../../../firebaseConfig';
 import ModalBook from '../../../component/Modal/ModalBook';
 
 function Qltable() {
-    console.log('re-render-Table')
     const [tables, setTables] = useState([])
     const [tablesSearch, setTablesSearch] = useState([])
     const [table, setTable] = useState('')
@@ -34,7 +33,7 @@ function Qltable() {
     }, [render])
 
     useEffect(() => {
-        setTablesSearch(table ? tables.filter(item => item.tableName.includes(table)) : tables);
+        setTablesSearch(table ? tables.filter(item => item.name.includes(table)) : tables);
     }, [table])
 
     const ordersRef = collection(db, "table");
@@ -94,10 +93,6 @@ function Qltable() {
                 console.error('Error booking table:', error);
             });
     }
-
-    console.log(table)
-    console.log(tables)
-    console.log(tablesSearch)
 
     const classTableSearch = clsx(style.tableSearch, 'input-group')
     const classTableButton = clsx(style.tableButton, 'btn btn-outline-primary')

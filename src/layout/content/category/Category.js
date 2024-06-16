@@ -13,8 +13,6 @@ import { getCategories } from '../../../CallApi/CategoryApi/getCategories'
 
 
 function Category() {
-    console.log('re-render-Category')
-
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
@@ -83,10 +81,6 @@ function Category() {
         
         setCategoriesSearch(filteredCategories);
     }, [category])
-    
-    console.log(category)
-    console.log(categories)
-    console.log(categoriesSearch)
 
     const classCategorySearch = clsx(style.categorySearch, 'input-group')
     const classCategoryButton = clsx(style.categoryButton, 'btn btn-outline-primary')

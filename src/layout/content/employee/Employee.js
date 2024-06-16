@@ -12,8 +12,6 @@ import { useAuth } from '../../../component/Context/AuthProvider';
 import { getEmployees } from '../../../CallApi/EmployeeApi/getEmployees'
 
 function Employee() {
-    console.log('re-render-Employee')
-
     const { account, token, refreshToken, reNewToken } = useAuth();
 
     const navigate = useNavigate();
@@ -70,10 +68,12 @@ function Employee() {
                     console.error('Error renewing token:', error);
                 }
             }
-            if (response && response.error === 'AccessDenied') {
-                navigate('/Ql/AccessDenied');
-            } else {
-                console.error('Error fetching employee');
+            else {
+                if (response && response.error === 'AccessDenied') {
+                    navigate('/Ql/AccessDenied');
+                } else {
+                    console.error('Error fetching employee');
+                }
             }
         }
     };
@@ -90,10 +90,6 @@ function Employee() {
         
         setEmployeesSearch(filteredEmployees);
     }, [employee])
-
-    console.log(employee)
-    console.log(employees)
-    console.log(employeesSearch)
 
     const classEmployeeSearch = clsx(style.employeeSearch, 'input-group')
     const classEmployeeButton = clsx(style.employeeButton, 'btn btn-outline-primary')
@@ -128,7 +124,7 @@ function Employee() {
                         {
                             employeesSearch?.map((item) => {
                                 return (
-                                    <div key={item.employeeId} className='col-lg-6 col-xs-12' style={{ padding: '24px 12px 8px 12px' }}>
+                                    <div key={item.userId} className='col-lg-6 col-xs-12' style={{ padding: '24px 12px 8px 12px' }}>
                                         <div className='border d-flex a-center' style={{}}>
                                             <div className='col-3' style={{ padding: '6px' }}>
                                                 <img loading='lazy' src={item.urlImage} alt={item.name} style={{ width: '100%', height: '100%', maxHeight: '150px', borderRadius: '8px', border: '1px solid #ccc' }} />

@@ -9,7 +9,7 @@ const Pagination = (props) => {
     const search = props.search
     for (let i = 1; i <= props.totalPages; i++) {
         pages.push(
-        <li key={i} class={currentPage == i ? 'page-item active' : 'page-item'}>
+        <li key={i} className={currentPage == i ? 'page-item active' : 'page-item'}>
             <Link to={`/Ql/${url}?page=${i}&search=${search}`} className="page-link">
                 {i}
             </Link>
@@ -20,8 +20,8 @@ const Pagination = (props) => {
     return (
         <div className='d-flex j-center'>
             <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class={currentPage == 1 ? 'page-item disabled' : 'page-item'}>
+                <ul className="pagination">
+                    <li className={currentPage == 1 ? 'page-item disabled' : 'page-item'}>
                         <Link 
                             to={`/Ql/${url}?page=${parseInt(currentPage) - 1}&search=${search}`}
                             className="page-link"
@@ -30,7 +30,7 @@ const Pagination = (props) => {
                         </Link>
                     </li>
                     {pages}
-                    <li class={currentPage == lastPage ? 'page-item disabled' : 'page-item'}>
+                    <li className={currentPage == lastPage ? 'page-item disabled' : 'page-item'}>
                         <Link 
                             to={`/Ql/${url}?page=${parseInt(currentPage) + 1}&search=${search}`}
                             className="page-link"

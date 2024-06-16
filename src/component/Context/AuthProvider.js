@@ -14,12 +14,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(storedAccessToken ? storedAccessToken : null);
   const [refreshToken, setRefreshToken] = useState(storedRefreshToken ? storedRefreshToken : null);
 
-  useEffect(() => {
-    console.log(account);
-    console.log(token);
-    console.log(refreshToken);
-  }, [account]);
-
   const login = (account, token, refreshToken) => {
     setAccount(account);
     setToken(token);

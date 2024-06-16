@@ -238,11 +238,13 @@ const Update = (props) => {
                     if (newDataResponse && newDataResponse.data) {
                         navigate(props.url)
                     }
-                    if (newDataResponse && newDataResponse.error === 'AccessDenied') {
-                        navigate('/Ql/AccessDenied')
-                    }
                     else {
-                        console.error(`Error edit ${props.type} after token renewal`);
+                        if (newDataResponse && newDataResponse.error === 'AccessDenied') {
+                            navigate('/Ql/AccessDenied')
+                        }
+                        else {
+                            console.error(`Error edit ${props.type} after token renewal`);
+                        }
                     }
                 } catch (error) {
                     console.error('Error renewing token:', error);

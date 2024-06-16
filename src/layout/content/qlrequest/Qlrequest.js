@@ -25,8 +25,6 @@ import { completeRequest } from '../../../CallApi/RequestApi/completeRequest'
 import ModalDelete from '../../../component/Modal/ModalDelete';
 
 function Qlrequest({ activeMenu }) {
-    console.log('re-render-qlorder')
-
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
@@ -112,12 +110,10 @@ function Qlrequest({ activeMenu }) {
     }
 
     useEffect(() => {
-        console.log(searchRequest)
         fetchData();
     }, [render, page, searchRequest, searchStatusRequest, searchStartDateRequest, searchEndDateRequest])
 
     useEffect(() => {
-        console.log('re-render 2')
         axios.get(`${CONFIG_API}type?type=${REQUEST_TYPE}`)
             .then(res => {
                 setStatus(res.data);
@@ -264,12 +260,6 @@ function Qlrequest({ activeMenu }) {
     const classQlrequestCol_1_5 = clsx(style.qlrequestCol, 'col-1-5')
     const classQlrequestCol_2 = clsx(style.qlrequestCol, 'col-2')
     const classQlrequestCol_3 = clsx(style.qlrequestCol, 'col-3')
-
-
-    console.table(render)
-    console.table(qlRequestsSearch)
-    console.log(status)
-    console.log(qlRequest)
 
     return (
         <div className="col-10">

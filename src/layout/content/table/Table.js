@@ -13,8 +13,6 @@ import { TABLE_API } from '../../constants'
 import { db } from '../../../firebaseConfig';
 
 function Table() {
-    console.log('re-render-Table')
-
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
@@ -71,10 +69,6 @@ function Table() {
     
         return () => unsub(); // Dọn dẹp listener khi component unmount
     }, []);
-    
-    console.log(table)
-    console.log(tables)
-    console.log(tablesSearch)
 
     const classTableSearch = clsx(style.tableSearch, 'input-group')
     const classTableButton = clsx(style.tableButton, 'btn btn-outline-primary')

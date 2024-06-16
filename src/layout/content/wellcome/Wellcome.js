@@ -18,7 +18,7 @@ function Wellcome( props ) {
 
     return (
         <div className='col-10 d-flex a-center'>
-            <MDBContainer fluid className='my-5'>
+            <MDBContainer className='my-5'>
 
                 <MDBRow className='g-0 align-items-center'>
                     <MDBCol col='6'>
@@ -34,8 +34,8 @@ function Wellcome( props ) {
                     </MDBCol>
 
                     <MDBCol col='6'>
-                        <img src="https://www.bravo.com.vn/wp-content/uploads/2022/11/Xuyen_D5.jpg" class="w-100 rounded-4 shadow-4"
-                            alt="" fluid />
+                        <img src="https://www.bravo.com.vn/wp-content/uploads/2022/11/Xuyen_D5.jpg" className="w-100 rounded-4 shadow-4"
+                            alt="" />
                     </MDBCol>
 
 

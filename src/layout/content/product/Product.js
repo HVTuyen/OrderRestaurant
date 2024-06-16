@@ -14,8 +14,6 @@ import { getProducts } from '../../../CallApi/ProductApi/getProducts'
 import Pagination from '../../../component/Pagination/Pagination'
 
 function Product() {
-    console.log('re-render-product')
-
     const navigate = useNavigate();
 
     const { account, token, refreshToken, reNewToken } = useAuth();
@@ -130,12 +128,6 @@ function Product() {
     useEffect(() => {
         fetchDataProducts();
     }, [page, search, searchId]);
-
-    console.log(product)
-    console.log(products)
-    console.log(productsSearch)
-
-    console.log(categoryId)
 
     const classProductSearch = clsx(style.productSearch, 'input-group')
     const classProductButton = clsx(style.productButton, 'btn btn-outline-primary')
